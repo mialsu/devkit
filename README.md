@@ -26,6 +26,7 @@ a per-domain **profile**.
 
 ## Use
 ```
+/product-brief                  # (devkit) Stage 0: turn a raw idea into a lean, validated brief
 /new-project                    # scaffold: pick a domain profile, lay down CLAUDE.md + gates
 /grill-with-docs                # (Pocock) shape one question at a time → /to-spec
 /implement                      # (Pocock) build the slice, drives /tdd, then /code-review
