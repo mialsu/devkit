@@ -31,6 +31,10 @@ against it, hard:
    - the **riskiest assumption** — name the one thing that, if false, kills the product, and the
      *cheapest* test that could falsify it (landing page, 5 user chats, paper prototype, a
      `/prototype` (mp) spike). This is the real output; a brief with no test plan isn't done.
+     **A shipped thin slice counts as a test** when building it costs less than the experiment —
+     often true when an agent does the building, and more informative besides. If you take that
+     path, keep it honest: the build must be pointed at the #1 assumption and reach real users,
+     or "we'll learn stuff" is just building in a vacuum.
 3. **Separate one-way from two-way doors.** Decide the few hard-to-reverse things now; explicitly
    defer the reversible ones (usually all the tech).
 4. **Write `PRODUCT-BRIEF.md`** from the template. Keep it lean — cut any section that's

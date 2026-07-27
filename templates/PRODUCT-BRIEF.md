@@ -44,7 +44,15 @@ generous here; this is where scope creep dies. Move things here the moment you d
 ## 7. Riskiest assumptions & how we'll test them (cheapest first)
 The most important section. Rank by "if this is false, the product is dead." For each: the
 cheapest test that could falsify it — a landing page, 5 user chats, a paper prototype, a spike.
-| # | Assumption (stated as falsifiable) | Cheapest test | Result |
+
+**A working thin slice can be the test.** When building the core-loop slice costs less than the
+experiment that would validate it — often true now that an agent does the building — then
+*shipping that slice to real users IS the test*, and usually a more informative one (real UX
+friction, real data problems, whether the loop even feels good). The discipline that stays: the
+build is pointed squarely at the #1 assumption and reaches real users; "we'll learn stuff"
+without a named question and a real audience is just building in a vacuum.
+
+| # | Assumption (stated as falsifiable) | Cheapest test (may be a shipped thin slice) | Result |
 |---|---|---|---|
 | 1 | <the one that kills it if wrong> | <test> | untested |
 
