@@ -1,0 +1,37 @@
+# Anti-patterns — if you catch yourself doing one of these, stop
+
+Each of these was paid for on the builds that produced the source method. They are the
+failure *shapes* that recur regardless of domain.
+
+- **Shipping on green tests without a live exercise.** Real bugs — crashes, leaks, stale
+  caches, wrong-persona denials — routinely pass a green suite. Tests gate; the live run proves.
+  (→ `/verify-live`)
+
+- **Trusting status over code.** An old TODO, a doc, or your own memory says "this is done."
+  Marking it done without grepping the actual code is how a project rots into false progress.
+  (→ `/verify-claim`)
+
+- **Silent scope-filling.** Resolving an ambiguity with the agent's own assumption is a defect
+  with a delay timer. It goes to a questions file or back to you — never quietly into the code.
+
+- **Sliding from shaping into building.** Shaping and building are separate acts. The agent
+  proposes, you say go. No go, no code.
+
+- **Backend/layer-only "progress."** A schema with no screen, or a screen over an API that
+  doesn't exist, banks work nobody can exercise. Slice end-to-end or don't slice.
+
+- **Rebuilding what you already have.** A second implementation of one behavior is a divergence
+  waiting for a bug. Reuse the existing one, or delete it and build one good one.
+
+- **Roadmap copy in the product.** No "coming soon", no "unsupported", no placeholder dressed
+  up as real. A labeled honest empty state, or nothing.
+
+- **Reformatting generated or vendored files.** Migrations, lockfiles, codegen output, and
+  vendored code are not yours to prettify. Touch them only through their generator.
+
+- **Deferring the confession.** "I'll write down what I stubbed later" means you won't. The
+  debt entry is written at the moment you incur it, or it is lost.
+
+- **Two writers, one file.** When you parallelize with background agents, the merge pain always
+  exceeds the parallel gain if two lanes edit the same file. Partition by file set first, or
+  don't parallelize.
