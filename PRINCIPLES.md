@@ -7,7 +7,9 @@ contradicts one of these, the principle wins.
 
 1. **Done means verified, not "should work."** "It's wired / it builds / I think it works"
    is not done. Done is: you (or a background verifier) exercised it the way a user hits it,
-   with evidence. What "the way a user hits it" means is set per domain in the profile.
+   with evidence. What "the way a user hits it" means is set per domain in the profile. Done is
+   asserted **per acceptance criterion**, never per task — and a task's verdict is the *worst*
+   verdict among its criteria.
 
 2. **Gates before every commit.** A change lands only when the profile's gate set is green:
    typecheck/lint, tests, a clean build, the standards harness (boundaries + drift), and a live

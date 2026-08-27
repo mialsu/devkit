@@ -57,7 +57,9 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
                   │  gate: lovable MVP + cheap test for the #1 risk? → /new-project (dk)
                   ▼
 1. SHAPE     /grill-with-docs (mp)   → one question at a time, each with a recommendation.
-   (+ shape)  → /to-spec (mp)          Writes SPEC.md. Ambiguity → questions file, not assumption.
+   (+ shape)  → /to-spec (mp)          Writes the spec; devkit then adds falsifiable ACCEPTANCE
+                                       CRITERIA, each naming how it will be proven, before code.
+                                       Ambiguity → the spec's open questions, not an assumption.
                   │
 2. SLICE     /to-tickets (mp)         → tracer-bullet vertical slices with blocking edges.
    (optional)                           Skip for small work.
@@ -67,6 +69,7 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 4. REVIEW    /code-review (mp)        → standards + spec, adversarial. Fixes folded INTO commits.
                   │
 5. VERIFY    /verify-live (dk)        → exercise it the way a user hits it, per the profile.
+                  │                      A verdict PER CRITERION; the task's is the worst of them.
                   │                      This is what turns "built" into "done".
 6. CONFESS   /confess (dk)            → every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md.
 ```
@@ -121,6 +124,7 @@ agent states which weight it's running.
 | **Sessions** | one | one or two | many, joined by `/handoff` |
 | **Confession** | a line in the commit message | REVIEW-DEBT entry | REVIEW-DEBT + disposition pass |
 | **Harness** | drift gate | + boundary gate | + `CODING_STANDARDS.md` and layering rules |
+| **Acceptance criteria** | one falsifiable line in the commit message | an AC table, verdicts filled by `/verify-live` | AC table + `Serves` column back to user stories + spec-delta log |
 
 A one-file script still gets **gated and verified** — that's the spine. It just skips the
 tickets, the ADRs, and the multi-session paperwork.

@@ -28,8 +28,10 @@ Green tests gate; they do not prove. And **a gate you haven't watched fail is no
 one above was installed by breaking it once on purpose and seeing it go red.
 
 ## Definition of DONE
-Built + gates green + **exercised the way a user hits it, with evidence** (`/verify-live`) +
-copy is in the user's language + every cut corner confessed to REVIEW-DEBT.md + tracked.
+Built + gates green + **every acceptance criterion exercised the way a user hits it, with
+evidence** (`/verify-live`) + copy is in the user's language + every cut corner confessed to
+REVIEW-DEBT.md + tracked. The task's verdict is the worst of its criteria: one PARTIAL criterion
+means a PARTIAL task, and an honest PARTIAL beats an indefensible DONE.
 Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsupported".
 
 ## Verify like a user
@@ -50,6 +52,9 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   memory. Ambiguity goes to the spec's **Open questions** (or `_Unresolved_:` on the term in
   `CONTEXT.md` when it's a vocabulary question), never a silent guess.
 - Slice end-to-end; gate every commit; confess at every landing; fold review fixes into commits.
+- Reference the criterion a commit satisfies: `Spec: specs/NNNN-slug.md#AC-3`. Then
+  `git log --grep=AC-3` answers "what proved this?" without anyone remembering.
+- Spec wrong? Append a dated line to its **Spec deltas**. Never silently edit the decision.
 - Reuse before building. Write load-bearing decisions down as ADRs at the moment of decision.
 
 ## Domain guard-rails  (THE section to write yourself)

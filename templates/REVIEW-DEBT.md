@@ -10,5 +10,6 @@ ledger is worse than none, because sessions trust it.
 ## YYYY-MM-DD — <one-line title>
 - **What:** <what is stubbed / faked / deferred / weaker than spec>
 - **Where:** <file:line anchors>
+- **Criterion:** <`AC-N` from `specs/NNNN-slug.md`, quoted — omit if there was no spec>
 - **What green tests do NOT prove here:** <the specific gap>
 - **Disposition:** open

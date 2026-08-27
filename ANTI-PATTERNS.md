@@ -29,6 +29,11 @@ failure *shapes* that recur regardless of domain.
 - **Reformatting generated or vendored files.** Migrations, lockfiles, codegen output, and
   vendored code are not yours to prettify. Touch them only through their generator.
 
+- **Spec drift, silently.** The build teaches you the spec was wrong — so the code goes one way
+  and the spec keeps asserting the other, or worse, the spec gets quietly edited to match as
+  though it always said that. Diverging is normal; diverging *unrecorded* is the defect. It goes
+  in the spec's `Spec deltas` log, dated, or it becomes a confession you owe.
+
 - **Deferring the confession.** "I'll write down what I stubbed later" means you won't. The
   debt entry is written at the moment you incur it, or it is lost.
 

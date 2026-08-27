@@ -25,8 +25,27 @@ set by the project's domain profile — read `profiles/<domain>/PROFILE.md` (or 
 3. **Evidence is honest.** Capture what you saw — including errors and ugliness. A screenshot of
    a broken state is evidence; skipping it is a lie. Cosmetic problems visible in the evidence go
    to `REVIEW-DEBT.md`, they don't get silently smoothed over.
-4. **Return a verdict**: WORKS (with the evidence) / PARTIAL (works, but here is exactly what
-   doesn't) / BROKEN (with the repro). Never soften a PARTIAL into a WORKS.
+4. **Return a verdict per acceptance criterion, not per task.** If the spec has an
+   `## Acceptance criteria` table, that table *is* the checklist: exercise each criterion by the
+   proof route it names, then write its verdict into the `Verdict` column — **WORKS** (with the
+   evidence) / **PARTIAL** (works, but here is exactly what doesn't) / **BROKEN** (with the
+   repro). Never soften a PARTIAL into a WORKS.
 
-Only after a WORKS verdict — with evidence — may a task be called done. If you can't exercise it
-(no device, no stack up), say so plainly and mark the task blocked, not done.
+   A criterion whose route is `test:` and that a user can touch is **not** proven by the test
+   passing. Exercise it live too, or record it PARTIAL with that gap named (PRINCIPLES #1).
+
+   No AC table — a Light task, or an older spec? Return one verdict for the task, and say which
+   spec you checked against, or that there wasn't one.
+
+## The task verdict is the worst criterion's verdict
+One PARTIAL makes the whole task PARTIAL, however many WORKS surround it. Report it that way and
+list the criteria that aren't green. A task-level "works" that averages over a broken criterion is
+exactly the overclaim PRINCIPLES #10 exists to stop, and it is the granularity where an
+indefensible DONE actually hides.
+
+Only when **every** criterion reads WORKS — each with evidence — may the task be called done. Hand
+each non-WORKS criterion to `/confess` as its own ledger entry, quoting the criterion.
+
+If exercising a criterion turns out to be impossible (no device, no stack up), say so plainly and
+mark it blocked, not done. If the criterion itself turns out to be wrong or unfalsifiable, that is
+a **spec delta**, not a verdict — record it in the spec's `Spec deltas` log and tell the Owner.

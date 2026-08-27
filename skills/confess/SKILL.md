@@ -12,7 +12,11 @@ Anything you did that a future reader would be surprised by:
 - a test that asserts less than the behavior actually needs;
 - something built narrower than the spec, or a spec ambiguity you resolved by guessing;
 - a thing that works locally but you couldn't fully verify (say why);
-- a known cosmetic or edge-case defect you saw during `/verify-live`.
+- a known cosmetic or edge-case defect you saw during `/verify-live`;
+- **any acceptance criterion left `unproven`, `PARTIAL` or `BROKEN`** — one entry per criterion,
+  quoting it, so the gap is legible without opening the spec;
+- **a divergence from the spec that isn't written in the spec's `Spec deltas` log** — silent
+  divergence is the defect, not the divergence.
 
 Silence about any of these is the defect, not the corner-cut itself.
 
@@ -23,6 +27,7 @@ Append to the project's `REVIEW-DEBT.md`, one entry per confession:
 ## <date> — <one-line title>
 - **What:** what is stubbed / faked / deferred / weaker than spec.
 - **Where:** file:line anchors.
+- **Criterion:** `AC-N` from `specs/NNNN-slug.md`, quoted  (omit if there was no spec)
 - **What green tests do NOT prove here:** the specific gap.
 - **Disposition:** open  (later: fixed / accepted-with-reason / promoted-to-issue)
 ```

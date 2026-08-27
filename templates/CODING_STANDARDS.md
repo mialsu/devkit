@@ -45,6 +45,8 @@ Two rules about the rules:
 - Prefer an existing seam to a new one, and the highest seam that works. `[review-only]`
 - No skipped, focused, or silently-deleted test lands without a `REVIEW-DEBT.md` entry. `[script]`
 - Green tests gate; they do not prove. The live exercise proves (PRINCIPLES #1). `[review-only]`
+- A behavior change names the criterion it satisfies in its commit (`Spec: …#AC-N`), so the proof
+  is greppable later. `[review-only]`
 
 ## Escape hatches
 
