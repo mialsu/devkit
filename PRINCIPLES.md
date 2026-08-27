@@ -10,8 +10,10 @@ contradicts one of these, the principle wins.
    with evidence. What "the way a user hits it" means is set per domain in the profile.
 
 2. **Gates before every commit.** A change lands only when the profile's gate set is green:
-   typecheck/lint, tests, a clean build, and a live exercise. No "just this once." Green tests
-   gate; they do not prove — the live exercise proves.
+   typecheck/lint, tests, a clean build, the standards harness (boundaries + drift), and a live
+   exercise. No "just this once." Green tests gate; they do not prove — the live exercise proves.
+   And **a gate you haven't watched fail is not a gate**: you install one by breaking it on
+   purpose once, seeing it go red, and reverting.
 
 3. **Reuse before building.** Never rebuild a capability the language, framework, or an
    existing dependency already gives you. Look first, verify how it fits, then extend or

@@ -34,6 +34,7 @@ a per-domain **profile**.
 /confess                        # (devkit) record what was cut → REVIEW-DEBT.md
 /ship                           # (devkit) the explicit publish gate
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
+/harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
 ```
 
 ## What's in here
@@ -43,11 +44,20 @@ a per-domain **profile**.
 | `PRINCIPLES.md` | The 10 non-negotiables — the spine that never bends. |
 | `ANTI-PATTERNS.md` | The recurring failure shapes; stop if you catch one. |
 | `skills/` | devkit's own skills (the new ones the sources didn't have as composable units). |
-| `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library. |
-| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `REVIEW-DEBT.md`, ADR, SPEC. |
+| `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set and its **standards harness**. |
+| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
+| `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
 
 ## Why "reference, not fork" for Pocock's skills
 devkit deliberately does **not** copy his skills in. Install them as his plugin and they update
 when he ships new ones; devkit only adds the pieces he doesn't cover (project bootstrap,
-verify-like-a-user, confession ledger, adversarial claim-checking, per-domain profiles) plus the
-method that ties everything together. `METHOD.md` marks each step **(mp)** his or **(dk)** mine.
+verify-like-a-user, confession ledger, adversarial claim-checking, the standards harness,
+per-domain profiles) plus the method that ties everything together. `METHOD.md` marks each step
+**(mp)** his or **(dk)** mine.
+
+The same rule governs the *documents*: where one of his skills already maintains an artifact,
+devkit adopts that skill's format rather than a prettier one of its own — `CONTEXT.md` and ADRs
+follow `domain-modeling`, specs follow `to-spec`, and the standards file is named
+`CODING_STANDARDS.md` because that is the filename `code-review` looks for. See the reuse map in
+`METHOD.md`. Two formats for one artifact is the same defect as two implementations of one
+behavior.

@@ -14,7 +14,23 @@ command line*: the right output, the right exit code, and a tool a stranger can 
 - Lint/format: `<cmd>`
 - Tests: unit + the integration layer (run the binary, assert stdout/stderr/exit code)
 - `--help` renders and documents every flag
+- Boundaries: `<boundary cmd>` (see **Standards harness**)
+- Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
+
+## Standards harness (`/harness`)
+- **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
+- **Boundary gate by ecosystem:** Go → `depguard` (via golangci-lint) for import rules, plus
+  `go-cleanarch` for layer checks — written by Robert Laszczak of Three Dots Labs, the same source
+  as the DDD-and-agents argument this profile's discipline comes from. Python → `import-linter`
+  with layer/forbidden/independence contracts in `.importlinter`. Rust → module visibility +
+  `cargo-deny`. Node → `dependency-cruiser` via `/setup-ts-deep-modules`.
+- **Drift gate:** `scripts/drift-check.sh`.
+- **The CLI-specific one:** exit codes and `--help` drifting away from the flags that exist. That
+  is a `[test]`, not a lint — assert the built binary's `--help` mentions every flag and that each
+  documented failure mode returns its documented exit code.
+- **What no harness here catches:** the clean-install experience, non-TTY behavior, and
+  cross-platform path assumptions. Those need the live exercise below.
 
 ## Tracer slice
 `flag/arg → logic → output (stdout + exit code) → it does the thing`. A slice is one subcommand

@@ -20,9 +20,12 @@ Domain profile: **<PROFILE>**.
 - Lint: `<cmd>`
 - Tests: `<cmd>`
 - Build: `<cmd>`
+- Boundaries: `<cmd>`  (the import/architecture gate)
+- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files)
 - Live exercise: see **Verify like a user** below.
 
-A gate you haven't run is not a gate. Green tests gate; they do not prove.
+Green tests gate; they do not prove. And **a gate you haven't watched fail is not a gate** — each
+one above was installed by breaking it once on purpose and seeing it go red.
 
 ## Definition of DONE
 Built + gates green + **exercised the way a user hits it, with evidence** (`/verify-live`) +
@@ -32,10 +35,20 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 ## Verify like a user
 <Filled by /new-project from the profile — the concrete recipe for THIS domain.>
 
+## Where the rules live
+- **`CONTEXT.md`** — the project's words. Every domain concept in the code uses its term from here;
+  a word listed under `_Avoid_:` fails the drift gate. New concept → add the term, then write code.
+- **`CODING_STANDARDS.md`** — how code here is written, every rule tagged with its enforcer. A rule
+  tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
+- **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate
+  a decision recorded here; supersede it with a new ADR or leave it alone.
+- **`REVIEW-DEBT.md`** — everything the green gates do not prove. Read it before trusting the repo.
+
 ## Process rules
 - Shape before build: `/grill-with-docs` → agree a spec → wait for an explicit "go".
 - One question at a time, each with a recommendation. Verify claims against the code, never
-  memory. Ambiguity goes to CUSTOMER-QUESTIONS / the spec's open-questions, never a silent guess.
+  memory. Ambiguity goes to the spec's **Open questions** (or `_Unresolved_:` on the term in
+  `CONTEXT.md` when it's a vocabulary question), never a silent guess.
 - Slice end-to-end; gate every commit; confess at every landing; fold review fixes into commits.
 - Reuse before building. Write load-bearing decisions down as ADRs at the moment of decision.
 

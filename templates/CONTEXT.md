@@ -1,22 +1,34 @@
-# CONTEXT.md — <PROJECT>
+# <PROJECT>
 
-The project's canonical vocabulary: the words the code and the domain actually use, defined once
-so every session (and every agent) speaks the same language. Glossary only — no implementation
-detail, no file paths (those go stale). This is the single source of truth for names.
+<One or two sentences: what this context is and why it exists.>
 
-**Purpose (one sentence):** <what this project does, for whom>
+This file is the project's **ubiquitous language** — the words the domain, the docs, the
+conversation, and the code all use. It is a glossary and **nothing else**: no implementation
+detail, no file paths, no decisions (those are ADRs), no scope (that's the spec).
 
-## Glossary
-| Term | Means | Notes |
-|---|---|---|
-| <Term> | <definition in plain language> | |
+Format and rules: devkit adopts the format of the installed `domain-modeling` skill verbatim
+(`~/.claude/skills/domain-modeling/CONTEXT-FORMAT.md`) so the skill that maintains this file and
+the template that seeds it can never drift apart. Two devkit additions are noted below.
 
-## Avoid these words
-Terms that mislead or that we deliberately retired, and what to say instead.
-| Don't say | Say instead | Why |
-|---|---|---|
-| <term> | <term> | <reason> |
+## Language
 
-## Flagged ambiguities
-Words we haven't fully pinned down yet — resolve before they cause a bug.
-- <ambiguity>
+**<Term>**:
+<What it IS, in one or two sentences. Not what it does.>
+_Avoid_: <the other words people reach for for this same concept>
+_Unresolved_: <optional — the part of this term still fuzzy. Resolve before it causes a bug.>
+
+## How this file is enforced
+
+- `_Avoid_:` is **machine-checked**. `scripts/drift-check.sh` fails a diff that introduces one of
+  these words as an identifier — the language stops being a suggestion. Escape a genuine false
+  positive with a `drift-ok:` comment on the line, which leaves the exemption greppable.
+- `_Unresolved_:` is devkit's second addition (the skill's format has no equivalent). It keeps a
+  known-fuzzy term visible *as a term* instead of exiling the ambiguity to a separate file.
+  An `_Unresolved_` term is a question for the Owner, never an assumption for the agent.
+
+## Multiple contexts
+
+Most projects have one. When this one grows a second — the same word meaning genuinely different
+things to different actors — the convention is a `CONTEXT-MAP.md` at the repo root listing each
+context, where it lives, and how they relate; each context then owns its own `CONTEXT.md` beside
+its code. Don't pre-split: one context until a word actually collides.

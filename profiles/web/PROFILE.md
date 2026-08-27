@@ -13,7 +13,22 @@ disciplines transfer most directly.
 - Lint: `eslint` over changed files
 - Tests: the unit + component suite for the touched area
 - Build: the production build succeeds (`vite build` / `next build`)
+- Boundaries: `<boundary cmd>` (see **Standards harness**)
+- Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
+
+## Standards harness (`/harness`)
+- **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
+- **Boundary gate:** `dependency-cruiser`, installed by the Pocock skill `/setup-ts-deep-modules`,
+  which ships a working config (a package's root files are its public surface, subfolders are
+  private, no cycles) and proves its own rules bite. Then fill the piece it leaves empty on
+  purpose — its `// Layering (optional, off by default)` stub — with which area may depend on
+  which. Script it as `lint:boundaries` (`depcruise src`) and fold it into the umbrella check.
+  `eslint-plugin-boundaries` is the alternative if the repo is already ESLint-centric.
+- **Drift gate:** `scripts/drift-check.sh` — vocabulary from `CONTEXT.md`, suppressions without a
+  confession, undeclared dependencies, stray lockfile moves, oversized new files.
+- **What no harness here catches:** whether the seam is in the *right place*, runtime coupling
+  through a store/context/DI container, and prop-drilled state that no import graph can see.
 
 ## Tracer slice
 `data model → API/endpoint → screen → real copy → it actually does the thing`. A slice is one

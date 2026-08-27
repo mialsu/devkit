@@ -16,7 +16,24 @@ as an installer would, and the docs are part of the deliverable, not an aftertho
 - Tests: the public-API suite; **documented examples compile and run** (doctest / example test)
 - Build: the distributable artifact builds (bundle / wheel / crate)
 - Public-API check: no unintended breaking change (semver diff tool where one exists)
+- Boundaries: `<boundary cmd>` — the entry-point rule IS the library discipline (see **Standards harness**)
+- Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
+
+## Standards harness (`/harness`)
+- **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
+- **Boundary gate:** for a library the entry-point rule *is* the product discipline — the public
+  surface is what you ship. `/setup-ts-deep-modules`' `dependency-cruiser` config enforces exactly
+  that (root files public, subfolders private, tests go through the entry points, no cycles).
+  Non-TS: the ecosystem's visibility system is the gate — `pub`/`pub(crate)`, package-private,
+  `__all__` plus `import-linter`, unexported Go identifiers.
+- **Public-surface gate:** a surface-diff tool so an accidental breaking change fails the build
+  rather than a user's install (`api-extractor` / `@arethetypeswrong/cli` for TS,
+  `cargo-public-api` for Rust, an apidiff for Go). Verify the tool fits before wiring it.
+- **Drift gate:** `scripts/drift-check.sh` — with `CONTEXT.md` terms mattering more here than
+  anywhere else, because your vocabulary *is* your API and renaming it later is a breaking change.
+- **What no harness here catches:** whether the documented examples still run. That's the live
+  exercise, and it's the one that catches README drift.
 
 ## Tracer slice
 `type / signature → implementation → test through the public interface → a runnable doc example`.

@@ -19,16 +19,23 @@ Create the project directory (or use the current one if it's empty). Drop in, fr
 `templates/`:
 - `CLAUDE.md` — fill the **domain guard-rails** section WITH the user (see step 4). Everything
   else is adopt-verbatim.
-- `CONTEXT.md` — the domain glossary starter. One line: the project's one-sentence purpose.
+- `CONTEXT.md` — the ubiquitous-language starter, in the format the installed `domain-modeling`
+  skill maintains. One line on what this context is; terms get added as they're resolved, not now.
+- `CODING_STANDARDS.md` — seeded from the profile in step 3. The filename is load-bearing.
 - `REVIEW-DEBT.md` — empty ledger.
-- `docs/adr/` with the ADR template; `specs/` for shaped specs (thinking artifacts live beside
-  the code, not in it if this is a workspace-style project).
+- `scripts/drift-check.sh` — the drift gate (step 3).
+- `specs/` for shaped specs. Do **not** pre-create `docs/adr/`: ADRs are created lazily, by the
+  first decision that earns one.
 
 ## 3. Wire the gates
 From the profile, install/verify the actual gate commands: the typecheck, the lint, the test
-runner, the build, and the live-exercise recipe. Write them into `CLAUDE.md`'s **Build gates**
-section as literal commands. Prove each one runs (even against an empty project) before moving
-on — a gate you haven't run is not a gate.
+runner, the build, and the live-exercise recipe. Then run **`/harness`** for the rest of the gate
+set — `CODING_STANDARDS.md`, the boundary gate, the drift gate — and let it do the proving.
+
+Write every command into `CLAUDE.md`'s **Build gates** section, literally. Then, for each one:
+run it green, break it on purpose, watch it go red, revert. **A gate you haven't watched fail is
+not a gate** (PRINCIPLES #2) — an empty project is the easiest place in the project's life to
+prove this, so do it here.
 
 ## 4. Fill the domain guard-rails — one question at a time
 This is the ONE section the user must author. Grill it out, one question per message, each with
@@ -39,8 +46,9 @@ a recommendation marked "(Recommended)", plain language. Cover:
 Keep the generic hard limits from the template verbatim.
 
 ## 5. Acid test
-Open the intent of a cold session: from `CLAUDE.md` and `CONTEXT.md` alone, restate the
-project's scope, its hard limits, and its gate set. If a cold read wouldn't get them right, the
+Open the intent of a cold session: from `CLAUDE.md`, `CONTEXT.md` and `CODING_STANDARDS.md` alone,
+restate the project's scope, its hard limits, its gate set, and which of its rules are enforced
+versus `[review-only]`. If a cold read wouldn't get them right, the
 setup isn't done — fix the docs, not your memory.
 
 ## 6. First commit

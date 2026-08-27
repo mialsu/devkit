@@ -32,6 +32,21 @@ failure *shapes* that recur regardless of domain.
 - **Deferring the confession.** "I'll write down what I stubbed later" means you won't. The
   debt entry is written at the moment you incur it, or it is lost.
 
+- **A standard with no enforcer.** A rule that lives only in prose — no lint, no test, no script —
+  is a suggestion, and an agent follows the harness far more reliably than the paragraph. Wire an
+  enforcer or label it `[review-only]`, so nobody mistakes the document for a guarantee.
+  (→ `/harness`)
+
+- **Two words for one thing.** A second name for a concept that already has one forks the
+  project's language: the agent starts writing a parallel vocabulary, and two half-implementations
+  follow it. The word goes in `CONTEXT.md` — with its rejected synonyms under `_Avoid_` — before
+  the code uses it. (→ the drift gate checks this on every diff)
+
+- **Two formats for one artifact.** The same document (a glossary, an ADR, a spec) written two ways
+  in two places guarantees they drift, and then every session has to guess which is canonical. If
+  a skill you already install writes that artifact, adopt *its* format — even when yours is
+  prettier. This is "rebuilding what you already have", aimed at the docs.
+
 - **Two writers, one file.** When you parallelize with background agents, the merge pain always
   exceeds the parallel gain if two lanes edit the same file. Partition by file set first, or
   don't parallelize.

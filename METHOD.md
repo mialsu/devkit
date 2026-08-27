@@ -71,20 +71,42 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 6. CONFESS   /confess (dk)            → every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md.
 ```
 
-Two supporting skills sit outside the loop:
+Three supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
   return a MET / PARTIAL / NOT-MET verdict with file:line evidence.
+- **`/harness` (dk)** — install and *prove* a project's standards harness: `CODING_STANDARDS.md`
+  (the exact filename `/code-review`'s Standards axis reads), the import/architecture boundary
+  gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
+  retrofit a project whose rules currently live only in prose.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
 profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, wires the
-gate commands, and runs the acid test. Publishing is **`/ship` (dk)** — the per-profile,
+gate commands via **`/harness`**, and runs the acid test. Publishing is **`/ship` (dk)** — the per-profile,
 explicit-keystroke publish checklist.
 
 ---
+
+## Reuse before building — the docs too
+
+devkit does **not** invent a format for an artifact that a skill you already have maintains. The
+map, so no session has to guess which shape is canonical:
+
+| Artifact | Format owned by | devkit's additions |
+|---|---|---|
+| `CONTEXT.md` (ubiquitous language) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
+| `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7) |
+| `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file, not a tracker issue (solo work has no tracker); adds Tracer slices (#4) and Open questions (#7) |
+| `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
+| the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
+| `scripts/drift-check.sh`, `REVIEW-DEBT.md`, `PRODUCT-BRIEF.md`, the profiles | devkit | — |
+
+The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
+adopt its format even when yours is prettier.** Two formats for one artifact is the same defect as
+two implementations of one behavior — they drift, and then both are suspect.
 
 ## The weight dial
 
@@ -98,6 +120,7 @@ agent states which weight it's running.
 | **SPEC.md** | a few lines inline, or none | yes | yes, + ADRs for load-bearing calls |
 | **Sessions** | one | one or two | many, joined by `/handoff` |
 | **Confession** | a line in the commit message | REVIEW-DEBT entry | REVIEW-DEBT + disposition pass |
+| **Harness** | drift gate | + boundary gate | + `CODING_STANDARDS.md` and layering rules |
 
 A one-file script still gets **gated and verified** — that's the spine. It just skips the
 tickets, the ADRs, and the multi-session paperwork.

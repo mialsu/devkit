@@ -13,7 +13,26 @@ one product. Everything in the web profile applies; the differences below are wh
 - Tests: unit + component/widget for the touched area; backend suite for touched endpoints
 - Build: the app builds for at least one target (`expo prebuild` / `flutter build` / Xcode/Gradle)
   **and** the backend builds/migrates cleanly
+- Boundaries: `<boundary cmd>` — app and backend checked separately (see **Standards harness**)
+- Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
+
+## Standards harness (`/harness`)
+- **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
+- **Boundary gate, TS/RN:** `dependency-cruiser` via `/setup-ts-deep-modules`, run over the app
+  and the backend as separate roots. The boundary that matters most here is the **app↔backend
+  contract** — generate the client from one source of truth so skew becomes a typecheck failure
+  rather than a runtime 500.
+- **Boundary gate, Flutter/Dart:** `analysis_options.yaml` with `dart analyze`; import-boundary
+  linting is thin in this ecosystem, so expect a grep-based check — and label it `[script]`, not
+  `[lint]`, so nobody over-trusts it.
+- **Boundary gate, native:** on the JVM/Kotlin side ArchUnit-style architecture *tests* are the
+  mature option (Konsist if you want Kotlin-native — verify maturity first, per `/harness` step 1);
+  on Swift, module targets are the real boundary, since SwiftLint has no import rules.
+- **Drift gate:** `scripts/drift-check.sh` — run it over app and backend together, so a term that
+  drifts on one side of the wire is caught against the other.
+- **What no harness here catches:** permission-denied paths, offline behavior, and version skew
+  between a shipped app and a moved backend. Those are `/verify-live`'s job.
 
 ## Tracer slice
 `data → API → app screen → device → it actually does the thing`. A slice spans the backend and
