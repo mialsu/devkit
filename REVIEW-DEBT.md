@@ -36,15 +36,38 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   is shaped to catch", never "no undeclared dependency".
 - **Disposition:** open — widen the shapes as real projects hit them.
 
-- **What:** Two known, accepted false-positive sources. (1) The vocabulary check matches an
-  `_Avoid_` term as a substring of any identifier, so a 4-letter term like `bill` flags `billion` —
-  deliberate, documented in the script header: a missed synonym forks the language, a false
-  positive costs one `drift-ok`. (2) The lockfile check fires on a legitimate lock-only change
-  (npm dedupe, audit fix), whose only remedy is `drift-ok` — which weakens the gate at that spot.
-- **Where:** `templates/scripts/drift-check.sh`, checks 1 and 4.
+- **What:** The vocabulary check was **field-tested on a real repo and failed**, then fixed. On
+  `meeting-conductor` (Python, 26-term glossary) the original substring matcher produced ~all
+  false positives — `runtime`/`overrun`/`Running` matching `run`, `lockstep` matching `step`,
+  Qt's `setWindowFlags` matching `flag`. Replaced with **identifier-segment matching** (`clientId`
+  → `client` + `id`), plurals honoured only for terms of 5+ chars. Verified: the five synthetic
+  false positives now pass clean, and `createPurchase` / `clientId` / `buyerName` / `purchases`
+  are still caught, each annotated with the term that matched.
+- **Where:** `templates/scripts/drift-check.sh`, check 1 (`seglist`, `banned`).
+- **What green tests do NOT prove here:** that the *remaining* hits are worth acting on. On
+  `meeting-conductor` 60 exact matches survive, and every one is a general programming word
+  (`run`, `item`, `instance`, `duration`, `step`) that the repo's `_Avoid_` list should not
+  contain — Pocock's own CONTEXT-FORMAT rule says a glossary holds domain concepts only.
+- **Disposition:** algorithm fixed. **New prerequisite discovered:** before `/harness` runs on any
+  repo, that repo's `CONTEXT.md` `_Avoid_` list needs a prune pass, or the gate opens with dozens
+  of technically-correct-but-useless hits and loses trust on day one.
+
+- **What:** The lockfile check still fires on a legitimate lock-only change (npm dedupe, audit
+  fix), whose only remedy is `drift-ok` — which weakens the gate at that spot.
+- **Where:** `templates/scripts/drift-check.sh`, check 4.
 - **What green tests do NOT prove here:** that a green run wasn't bought with exemptions.
   `git grep drift-ok` is the audit; nothing forces anyone to read it.
-- **Disposition:** open — accepted-with-reason, pending a real-project noise measurement.
+- **Disposition:** open — accepted-with-reason.
+
+- **What:** The **boundary gate is TS-only in practice**. `CODING_STANDARDS.md` and the drift gate
+  are language-agnostic (the drift gate was run successfully against a Python repo), but only
+  TypeScript has a ready-made, self-proving boundary config via `/setup-ts-deep-modules`. For
+  Python — which backs roughly half the projects in this tree — nothing is wired.
+- **Where:** `profiles/*/PROFILE.md` → `## Standards harness`; `skills/harness/SKILL.md` step 3.
+- **What green tests do NOT prove here:** that a Python or Godot project gets any boundary
+  enforcement at all today.
+- **Disposition:** open — an `import-linter` contract set for the Python profile is the highest-value
+  gap to close after the first TS run.
 
 - **What:** `drift-check.sh` has **no committed test suite**. It was proven by hand in a scratch
   repo under `/tmp`, which is not committed — so a future session cannot re-run the proof that made

@@ -14,9 +14,11 @@
 # `git grep drift-ok` lists every exemption you've ever granted. For a suppression or a skipped
 # test the intended remedy is a REVIEW-DEBT.md entry, not drift-ok.
 #
-# Sensitivity: the vocabulary check errs toward false positives on purpose. A missed synonym
-# silently forks the project's language (the expensive failure); a false positive costs one
-# `drift-ok` comment (the cheap one).
+# Sensitivity: the vocabulary check matches whole identifier SEGMENTS (clientId -> client + id),
+# so it catches `createPurchase` without flagging `runtime`, `overrun`, or `setWindowFlags`. It
+# still errs toward catching: a missed synonym silently forks the project's language (expensive),
+# a false positive costs one `drift-ok` (cheap). If it is noisy, suspect CONTEXT.md first — an
+# `_Avoid_` list should hold domain synonyms, not general programming words.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN.
 
@@ -96,15 +98,64 @@ done < <(git ls-files | grep -E '(^|/)CONTEXT\.md$')
 terms="$(printf '%s' "$terms" | awk -v m="$MIN_TERM_LEN" 'length($0)>=m' | sort -fu)"
 
 if [ -n "$terms" ] && [ -n "$LINES" ]; then
-  pattern="$(printf '%s' "$terms" | paste -sd'|' -)"
-  hits="$(printf '%s\n' "$LINES" | grep -Ei "[A-Za-z0-9_]*($pattern)[A-Za-z0-9_]*")"
+  # Match whole IDENTIFIER SEGMENTS, not substrings: clientId -> [client, id] flags `client`,
+  # while runtime / overrun / lockstep / setWindowFlags do NOT match run / step / flag. Plurals
+  # count only for terms of 5+ chars, so `flag` never flags Qt's `Flags` but `purchase` catches
+  # `purchases`.
+  hits="$(printf '%s\n' "$LINES" | awk -F'\t' -v terms="$terms" '
+  function seglist(id, out,    i,c,prev,nxt,cur,k,isup,prevlow,nxtlow) {
+    k=0; cur="";
+    for (i=1; i<=length(id); i++) {
+      c = substr(id,i,1);
+      if (c=="_" || c=="-") { if (cur!="") { out[++k]=tolower(cur); cur="" } ; continue }
+      isup    = (c ~ /[A-Z]/);
+      prev    = (i>1) ? substr(id,i-1,1) : "";
+      nxt     = (i<length(id)) ? substr(id,i+1,1) : "";
+      prevlow = (prev ~ /[a-z0-9]/);
+      nxtlow  = (nxt ~ /[a-z]/);
+      if (isup && cur!="" && (prevlow || nxtlow)) { out[++k]=tolower(cur); cur="" }
+      cur = cur c;
+    }
+    if (cur!="") out[++k]=tolower(cur);
+    return k;
+  }
+  function banned(seg,   sing) {
+    if (seg in BAN) return seg;
+    if (length(seg) > 1 && substr(seg,length(seg)) == "s") {
+      sing = substr(seg,1,length(seg)-1);
+      if ((sing in BAN) && length(sing) >= 5) return sing;
+    }
+    return "";
+  }
+  BEGIN {
+    n = split(terms, T, "\n");
+    for (i=1;i<=n;i++) { t=tolower(T[i]); sub(/^[ \t]+/,"",t); sub(/[ \t]+$/,"",t); if (t!="") BAN[t]=1 }
+  }
+  {
+    rest=$3; found=""; delete SEEN;
+    while (match(rest, /[A-Za-z_][A-Za-z0-9_]*/)) {
+      id   = substr(rest, RSTART, RLENGTH);
+      rest = substr(rest, RSTART+RLENGTH);
+      k = seglist(id, S);
+      for (j=1;j<=k;j++) {
+        b = banned(S[j]);
+        if (b != "") { if (!(id in SEEN)) { SEEN[id]=1; found = found (found==""?"":" ") id "(" b ")" } break }
+      }
+      delete S;
+    }
+    if (found != "") print $1 ":" $2 "  ->  " found;
+  }')"
   if [ -n "$hits" ]; then
-    report "vocabulary — a word CONTEXT.md says to avoid is entering the code" \
+    count="$(printf '%s\n' "$hits" | wc -l | tr -d ' ')"
+    report "vocabulary — a word CONTEXT.md says to avoid is entering the code ($count)" \
             "two words for one thing: the project's language forks silently" \
             "use the canonical CONTEXT.md term, or add \`drift-ok\` if this word genuinely means something else here"
-    while IFS= read -r h; do
-      say "     $(loc "$h")  →  $(body "$h" | grep -Eio "[A-Za-z0-9_]*($pattern)[A-Za-z0-9_]*" | sort -fu | paste -sd' ' -)"
-    done <<<"$hits"
+    printf '%s\n' "$hits" | head -15 | sed 's/^/     /'
+    if [ "$count" -gt 15 ]; then
+      say "     … and $((count - 15)) more of the same kind. The cap is display-only — all $count are violations."
+      say "     If most look like general programming words, the fix is CONTEXT.md: a domain glossary's"
+      say "     _Avoid_ list should hold DOMAIN synonyms, not words like run/item/length/script."
+    fi
   fi
 fi
 
