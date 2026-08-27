@@ -41,6 +41,47 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 - **Disposition:** accepted-with-reason, recorded as the reason `check.sh` asserts on output content
   rather than exit codes alone.
 
+## 2026-08-27 — First real bootstrap (`class-booking`): what the run found
+
+- **What:** The drift gate gave a **false pass on a repo with no commits** — the exact state every
+  project is in when `/new-project` installs it, and when `new-project` step 3 says "an empty project
+  is the easiest place in the project's life to prove this". `git diff HEAD` has no HEAD, so git
+  printed `fatal: bad revision` five times to stderr and the gate reported **clean** while several
+  checks silently did nothing. Fixed: with no HEAD it now diffs the **empty tree**, announces it, and
+  polices the bootstrap commit like any other diff. Verified on the fixture: zero `fatal` lines, and
+  check 3 correctly fired `package.json gained a dependency with no ADR` in `--cached` mode, going
+  green once ADR-0001 was written.
+- **Where:** `templates/scripts/drift-check.sh` (`DEFAULT_MODE`, the empty-tree substitution).
+- **What green tests do NOT prove here:** `dep_names()` still diffs against `RANGE` with no untracked
+  fallback, unlike `added_lines()`. In the **default** working-tree mode an *untracked* manifest is
+  therefore still invisible to check 3; it works in `--cached`, which is the mode a hook uses.
+  Inconsistent coverage between checks, deliberately not fixed mid-bootstrap.
+- **Disposition:** false pass fixed and observed; the `dep_names` untracked gap is open.
+
+- **What:** **`/harness` step 3's boundary work now has one end-to-end proof** — the debt open since
+  Phase 1. `dependency-cruiser` 18.2.0 installed on a real Vite/React/TS project with four rules
+  (no-cycles, domain↛storage, domain↛react, nothing↛ui), each broken individually and watched to
+  fail. The step-3 precondition check added after training-tracker was exercised for real: this
+  project's layout differs from `/setup-ts-deep-modules`' root-file convention, so the config was
+  written directly, as the step now instructs.
+- **Where:** `class-booking/.dependency-cruiser.cjs`; `skills/harness/SKILL.md` step 3.
+- **What green tests do NOT prove here:** that the delegation branch works. `/setup-ts-deep-modules`
+  has still never been run — only the write-it-directly branch has.
+- **Disposition:** partly closed. Also worth recording: **`domain-stays-pure-of-react` installed
+  green and could never have fired**, because `exclude: node_modules` had removed the react module
+  from the graph. Only breaking it on purpose revealed it. This is the single best piece of evidence
+  devkit has for PRINCIPLES #2.
+
+- **What:** Two profile facts are **stale**, found by using them: the web profile's stack default
+  says `eslint`, but the current `create-vite react-ts` template ships **oxlint** and no eslint at
+  all; and the same scaffold ships **without `strict`** in any tsconfig, which no profile warns
+  about even though every invariant-bearing project wants it.
+- **Where:** `profiles/web/PROFILE.md` → Stack defaults, Gate set.
+- **What green tests do NOT prove here:** whether the other four profiles' stack defaults have
+  drifted the same way. Only web was exercised.
+- **Disposition:** open — the profile should name oxlint-or-eslint and add "turn `strict` on; the
+  scaffold does not".
+
 ## 2026-08-27 — `/harness` field run on training-tracker (test only, nothing installed)
 
 - **What:** The drift gate was run against a real TS monorepo (pnpm, Hono + React, ~4 packages) over

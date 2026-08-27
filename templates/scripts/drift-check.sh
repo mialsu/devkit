@@ -36,6 +36,24 @@ MIN_TERM_LEN="${MIN_TERM_LEN:-3}"
 POLICE_STRINGS="${POLICE_STRINGS:-0}"
 
 RANGE=("$@"); [ ${#RANGE[@]} -eq 0 ] && RANGE=(HEAD)
+DEFAULT_MODE=0
+{ [ ${#RANGE[@]} -eq 1 ] && [ "${RANGE[0]}" = "HEAD" ]; } && DEFAULT_MODE=1
+
+# A repo with no commits has no HEAD to diff against — which is EXACTLY when a project installs
+# this gate. Left alone, git prints `fatal: bad revision` for every check and the gate still reports
+# clean: a false pass at the one moment someone is trying to prove the gate bites. Diff the empty
+# tree instead, so a bootstrap commit is policed like any other diff.
+if ! git rev-parse --verify -q HEAD >/dev/null 2>&1; then
+  EMPTY_TREE="$(git hash-object -t tree /dev/null)"
+  for i in "${!RANGE[@]}"; do
+    [ "${RANGE[$i]}" = "HEAD" ] && RANGE[$i]="$EMPTY_TREE"
+  done
+  case " ${RANGE[*]} " in
+    *" $EMPTY_TREE "*) : ;;
+    *) RANGE+=("$EMPTY_TREE") ;;
+  esac
+  echo "drift-check: no commits yet — diffing against the empty tree (everything counts as new)."
+fi
 
 # Files whose CONTENT this gate does not police (prose, locks, generated, vendored, snapshots).
 SKIP_CONTENT='(^|/)(CHANGELOG|README|REVIEW-DEBT|CODING_STANDARDS|CONTEXT|CONTEXT-MAP)\.md$|\.(md|txt|snap|svg|png|jpg|lock)$|(^|/)(vendor|node_modules|dist|build|\.venv)/|-lock\.(json|yaml)$|(^|/)(go\.sum|yarn\.lock|bun\.lockb)$|\.min\.|\.gen\.[a-z]+$|(^|/)drizzle/|(^|/)openapi\.json$|(^|/)schema\.d\.ts$'
@@ -62,7 +80,7 @@ report() {                      # report <check> <anti-pattern> <fix>
 # --- diff helpers ------------------------------------------------------------
 # Default (no args) = "everything not yet committed", which INCLUDES untracked files —
 # git diff alone cannot see them, and a brand-new file is exactly what needs checking.
-if [ ${#RANGE[@]} -eq 1 ] && [ "${RANGE[0]}" = "HEAD" ]; then
+if [ "$DEFAULT_MODE" = 1 ]; then
   UNTRACKED="$(git ls-files --others --exclude-standard)"
 else
   UNTRACKED=""
