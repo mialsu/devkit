@@ -65,6 +65,11 @@ invariant gets tested by a user instead.
 `Invariants touched:` INV-2, INV-5
 `New invariants this slice introduces:` <INV-n, added to INVARIANTS.md with its enforcer — or none>
 
+On a greenfield project the invariants exist before their enforcers do (`/crunch-domain` step 6).
+When this slice is the one that implements a rule, that shows up as a criterion in the table above —
+*"INV-n's enforcer exists and fails when the rule is violated"* — so the commitment is tracked where
+verdicts are, not in a ledger nobody re-reads.
+
 ## Implementation decisions
 The modules touched and the interfaces that change; architectural calls, schema changes, API
 contracts, specific interactions. Tagged `D-n`, each **with its why** — the reason is the part that

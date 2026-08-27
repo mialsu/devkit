@@ -6,6 +6,41 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-08-27 — devkit now runs its own method on itself (and where that stops)
+
+- **What:** devkit shipped a harness while having none: no `CODING_STANDARDS.md` (the file
+  `/code-review` opens), no CI, no lint on the 200-line script it distributes, and a drift gate that
+  ran only because someone remembered to type it. Now fixed: `scripts/check.sh` with six checks and
+  `CODING_STANDARDS.md` with every rule enforcer-tagged. Five of the six were observed
+  pass → fail → pass — a broken awk program (an apostrophe inside the single-quoted program, which
+  `bash -n` does not catch), a skill whose `name:` differs from its directory, an unadvertised skill,
+  a dead cross-reference, and a shell syntax error in `check.sh` itself.
+- **Where:** `scripts/check.sh`; `CODING_STANDARDS.md`.
+- **What green tests do NOT prove here:** **`shellcheck` is not installed on this machine**, so
+  check 2 prints `SKIP` and runs nothing. It is a labelled hole, not a passing gate — the first
+  `shellcheck` run on `drift-check.sh` should be expected to find real things.
+- **Disposition:** open — `apt install shellcheck` closes it; the SKIP line is deliberately loud
+  until then.
+
+- **What:** `scripts/check.sh` **is not wired to anything.** No CI, no pre-commit hook — it runs when
+  someone types it. By devkit's own anti-pattern list that makes it a suggestion, and it is exactly
+  what `/harness` step 6 tells every *other* project not to accept.
+- **Where:** `scripts/check.sh`; no `.github/`, no hook.
+- **What green tests do NOT prove here:** that a future commit ran it at all.
+- **Disposition:** open — needs the Owner's call, since a hook changes their local settings and CI
+  means a workflow file that eventually leaves the machine.
+
+- **What:** My own proof run was **invalid on two of five checks the first time**: `check.sh` wasn't
+  git-tracked yet, so `git ls-files` skipped it and check 1 never examined itself (the revert then
+  failed and left the file broken on disk); and the awk-breakage `sed` didn't match its target
+  string, so "the gate passed" meant "nothing was changed". Both proofs were redone properly.
+- **Where:** the method, not a file: a pass → fail → pass is only evidence if you confirm the
+  *fail* step actually changed something.
+- **What green tests do NOT prove here:** that any other proof in this repo's history was valid.
+  The earlier ones printed their violations, which is weak evidence the mutation landed.
+- **Disposition:** accepted-with-reason, recorded as the reason `check.sh` asserts on output content
+  rather than exit codes alone.
+
 ## 2026-08-27 — `/harness` field run on training-tracker (test only, nothing installed)
 
 - **What:** The drift gate was run against a real TS monorepo (pnpm, Hono + React, ~4 packages) over

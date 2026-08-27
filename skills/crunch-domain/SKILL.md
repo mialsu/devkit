@@ -93,9 +93,26 @@ For **every** invariant harvested, in the same session, before the report:
 
 - name the enforcer that fails when it's violated — `test:<name>`, `constraint:<db object>`,
   `type:<name>`;
-- if that enforcer doesn't exist yet, **write it now as a failing test** (`/tdd`), or tag the
-  invariant `[review-only]` and open its `REVIEW-DEBT.md` entry the same minute (`/confess`);
 - name its **one owner in code**. Three enforcement sites for one rule is three chances to drift.
+
+Then it splits, because the two situations are genuinely different:
+
+**Brownfield — the rule is already implemented.** Write the enforcer *now*. If a test that should
+fail on a violation doesn't exist, write it (`/tdd`) and watch it go red against a deliberate
+violation before you trust it. If you won't write it today, tag the invariant `[review-only]` and
+open its `REVIEW-DEBT.md` entry the same minute (`/confess`).
+
+**Greenfield — nothing is implemented yet.** Do *not* write a wall of failing tests: gates must be
+green before every commit (PRINCIPLES #2), so a repo carrying eight deliberately-red tests can never
+commit, and eight `[review-only]` entries on day one just teaches you to skim the ledger. Instead:
+record the enforcer's **name** (`test:no_overlapping_bookings`) as a commitment, and let the tracer
+slice that implements the rule deliver it — that slice's spec carries the acceptance criterion
+*"INV-n's enforcer exists and fails when the rule is violated"*, proven by `test:` plus the
+break-it-on-purpose observation. The invariant and its enforcer then arrive together, and the AC
+table is what remembers the debt instead of the ledger.
+
+Either way the rule is the same: **the enforcer is named before any code, and it exists before the
+invariant is called enforced.**
 
 An invariants table with no test names is the pseudo-artifact this skill was built to prevent.
 The drift gate backs this up: a new `INV-` row with an empty `Enforced by` cell fails the diff.

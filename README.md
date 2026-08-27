@@ -39,6 +39,16 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
 ```
 
+## Working on devkit itself
+```bash
+scripts/check.sh                # devkit's own gate set — green before every commit
+```
+Shell syntax, shellcheck (when installed), the drift gate on devkit's own diff, skill frontmatter
+(`name:` must equal the directory, or the skill installs and can't be invoked), skill advertising,
+and dead cross-references — the likeliest defect in a repo made of documents pointing at documents.
+House rules are in [CODING_STANDARDS.md](CODING_STANDARDS.md); what the gates don't prove is in
+[REVIEW-DEBT.md](REVIEW-DEBT.md).
+
 ## What's in here
 | Path | What |
 |---|---|
@@ -49,6 +59,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 | `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, and its **domain dial** default. |
 | `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `INVARIANTS.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
+| `CODING_STANDARDS.md`, `scripts/check.sh` | devkit's own standards and gate set — it runs its own method on itself. |
 | `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |
 
 ## Why "reference, not fork" for Pocock's skills

@@ -56,6 +56,12 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
    (greenfield only)                    non-goals, riskiest-assumption tests. Tech DEFERRED.
                   │  gate: lovable MVP + cheap test for the #1 risk? → /new-project (dk)
                   ▼
+0b. CRUNCH   /crunch-domain (dk)      → only if the DOMAIN DIAL is on (below), and BEFORE the first
+   (dial on only)                       spec: walk the domain's timeline with the Owner, harvest the
+                                        words into CONTEXT.md and the rules into INVARIANTS.md, give
+                                        every invariant the test that fails when it is violated.
+                  │  gate: can the Owner recite the contexts and top 3 invariants, files closed?
+                  ▼
 1. SHAPE     /grill-with-docs (mp)   → one question at a time, each with a recommendation.
    (+ shape)  → /to-spec (mp)          Writes the spec; devkit then adds falsifiable ACCEPTANCE
                                        CRITERIA, each naming how it will be proven, before code.
@@ -73,6 +79,39 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
                   │                      This is what turns "built" into "done".
 6. CONFESS   /confess (dk)            → every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md.
 ```
+
+### The whole chain, greenfield to shipped
+
+Six commands do the work; everything after step 3 repeats per MVP-cut bullet.
+
+```
+1. /product-brief                 once, before a repo exists. Problem, core value, MVP cut,
+                                  non-goals, riskiest assumption + its cheapest test. No tech.
+                                  → its platform reality picks the profile, and its MVP cut is
+                                    already the DOMAIN DIAL's evidence (money? scheduling?
+                                    permissions? a state machine? then the dial is on)
+2. /new-project                   once. Profile, CLAUDE.md, CONTEXT.md, CODING_STANDARDS.md,
+                                  REVIEW-DEBT.md, scripts/drift-check.sh, specs/. Delegates to
+                                  /harness, which PROVES each gate by breaking it. Step 3a sets
+                                  the domain dial. You author the domain guard-rails. Then it stops.
+3. /crunch-domain                 once, if the dial is on — before the first spec, because an
+                                  invariant found after the schema exists costs a migration.
+── per MVP-cut bullet ────────────────────────────────────────────────────────────────────
+4. /grill-with-docs → /to-spec    the spec, then its AC table (each criterion naming
+                                  test:/live:/review-only) and `Invariants touched: INV-n`
+5. (/to-tickets)                  tracer slices, blockers first. Skip for small work.
+6. /implement (+ /tdd)            build the slice. The profile's gate set green before EVERY commit.
+7. /code-review                   standards + spec axes; fixes folded INTO the commits.
+8. /verify-live                   a verdict per criterion, and it ATTACKS the invariants the slice
+                                  touches. The task's verdict is the worst criterion's.
+9. /confess                       every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md
+── when you choose to publish ────────────────────────────────────────────────────────────
+10. /ship                         the only command that puts anything on a remote.
+```
+
+Anywhere in there: `/verify-claim` the moment something claims "this already works", and
+`/handoff` when a session fills up. Adding a feature to a project that already exists? Start at
+step 4 — Stage 0 and the bootstrap are once-per-project.
 
 Four supporting skills sit outside the loop:
 
