@@ -22,6 +22,12 @@ _Unresolved_: <optional — the part of this term still fuzzy. Resolve before it
 - `_Avoid_:` is **machine-checked**. `scripts/drift-check.sh` fails a diff that introduces one of
   these words as an identifier — the language stops being a suggestion. Escape a genuine false
   positive with a `drift-ok:` comment on the line, which leaves the exemption greppable.
+- **What belongs under `_Avoid_`:** a word someone would plausibly reach for *as the name of this
+  concept*. Not a word the platform owns (`target` collides with the DOM's `e.target`), not one a
+  dependency owns (an auth library's `user`), and not one of your own enum values or button labels.
+  The gate matches identifiers, so a term whose every hit turns out to be a value or a piece of copy
+  is a glossary bug, not a code bug. And if a banned word turns out to name a *different, real*
+  concept, the fix is to promote it to a term of its own — that is the gate earning its keep.
 - `_Unresolved_:` is devkit's second addition (the skill's format has no equivalent). It keeps a
   known-fuzzy term visible *as a term* instead of exiling the ambiguity to a separate file.
   An `_Unresolved_` term is a question for the Owner, never an assumption for the agent.

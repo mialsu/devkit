@@ -6,6 +6,63 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-08-27 — `/harness` field run on training-tracker (test only, nothing installed)
+
+- **What:** The drift gate was run against a real TS monorepo (pnpm, Hono + React, ~4 packages) over
+  its whole history *and* its uncommitted work. It found **three defects in itself**, each since
+  fixed and each proven pass → fail → pass:
+  (1) generated files it didn't know — `*.gen.ts`, `drizzle/`, a dumped `openapi.json`, codegen
+  `schema.d.ts` — were being content-policed and size-capped;
+  (2) *committed codegen output* was flagged as hand-edited on every regeneration, so `GENERATED`
+  split into immutable (vendored, build output, applied migrations) vs `REGENERATED` (routinely
+  refreshed, skip content, never flag modification);
+  (3) banned words were matched inside **string literals** — enum values, test fixtures, free text —
+  now stripped by default, with `POLICE_STRINGS=1` to restore strict matching.
+  Effect on that repo: **198 → 70** hits over history, and the surviving hits reduced to four
+  nameable classes instead of a wall.
+- **Where:** `templates/scripts/drift-check.sh` (`SKIP_CONTENT`, `GENERATED`, `REGENERATED`,
+  check 1, check 5); `skills/harness/SKILL.md` (retrofit section); `templates/CONTEXT.md`.
+- **What green tests do NOT prove here:** that the gate is now quiet on a *different* stack. Three
+  language-agnostic runs (devkit, a Python repo, a TS monorepo) have each found new blind spots, so
+  the honest prior is that the fourth will too.
+- **Disposition:** fixed. **The earlier prediction was confirmed and sharpened**: the prerequisite
+  isn't just "prune general programming words" from `_Avoid_`, it's "prune words the *platform*, a
+  *dependency*, or your own *enum values and labels* already own" — now written into
+  `templates/CONTEXT.md`.
+
+- **What:** **`/harness` step 3's delegation had an undocumented precondition.** It delegates TS
+  boundary work to `/setup-ts-deep-modules`, which enforces depth — root files public, subfolders
+  private. A repo whose packages declare `"exports": {".": "./src/index.ts"}` puts its entry point a
+  level down, so that rule would flag *every* legitimate import. Step 3 now checks a `package.json`
+  before delegating and writes the config directly when the convention differs.
+- **Where:** `skills/harness/SKILL.md` step 3.
+- **What green tests do NOT prove here:** anything about the config that would be written by hand in
+  that case — it was designed and reviewed against the real graph, then **not installed**, because
+  the Owner scoped the run to testing only.
+- **Disposition:** open — the precondition check is written; neither branch of step 3 has run to
+  completion on a real repo.
+
+- **What:** **The boundary gate is still never proven end to end** — this run stopped before
+  installing it. What *did* close: `dependency-cruiser` is verified real and maintained (18.2.0,
+  published 2026-08-10), and `/setup-ts-deep-modules` is verified installed, so the Phase 1 entry
+  saying the profiles' tool names were unverified recommendations is now partly discharged for the
+  TS profile only.
+- **Where:** `profiles/web/PROFILE.md`; `skills/harness/SKILL.md` steps 3 and 5.
+- **What green tests do NOT prove here:** that a project ends up with a runnable `lint:boundaries`.
+  Unchanged since Phase 1.
+- **Disposition:** open — needs a run the Owner actually wants installed.
+
+- **What:** Findings that belong to **training-tracker, not devkit**, recorded here only so they
+  aren't lost — nothing was changed in that repo (its tree is byte-identical to before the run):
+  its `CONTEXT.md` has no term for the **auth account** (the code correctly separates
+  `session.user.id` from the Athlete it resolves to, and `me.ts` returns both) and none for the
+  **Calendar** read-model its in-flight feature builds, while `calendar` sits under Plan's
+  `_Avoid_`; and its `CLAUDE.md` + `docs/agents/domain.md` both assert a multi-context layout
+  (`CONTEXT-MAP.md`, `src/<context>/CONTEXT.md`) that does not exist in a repo laid out as
+  `apps/*` + `packages/*`.
+- **Where:** not devkit's files. The Owner's call, whenever that repo is next worked on.
+- **Disposition:** reported, not acted on — by the Owner's explicit instruction.
+
 ## 2026-08-27 — Phase 1 (DDD/SDD/harness integration): what is and isn't proven
 
 - **What:** `/harness` has never been run end to end. Of its two halves, only the **drift gate**

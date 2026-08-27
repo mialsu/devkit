@@ -23,7 +23,7 @@
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
 # hand-edited generated files, oversized new files, and invariants with no enforcer.
 #
-# Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN.
+# Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS.
 
 set -uo pipefail
 
@@ -33,13 +33,20 @@ MAX_NEW_FILE_LINES="${MAX_NEW_FILE_LINES:-400}"
 LEDGER="${LEDGER:-REVIEW-DEBT.md}"
 ADR_DIR="${ADR_DIR:-docs/adr}"
 MIN_TERM_LEN="${MIN_TERM_LEN:-3}"
+POLICE_STRINGS="${POLICE_STRINGS:-0}"
 
 RANGE=("$@"); [ ${#RANGE[@]} -eq 0 ] && RANGE=(HEAD)
 
 # Files whose CONTENT this gate does not police (prose, locks, generated, vendored, snapshots).
-SKIP_CONTENT='(^|/)(CHANGELOG|README|REVIEW-DEBT|CODING_STANDARDS|CONTEXT|CONTEXT-MAP)\.md$|\.(md|txt|snap|svg|png|jpg|lock)$|(^|/)(vendor|node_modules|dist|build|\.venv)/|-lock\.(json|yaml)$|(^|/)(go\.sum|yarn\.lock|bun\.lockb)$|\.min\.'
-# Files that are not yours to edit by hand (only through their generator).
-GENERATED='(^|/)(vendor|node_modules|dist|build)/|\.generated\.|(^|/)migrations/|_pb2?\.py$|\.pb\.go$|\.g\.dart$|\.freezed\.dart$'
+SKIP_CONTENT='(^|/)(CHANGELOG|README|REVIEW-DEBT|CODING_STANDARDS|CONTEXT|CONTEXT-MAP)\.md$|\.(md|txt|snap|svg|png|jpg|lock)$|(^|/)(vendor|node_modules|dist|build|\.venv)/|-lock\.(json|yaml)$|(^|/)(go\.sum|yarn\.lock|bun\.lockb)$|\.min\.|\.gen\.[a-z]+$|(^|/)drizzle/|(^|/)openapi\.json$|(^|/)schema\.d\.ts$'
+# Files that are not yours to edit by hand (only through their generator), and that never change
+# as a byproduct of normal work: vendored code, build output, an applied migration.
+GENERATED='(^|/)(vendor|node_modules|dist|build)/|\.generated\.|(^|/)(migrations|drizzle)/|_pb2?\.py$|\.pb\.go$|\.g\.dart$|\.freezed\.dart$'
+# Committed codegen output that legitimately changes whenever the source of truth changes (a router
+# tree, a dumped API spec, generated types, a schema snapshot). Content is not policed and size is
+# not capped, but a modification is NORMAL — flagging it would fire on every feature, and a gate
+# that fires on every feature gets tuned to silence.
+REGENERATED='\.gen\.[a-z]+$|(^|/)openapi\.json$|(^|/)schema\.d\.ts$|(^|/)drizzle/meta/'
 # Dependency manifests.
 MANIFESTS='(^|/)(package\.json|pyproject\.toml|requirements[^/]*\.txt|go\.mod|Cargo\.toml|Gemfile|composer\.json|pubspec\.yaml|[^/]+\.csproj|build\.gradle(\.kts)?)$'
 # Suppressions and silenced tests.
@@ -105,7 +112,7 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
   # while runtime / overrun / lockstep / setWindowFlags do NOT match run / step / flag. Plurals
   # count only for terms of 5+ chars, so `flag` never flags Qt's `Flags` but `purchase` catches
   # `purchases`.
-  hits="$(printf '%s\n' "$LINES" | awk -F'\t' -v terms="$terms" '
+  hits="$(printf '%s\n' "$LINES" | awk -F'\t' -v terms="$terms" -v SQ="'" -v police="$POLICE_STRINGS" '
   function seglist(id, out,    i,c,prev,nxt,cur,k,isup,prevlow,nxtlow) {
     k=0; cur="";
     for (i=1; i<=length(id); i++) {
@@ -136,6 +143,15 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
   }
   {
     rest=$3; found=""; delete SEEN;
+    # String literals hold enum VALUES, test fixtures and free text, where a banned word is
+    # usually a value or prose rather than a name. Matching there is close to pure noise, and the
+    # drift that matters shows up in identifiers. POLICE_STRINGS=1 restores strict matching, at
+    # the cost of every enum value and every bit of user-facing copy.
+    if (police != 1) {
+      gsub(/"[^"]*"/, " ", rest);
+      gsub("[" SQ "][^" SQ "]*[" SQ "]", " ", rest);
+      gsub(/`[^`]*`/, " ", rest);
+    }
     while (match(rest, /[A-Za-z_][A-Za-z0-9_]*/)) {
       id   = substr(rest, RSTART, RLENGTH);
       rest = substr(rest, RSTART+RLENGTH);
@@ -216,7 +232,7 @@ check_lock '(^|/)composer\.lock$' 'composer\.json' 'composer.json'
 check_lock '(^|/)pubspec\.lock$' 'pubspec\.yaml' 'pubspec.yaml'
 
 # --- 5. generated / vendored content edited by hand -------------------------
-hand_edited="$(printf '%s\n' "$CHANGED" | grep -E "$GENERATED" | grep -vxF -f <(added_files; echo '/dev/null'))"
+hand_edited="$(printf '%s\n' "$CHANGED" | grep -E "$GENERATED" | grep -Ev "$REGENERATED" | grep -vxF -f <(added_files; echo '/dev/null'))"
 if [ -n "$hand_edited" ]; then
   report "generated — an existing generated/vendored/migration file was modified" \
           "reformatting generated or vendored files" \

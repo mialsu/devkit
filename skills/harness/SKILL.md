@@ -30,8 +30,16 @@ its generic smell baseline alone.
   at a time, with a recommendation. Don't invent house style on their behalf.
 
 ## 3. Install the boundary gate
-Per the profile. For TypeScript, delegate to the installed `/setup-ts-deep-modules` — it ships a
-working `dependency-cruiser` config and already proves its own rules bite. Then fill in the piece
+Per the profile. For TypeScript, delegate to the installed `/setup-ts-deep-modules` — **but check
+its precondition first.** That skill enforces *depth*: a package's root files are its public
+surface, every subfolder is private. That is only correct if the packages really do put their entry
+points at the root. Read a `package.json` before delegating — if it declares
+`"exports": {".": "./src/index.ts"}` (or `main`/`module` pointing into `src/`), the entry point is a
+level down and the skill's rule would flag every legitimate import in the repo. Then write the
+`dependency-cruiser` config directly instead, re-expressing the same rules against the real surface
+(`packages/<pkg>/src/index.ts` public, everything else under `src/` private). Same tool, same
+proving step in step 5 — just not the delegation. Delegate only when the convention matches; it
+ships a working config and already proves its own rules bite. Then fill in the piece
 it deliberately leaves empty: its **`// Layering (optional, off by default)` stub**, which is
 where *which area may depend on which* belongs. Use `/codebase-design` vocabulary (module,
 interface, seam, depth) when discussing shape.
@@ -75,10 +83,21 @@ pass→fail→pass evidence per gate, which rules ended up `[review-only]`, and 
 enforce.
 
 ## Retrofitting an existing project
-Run the drift gate over a wide range first (`scripts/drift-check.sh main...HEAD`) and expect
-noise. Disposition it honestly: fix the cheap ones, confess the rest to `REVIEW-DEBT.md`, and
-exempt only genuine false positives with a `drift-ok` comment (each one greppable, forever). Do
-**not** mass-exempt to get to green — a gate tuned until it's silent is the same as no gate.
+**Measure before you install.** Run the drift gate over the whole history first — the range
+`$(git rev-list --max-parents=0 HEAD | head -1)...HEAD` scores every line the project ever added —
+and then over the working tree, which is where the in-flight feature lives. Expect noise, and sort
+it into three piles before changing anything:
+
+1. **The gate's own blind spots** — generated files it doesn't know about, a codegen convention it
+   hasn't met. Fix the gate; these are not the project's problem.
+2. **Glossary bugs** — a banned word whose every hit is a value, a UI label, or a word the platform
+   or a dependency owns. Fix `CONTEXT.md`; the code is fine.
+3. **Real drift** — the same concept under two names. This is the only pile that touches code.
+
+Expect pile 3 to be the smallest, and don't be disappointed: a run that finds two missing *terms*
+and no code defects has found the more expensive problem. Confess what you don't fix, and exempt
+only genuine false positives with a `drift-ok` comment (each one greppable, forever). Do **not**
+mass-exempt to get to green — a gate tuned until it's silent is the same as no gate.
 
 ## What this harness does not do
 It checks *shape*, never *behavior*. Nothing here proves the thing works: that's `/verify-live`.
