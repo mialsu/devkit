@@ -20,6 +20,17 @@ as an installer would, and the docs are part of the deliverable, not an aftertho
 - Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
 
+## Domain dial (default: **off** — the public API *is* the language)
+- **Why off:** for a library, the exported names are the ubiquitous language, and the surface gate
+  already enforces them. `CONTEXT.md` plus the API report covers what a separate model would say.
+- **Turn it on when the library *is* a domain** — money, tax, dates/timezones, units, permissions.
+  Then invariants are the library's actual contract, and they are the best-enforced invariants in
+  any profile: **property tests** (`test:prop_*`) hold them across inputs no example test would try.
+- **Invariants worth writing:** round-trip identity (parse ∘ format = id), commutativity and
+  associativity where claimed, monotonicity, and every documented error condition — a promise in
+  the README with no test is `[review-only]`, so label it.
+- **`mapped` essentially never.** A library with two bounded contexts is two libraries.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate:** for a library the entry-point rule *is* the product discipline — the public

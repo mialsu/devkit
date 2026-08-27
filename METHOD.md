@@ -74,7 +74,7 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 6. CONFESS   /confess (dk)            → every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md.
 ```
 
-Three supporting skills sit outside the loop:
+Four supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
@@ -83,6 +83,10 @@ Three supporting skills sit outside the loop:
   (the exact filename `/code-review`'s Standards axis reads), the import/architecture boundary
   gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
   retrofit a project whose rules currently live only in prose.
+- **`/crunch-domain` (dk)** — for a project whose **domain dial** is on (below): walk the domain's
+  timeline with the Owner, harvest the words into `CONTEXT.md` and the rules into `INVARIANTS.md`,
+  and give every invariant the test that fails when it's violated. Its first act is to check the
+  dial and try to talk you out of it. Not per-task: run it once early, re-run when the domain moves.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
 
@@ -103,8 +107,10 @@ map, so no session has to guess which shape is canonical:
 | `CONTEXT.md` (ubiquitous language) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
 | `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7) |
 | `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file, not a tracker issue (solo work has no tracker); adds Tracer slices (#4) and Open questions (#7) |
+| `CONTEXT-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
+| `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, `PRODUCT-BRIEF.md`, the profiles | devkit | — |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
@@ -131,6 +137,40 @@ tickets, the ADRs, and the multi-session paperwork.
 
 ---
 
+## The domain dial
+
+The weight dial scales *ceremony*. The domain dial answers a different question: **does this project
+have a domain worth modelling at all?** DDD earns its cost on complex, long-lived software and is a
+tax on everything else — a CRUD app's rules *are* its schema, and writing them out twice produces a
+document that rots. So the dial is **argued upward, never assumed**: each profile names the setting
+it expects for its domain (`profiles/*/PROFILE.md`), and the Owner confirms or overrides it against
+the actual project, because an empty repo can't answer this and a profile can't see your project.
+
+The bar for **on** is at least **two** of these:
+
+1. **Rules that aren't CRUD** — something decides whether an action is *allowed*, and the answer
+   isn't "the user owns the row".
+2. **One word already means two things** to two different actors.
+3. **Money, scheduling, permissions, or state machines** are in scope.
+4. **It will outlive a month**, across many sessions — the point at which the agent's context is
+   gone and only the files remain.
+
+| Setting | What exists | When |
+|---|---|---|
+| **off** (the floor — cli-tools, library) | `CONTEXT.md` only — the glossary is *always* on, because vocabulary drift is free to prevent and expensive to fix | scripts, CRUD, thin wrappers, most CLIs |
+| **on** (web, mobile-fullstack; game's rules only) | + `INVARIANTS.md`, each invariant naming the enforcer that fails when it's violated; `/crunch-domain` before the first spec | ≥2 triggers above |
+| **mapped** (rare, and never by default) | + `CONTEXT-MAP.md`, one `CONTEXT.md` + `INVARIANTS.md` per context, **and each context folder wired as a layering rule in the boundary gate** | a word genuinely collides between actors — nothing else justifies a split |
+
+Two rules keep the dial honest:
+
+- **Never split a context for size.** Layers, file counts and "it feels like two systems" are not
+  triggers; a colliding word is the only one. Slices cut layers, never contexts (PRINCIPLES #4).
+- **On means enforced.** An invariant with no named enforcer, or a context boundary not in the
+  import graph's rules, is the *pseudo-artifact* — the document that manufactures confidence. Down
+  the dial is always available; a decorative model is not.
+
+---
+
 ## Parallelism (when you want it)
 
 For a Standard/Full task with independent surfaces, you can fan out background agents — but the
@@ -154,6 +194,13 @@ serially. Research and read-only verification parallelize freely; code does not.
   skill prompts and in `CLAUDE.md`.
 - The framework's **"verify like a user with the real persona, screenshots as evidence"**
   becomes `/verify-live`, which delegates the *meaning* of "exercise it" to the domain profile.
+- **DDD** enters through the same door as everything else — reuse. Pocock's `domain-modeling`
+  already owns the ubiquitous language, the ADRs, and the context map, so devkit adds only the piece
+  it deliberately excludes (`CONTEXT.md` is "a glossary and nothing else", which leaves domain
+  *rules* homeless): `INVARIANTS.md`, plus the dial that decides when any of it is worth doing. The
+  discipline it borrows from Three Dots Labs' *DDD and AI coding* is the warning, not the ceremony —
+  the model's value is the understanding, an agent-generated model nobody read is a pseudo-artifact,
+  and the ubiquitous language is the highest-leverage context an agent can be given.
 - **High-level product design** is the one stage *neither* source covers well — the framework
   assumes the product already exists (requirements arrive as binding scope), and Pocock's flow
   starts at shaping a feature. `/product-brief` fills that gap as Stage 0, reusing Pocock's

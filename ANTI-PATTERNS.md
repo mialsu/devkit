@@ -42,6 +42,14 @@ failure *shapes* that recur regardless of domain.
   enforcer or label it `[review-only]`, so nobody mistakes the document for a guarantee.
   (→ `/harness`)
 
+- **The pseudo-artifact.** A document the agent generated in one pass, nobody read closely, and
+  everybody now cites: a "domain model" reverse-engineered from the code and skimmed, a glossary of
+  general programming words, an invariant list with no test names. It reads like understanding and
+  costs like understanding but carries none — and it is *worse* than no document, because the next
+  session trusts it. Two tests: can the Owner recite it with the file closed, and does every rule in
+  it name the enforcer that fails when it's broken? If neither, delete it. An absent document is
+  honest; a confident wrong one is not. (→ `/crunch-domain`)
+
 - **Two words for one thing.** A second name for a concept that already has one forks the
   project's language: the agent starts writing a parallel vocabulary, and two half-implementations
   follow it. The word goes in `CONTEXT.md` — with its rejected synonyms under `_Avoid_` — before

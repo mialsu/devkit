@@ -23,7 +23,9 @@ contradicts one of these, the principle wins.
 
 4. **Slice end-to-end.** Every unit of work cuts the whole stack and is demoable alone:
    data → logic → surface → words → *it actually does the thing*. No layers banked as
-   "progress" that no one can exercise yet.
+   "progress" that no one can exercise yet. A slice cuts **layers, never contexts**: all the way
+   through one bounded context is a slice; touching two at once is two slices with a named seam
+   between them.
 
 5. **Confessions over silence.** Every seam you faked, deferred, stubbed, or built weaker than
    the spec goes into `REVIEW-DEBT.md` at the moment you do it — never hidden, never a surprise
@@ -50,8 +52,15 @@ contradicts one of these, the principle wins.
     (issues, a local file, a board) is trusted only because nothing on it is marked done that
     isn't. An honest PARTIAL always beats an indefensible DONE.
 
+11. **The model is yours, not the agent's.** The domain's rules — what must always be true, what a
+    word means, where one context ends — come from you. The agent asks, transcribes, challenges,
+    and names; it never supplies them. Every invariant names the enforcer that fails when it's
+    violated, or it is prose. And a model you can't recite with the file closed is a
+    *pseudo-artifact*: it manufactures confidence without carrying understanding, which is worse
+    than having no document at all.
+
 ---
 
-*The weight dial (in METHOD.md) decides how much ceremony a given task gets. It never lets you
-opt out of these ten — a one-file script still gets gated and verified; it just gets less
-paperwork around it.*
+*The weight dial (in METHOD.md) decides how much ceremony a given task gets, and the domain dial
+decides whether the project models a domain at all. Neither lets you opt out of these eleven — a
+one-file script still gets gated and verified; it just gets less paperwork around it.*

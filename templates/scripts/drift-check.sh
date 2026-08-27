@@ -20,6 +20,9 @@
 # a false positive costs one `drift-ok` (cheap). If it is noisy, suspect CONTEXT.md first — an
 # `_Avoid_` list should hold domain synonyms, not general programming words.
 #
+# Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
+# hand-edited generated files, oversized new files, and invariants with no enforcer.
+#
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN.
 
 set -uo pipefail
@@ -232,6 +235,21 @@ while IFS=$'\t' read -r add path; do
     say "     $path"
   fi
 done < <(added_sizes)
+
+# --- 7. an invariant with no enforcer ---------------------------------------
+# INVARIANTS.md is prose, so SKIP_CONTENT excludes it from every other check — but a row claiming
+# a domain rule while naming no failing test is the pseudo-artifact this gate exists to refuse.
+# Retired invariants strike their id (~~INV-3~~), so they don't match.
+while IFS= read -r rec; do
+  [ -n "$rec" ] || continue
+  row="$(body "$rec")"
+  if ! awk -F'|' '{ print $5 }' <<<"$row" | grep -qE 'test:|constraint:|type:|gate:|review-only'; then
+    report "invariant — INV row at $(loc "$rec") names no enforcer" \
+            "a standard with no enforcer (the pseudo-artifact): an invariant with no failing test is prose" \
+            "name the test/constraint that fails when it is violated, or tag it [review-only] and confess it"
+    say "     ${row:0:110}"
+  fi
+done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)INVARIANTS\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*INV-[0-9]/' | grep -v 'drift-ok')
 
 # --- verdict ---------------------------------------------------------------
 say ""

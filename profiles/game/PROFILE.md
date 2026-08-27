@@ -18,6 +18,20 @@ it tells you that. Automated tests cover logic; playing covers fun.
 - Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below.
 
+## Domain dial (default: **on for the rules domain only**)
+- **On for:** simulation, combat, economy, progression, save versioning — the parts with rules a
+  player can exploit, where "what must always be true" has a real answer.
+- **Off for:** rendering, input, animation, asset plumbing, UI chrome. These are layers with
+  conventions, not a domain, and modelling them produces vocabulary nobody speaks.
+- **Invariants worth writing:** an economy that can't be farmed to infinity, a state machine that
+  can't be re-entered mid-transition, a save that either loads or fails loudly (never half-loads),
+  damage/resource maths that can't go negative or NaN.
+- **Enforcers:** deterministic simulation tests and property tests do the work here — replay a
+  fixed input sequence and assert the invariant every tick. Save-format invariants get a
+  round-trip test per version.
+- **`mapped` is rarely right.** Subsystems are not bounded contexts. Split only if the same word
+  genuinely differs — a "Level" in the editor vs. a "Level" in progression.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate, Unity/C#:** **assembly definitions (`.asmdef`) are the real mechanism** — an

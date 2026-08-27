@@ -17,6 +17,16 @@ one product. Everything in the web profile applies; the differences below are wh
 - Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
 
+## Domain dial (default: **on**)
+- **Why on:** an app with accounts, sync, or payments clears two triggers on day one.
+- **Invariants worth writing:** what stays true across an offline edit and a later sync (the
+  conflict rule *is* an invariant), what a token may do, and any local state the server can contradict.
+- **The trap unique to this profile:** the **client/server split is not a context split.** It is one
+  domain with two runtimes — split it and you get two half-models of the same rules, which is the
+  duplication the boundary was meant to prevent. The shared package for domain types is the seam.
+- **Enforcers:** the rule lives once, in the shared/domain package, and both runtimes call it.
+  A rule implemented in Swift/Kotlin *and* on the server is two rules waiting to disagree.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate, TS/RN:** `dependency-cruiser` via `/setup-ts-deep-modules`, run over the app

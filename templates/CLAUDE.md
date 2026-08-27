@@ -40,6 +40,9 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 ## Where the rules live
 - **`CONTEXT.md`** — the project's words. Every domain concept in the code uses its term from here;
   a word listed under `_Avoid_:` fails the drift gate. New concept → add the term, then write code.
+- **`INVARIANTS.md`** — the rules the domain can't break, each naming the enforcer that fails when
+  it's violated (only if the **domain dial** is on; `<off | on | mapped>` for this project). A spec
+  says which `INV-n` its slice touches; `/verify-live` then tries to break exactly those.
 - **`CODING_STANDARDS.md`** — how code here is written, every rule tagged with its enforcer. A rule
   tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
 - **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate
@@ -56,6 +59,8 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   `git log --grep=AC-3` answers "what proved this?" without anyone remembering.
 - Spec wrong? Append a dated line to its **Spec deltas**. Never silently edit the decision.
 - Reuse before building. Write load-bearing decisions down as ADRs at the moment of decision.
+- A domain rule is the Owner's to state, never the agent's to infer (PRINCIPLES #11). A slice cuts
+  layers, never contexts.
 
 ## Domain guard-rails  (THE section to write yourself)
 - **Scope (one sentence):** <what this project is>

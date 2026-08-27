@@ -17,6 +17,18 @@ disciplines transfer most directly.
 - Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
 
+## Domain dial (default: **on**)
+- **Why on:** a web app almost always carries permissions or money, and it outlives a month — two
+  triggers, which is the bar (METHOD.md).
+- **Invariants worth writing:** who may see or change a row and why (not just "is logged in"),
+  money that must reconcile, any status that can only move one way, uniqueness a user can observe.
+- **Enforcers here are cheap and strong:** a DB constraint or a unique index beats a service-layer
+  check, because it holds even when a new code path forgets. Prefer `constraint:` over `test:` when
+  the database can express the rule.
+- **`mapped` only when a word collides** — the `User` billing means vs. the `User` the editor means.
+  A monorepo's packages, an `app/` vs `api/` split, and "it's getting big" are **not** context
+  splits; they're layers and deployment units.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate:** `dependency-cruiser`, installed by the Pocock skill `/setup-ts-deep-modules`,

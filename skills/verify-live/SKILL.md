@@ -37,6 +37,18 @@ set by the project's domain profile — read `profiles/<domain>/PROFILE.md` (or 
    No AC table — a Light task, or an older spec? Return one verdict for the task, and say which
    spec you checked against, or that there wasn't one.
 
+## Attack the invariants the slice touches
+An acceptance criterion asks "does it do the thing?" — a happy-path question. An invariant asks
+"can I break the domain?", and only the second one finds the bug that ships. If the project has an
+`INVARIANTS.md` and the spec names `Invariants touched`, then for each of those `INV-n`: **try the
+violation the invariant itself describes** — the double submit, the overlapping booking, the
+out-of-order arrival, the concurrent edit, the cancelled thing revived.
+
+- It's refused → say which layer refused it (the DB constraint, the type, the service check). A rule
+  enforced only in the UI is not enforced.
+- It goes through → that is a **BROKEN** finding on its own, whatever the AC verdicts say, and it
+  outranks them: a violated invariant is a bug in every release, not an unfinished slice.
+
 ## The task verdict is the worst criterion's verdict
 One PARTIAL makes the whole task PARTIAL, however many WORKS surround it. Report it that way and
 list the criteria that aren't green. A task-level "works" that averages over a broken criterion is

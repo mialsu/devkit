@@ -57,6 +57,14 @@ Slices cut *layers*; a slice never silently crosses a bounded context.
 1. <slice> — <the thin full-stack cut it delivers>
 2. <slice> (blocked by 1)
 
+## Invariants touched  *(devkit addition — PRINCIPLES #11; omit if the domain dial is off)*
+The `INV-n` entries from `INVARIANTS.md` this slice can break. Naming them is what tells
+`/verify-live` which violations to *attempt* rather than only walking the happy path — an unnamed
+invariant gets tested by a user instead.
+
+`Invariants touched:` INV-2, INV-5
+`New invariants this slice introduces:` <INV-n, added to INVARIANTS.md with its enforcer — or none>
+
 ## Implementation decisions
 The modules touched and the interfaces that change; architectural calls, schema changes, API
 contracts, specific interactions. Tagged `D-n`, each **with its why** — the reason is the part that

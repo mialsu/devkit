@@ -25,7 +25,7 @@ Create the project directory (or use the current one if it's empty). Drop in, fr
 - `REVIEW-DEBT.md` — empty ledger.
 - `scripts/drift-check.sh` — the drift gate (step 3).
 - `specs/` for shaped specs. Do **not** pre-create `docs/adr/`: ADRs are created lazily, by the
-  first decision that earns one.
+  first decision that earns one. Same for `INVARIANTS.md` — it arrives with step 3a, or not at all.
 
 ## 3. Wire the gates
 From the profile, install/verify the actual gate commands: the typecheck, the lint, the test
@@ -37,6 +37,17 @@ run it green, break it on purpose, watch it go red, revert. **A gate you haven't
 not a gate** (PRINCIPLES #2) — an empty project is the easiest place in the project's life to
 prove this, so do it here.
 
+## 3a. Set the domain dial
+The profile has a default (`off` / `on` / `on for the rules domain only`). Confirm it against the
+project in front of you using METHOD.md's four triggers, and state the verdict in `CLAUDE.md`.
+- **off** — `CONTEXT.md` only. Nothing else to do; the glossary is always on.
+- **on** — copy `templates/INVARIANTS.md` and run **`/crunch-domain`** *before the first spec*, not
+  after. Invariants discovered after the schema exists cost a migration.
+- Don't create `CONTEXT-MAP.md`. One context until a word actually collides (PRINCIPLES #4).
+
+Recommend the profile default unless the project clearly clears or misses the bar, and say which
+way you're arguing. An empty repo cannot answer "does this have a domain?" for you — the Owner can.
+
 ## 4. Fill the domain guard-rails — one question at a time
 This is the ONE section the user must author. Grill it out, one question per message, each with
 a recommendation marked "(Recommended)", plain language. Cover:
@@ -47,8 +58,8 @@ Keep the generic hard limits from the template verbatim.
 
 ## 5. Acid test
 Open the intent of a cold session: from `CLAUDE.md`, `CONTEXT.md` and `CODING_STANDARDS.md` alone,
-restate the project's scope, its hard limits, its gate set, and which of its rules are enforced
-versus `[review-only]`. If a cold read wouldn't get them right, the
+restate the project's scope, its hard limits, its gate set, the domain dial's setting, and which of
+its rules are enforced versus `[review-only]`. If a cold read wouldn't get them right, the
 setup isn't done — fix the docs, not your memory.
 
 ## 6. First commit

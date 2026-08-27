@@ -76,11 +76,53 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 - **What green tests do NOT prove here:** everything. There are no tests.
 - **Disposition:** open — the highest-value next task on the harness itself.
 
-- **What:** Phase 2 (spec acceptance criteria + AC→test→evidence traceability + per-AC verdicts)
-  and Phase 3 (`DOMAIN.md`, `/crunch-domain`, the domain dial, principle #11) were agreed and are
-  **not done**. Consequence today: `templates/spec/SPEC-template.md` has numbered user stories but
-  no acceptance criteria, so `/verify-live` still returns one verdict per task rather than one per
-  criterion — the granularity where an indefensible DONE actually hides.
-- **Where:** `templates/spec/SPEC-template.md`; `skills/verify-live/SKILL.md`; `skills/confess/SKILL.md`.
-- **What green tests do NOT prove here:** n/a — this is scope deferred by the Owner, not a fake seam.
-- **Disposition:** open — Owner's call on when to run Phase 2.
+- **What:** Phase 2 (acceptance criteria) and Phase 3 (`INVARIANTS.md`, `/crunch-domain`, the
+  domain dial, principle #11) are now **delivered** — this entry is kept, dispositioned, because it
+  was the standing deferral the earlier phases pointed at.
+- **Where:** `templates/spec/SPEC-template.md`; `templates/INVARIANTS.md`; `skills/crunch-domain/`.
+- **Disposition:** closed 2026-08-27 by commits `d5f4d54` (Phase 2) and this one (Phase 3). What is
+  *not* closed is listed in the Phase 3 entry below.
+
+## 2026-08-27 — Phase 3 (DDD): what is and isn't proven
+
+- **What:** **`/crunch-domain` has never been run.** It is a 7-step interview validated by nothing
+  but inspection, and it is the piece of devkit most exposed to its own warning: the skill exists to
+  prevent pseudo-artifacts, and until an Owner sits through it on a real domain, the skill is itself
+  a document nobody has exercised. Both candidate repos are parked pending the Owner's repo cleanup.
+- **Where:** `skills/crunch-domain/SKILL.md`.
+- **What green tests do NOT prove here:** that the timeline walk in step 3 actually produces
+  invariants an Owner recognises, that the edge-probe questions are the right five, or that step 7's
+  cold-read acid test is passable on a real domain rather than merely demanding.
+- **Disposition:** open — closes the first time it runs on a project with real rules. The specific
+  risk to watch: an agent that narrates the domain *for* the Owner, which would invert the one rule
+  the skill is built on.
+
+- **What:** Of Phase 3, exactly one thing is **proven by observation**: the drift gate's new check 7
+  (an `INV-` row with no `Enforced by` cell). Observed pass → fail → pass in a scratch repo — it
+  caught an empty cell and a `TODO` placeholder, ignored a correctly-filled row and a struck-through
+  retired row (`~~INV-0~~`), and fired on a per-context path (`src/ordering/INVARIANTS.md`).
+  Everything else in Phase 3 is prose whose correctness rests on inspection.
+- **Where:** `templates/scripts/drift-check.sh`, check 7.
+- **What green tests do NOT prove here:** that a *named* enforcer exists. The gate reads the cell,
+  not the test suite — `test:no_such_test` passes it. Closing that needs the gate to resolve test
+  names, which is per-ecosystem work not done.
+- **Disposition:** open — accepted-with-reason. The cell is a claim; `/verify-live` is what checks it.
+
+- **What:** The **domain dial's four triggers and its per-profile defaults are a judgement call, not
+  a measurement.** "≥2 of four" is a heuristic I chose; the profile defaults (web/mobile on, game
+  rules-only, cli/library off) were reasoned from the domains, not observed on this machine's repos.
+- **Where:** `METHOD.md` → `## The domain dial`; `profiles/*/PROFILE.md` → `## Domain dial`.
+- **What green tests do NOT prove here:** that the bar sits in the right place. A too-low bar
+  produces the pseudo-artifacts the phase exists to prevent; a too-high one loses the language on
+  projects that needed it.
+- **Disposition:** open — revisit after the dial has been set on three real projects.
+
+- **What:** `INVARIANTS.md` **has no enforcement of its own semantics beyond the enforcer cell.**
+  Nothing checks that an invariant is stated in `CONTEXT.md`'s words (rule 5), that it has one owner
+  in code (rule 4), that the count stays in the 5–10 band (rule 1), or that a `[review-only]`
+  invariant actually got its ledger entry. Four of the file's six rules are `[review-only]` — by the
+  project's own standard, suggestions.
+- **Where:** `templates/INVARIANTS.md`.
+- **What green tests do NOT prove here:** all four of those rules.
+- **Disposition:** open — the owner-in-code and ledger-entry checks look mechanisable; the other two
+  probably aren't, and should be relabelled honestly rather than half-enforced.

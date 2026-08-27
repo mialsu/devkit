@@ -16,7 +16,10 @@ Anything you did that a future reader would be surprised by:
 - **any acceptance criterion left `unproven`, `PARTIAL` or `BROKEN`** — one entry per criterion,
   quoting it, so the gap is legible without opening the spec;
 - **a divergence from the spec that isn't written in the spec's `Spec deltas` log** — silent
-  divergence is the defect, not the divergence.
+  divergence is the defect, not the divergence;
+- **an invariant tagged `[review-only]`, or a context boundary that isn't in the boundary gate's
+  rules** — the label is honest, the debt is still owed. Name the `INV-n` and what would have to be
+  written to enforce it.
 
 Silence about any of these is the defect, not the corner-cut itself.
 
@@ -28,6 +31,7 @@ Append to the project's `REVIEW-DEBT.md`, one entry per confession:
 - **What:** what is stubbed / faked / deferred / weaker than spec.
 - **Where:** file:line anchors.
 - **Criterion:** `AC-N` from `specs/NNNN-slug.md`, quoted  (omit if there was no spec)
+- **Invariant:** `INV-N` from `INVARIANTS.md`, quoted  (omit unless a domain rule is involved)
 - **What green tests do NOT prove here:** the specific gap.
 - **Disposition:** open  (later: fixed / accepted-with-reason / promoted-to-issue)
 ```

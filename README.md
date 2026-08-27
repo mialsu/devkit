@@ -13,8 +13,9 @@ quality spine and the composable-skill format stay.
 You are the **Owner** (decide, gate, test). Claude is the **Foreman** (recommend, execute).
 Background agents are **Lanes/Verifiers** (build or verify, never publish). Every task rides one
 **loop** — shape → (slice) → build → review → **verify like a user** → confess — governed by a
-short **spine** of [principles](PRINCIPLES.md), scaled by a **weight dial**, and made concrete by
-a per-domain **profile**.
+short **spine** of [principles](PRINCIPLES.md), scaled by a **weight dial**, sized by a **domain
+dial** (does this project have a domain worth modelling at all?), and made concrete by a per-domain
+**profile**.
 
 ## Install
 ```bash
@@ -35,18 +36,20 @@ a per-domain **profile**.
 /ship                           # (devkit) the explicit publish gate
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
+/crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
 ```
 
 ## What's in here
 | Path | What |
 |---|---|
 | `METHOD.md` | The loop, the roles, the weight dial, and how it maps to the two sources. |
-| `PRINCIPLES.md` | The 10 non-negotiables — the spine that never bends. |
+| `PRINCIPLES.md` | The 11 non-negotiables — the spine that never bends. |
 | `ANTI-PATTERNS.md` | The recurring failure shapes; stop if you catch one. |
 | `skills/` | devkit's own skills (the new ones the sources didn't have as composable units). |
-| `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set and its **standards harness**. |
-| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
+| `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, and its **domain dial** default. |
+| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `INVARIANTS.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
+| `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |
 
 ## Why "reference, not fork" for Pocock's skills
 devkit deliberately does **not** copy his skills in. Install them as his plugin and they update
@@ -56,8 +59,8 @@ per-domain profiles) plus the method that ties everything together. `METHOD.md` 
 **(mp)** his or **(dk)** mine.
 
 The same rule governs the *documents*: where one of his skills already maintains an artifact,
-devkit adopts that skill's format rather than a prettier one of its own — `CONTEXT.md` and ADRs
-follow `domain-modeling`, specs follow `to-spec`, and the standards file is named
+devkit adopts that skill's format rather than a prettier one of its own — `CONTEXT.md`,
+`CONTEXT-MAP.md` and ADRs follow `domain-modeling`, specs follow `to-spec`, and the standards file is named
 `CODING_STANDARDS.md` because that is the filename `code-review` looks for. See the reuse map in
 `METHOD.md`. Two formats for one artifact is the same defect as two implementations of one
 behavior.

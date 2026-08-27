@@ -34,7 +34,11 @@ Two rules about the rules:
 
 - Import a module only through its public surface, never its internals. `[boundary]`
 - No dependency cycles. `[boundary]`
-- <Layering: which areas may depend on which — fill from the project's contexts.> `[boundary]`
+- <Layering: which areas may depend on which — one rule per context in `CONTEXT-MAP.md`.> `[boundary]`
+- Nothing crosses a context boundary except through a seam the context map names. `[boundary]`
+- A domain invariant (`INV-n`) is enforced in **one** place, and that place is named in
+  `INVARIANTS.md`. Everywhere else calls it — three enforcement sites is three chances to drift.
+  A comment at the owner naming its `INV-n` tells the next reader why the check exists. `[review-only]`
 - Prefer deep modules: a lot of behavior behind a small interface, placed at a clean seam. Use
   the `/codebase-design` vocabulary (module, interface, depth, seam, adapter). `[review-only]`
 - A new file over <400> added lines needs a reason. `[script]`

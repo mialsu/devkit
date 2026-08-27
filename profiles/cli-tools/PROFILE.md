@@ -18,6 +18,18 @@ command line*: the right output, the right exit code, and a tool a stranger can 
 - Drift: `scripts/drift-check.sh --cached`
 - Live exercise: see below
 
+## Domain dial (default: **off** — glossary only)
+- **Why off:** a CLI's rules usually belong to the thing it wraps, and that thing already owns
+  them. Re-stating someone else's rules here creates a second source of truth that silently goes
+  stale — the pseudo-artifact in its purest form.
+- **Still always on:** `CONTEXT.md`. Flag names, subcommand names and output nouns are the tool's
+  ubiquitous language, and they are the part users actually type. One name per concept, and a
+  renamed flag is a breaking change.
+- **Turn it on when** the tool encodes its own rules rather than relaying them — a scheduler, a
+  cost/quota calculator, a migration planner, anything with an ordering guarantee. Then the
+  invariants are about *idempotence and ordering*: running it twice does what running it once did,
+  a partial failure leaves nothing half-applied, and `--dry-run` output matches the real run.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate by ecosystem:** Go → `depguard` (via golangci-lint) for import rules, plus

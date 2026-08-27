@@ -36,10 +36,21 @@ it deliberately leaves empty: its **`// Layering (optional, off by default)` stu
 where *which area may depend on which* belongs. Use `/codebase-design` vocabulary (module,
 interface, seam, depth) when discussing shape.
 
+**Where the layering rules come from:** if `CONTEXT-MAP.md` exists, its contexts *are* the rules —
+one rule per context folder, forbidding everything except the seams the map names. Copy them; don't
+invent a parallel set of areas (that would be two shapes for one architecture). A context that
+isn't in the import graph's rules is a suggestion, and the first agent in a hurry reaches straight
+through it. No context map → the layering rules are the Owner's call; ask, don't guess.
+
 ## 4. Install the drift gate
 Copy `templates/scripts/drift-check.sh` to `scripts/`. Tune `MAX_NEW_FILE_LINES`, `LEDGER`,
 `ADR_DIR` if the project's layout differs. It reads `CONTEXT.md`'s `_Avoid_:` lines, so the
 project's ubiquitous language becomes machine-checked the moment a term is written down.
+
+If the **domain dial** is on, it also polices `INVARIANTS.md`: a new `INV-` row whose `Enforced by`
+cell is empty fails the diff. Check the existing rows too — an invariant already sitting there with
+no enforcer is a `[review-only]` rule that was never labelled as one. Give it a test or the label,
+and confess the label.
 
 ## 5. Prove each gate bites — the completion criterion
 A config that doesn't fail on a violation is worthless, so for **every** gate you installed:
