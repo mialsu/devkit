@@ -6,6 +6,39 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-08-31 — the product brief grew an edge-case section, and nothing enforces it
+
+- **What:** `/product-brief` gained a senior-product-manager stance, a **users / scope /
+  constraints** coverage checklist that has to be complete before a section is written, a new
+  template section 6 (**Edge cases & honest failures** — empty / refused / stale / broken), and
+  success signals that now name what you would observe and when. Sections renumbered as a result:
+  non-goals 6 → 7, riskiest assumptions 7 → 8, doors 8 → 9, open questions 9 → 10, tech 10 → 11,
+  success signals 11 → 12.
+- **Where:** `templates/PRODUCT-BRIEF.md`, `skills/product-brief/SKILL.md`, `METHOD.md` (Stage 0
+  paragraph, loop diagram, reuse map).
+- **What green tests do NOT prove here:** **every word of it is `[review-only]`.** No gate reads
+  `PRODUCT-BRIEF.md` at all — the drift gate's seven checks are vocabulary, escape hatches,
+  undeclared dependencies, lockfiles, generated content, oversized files and `INV-` enforcers
+  (`templates/scripts/drift-check.sh:119-273`). So a brief can ship with the edge-case table holding
+  nothing but its `<placeholder>` row, and with all three interview areas never asked, and the gates
+  stay green. The candidate enforcer is a check 8 that fails a committed document still carrying
+  template angle-bracket placeholders; deliberately not written yet, because it needs its own
+  observed pass → fail → pass and a check that fires on routine work is worse than no check.
+- **Disposition:** open — the stance and the checklist are prompt text, which this repo's own
+  anti-pattern list calls a suggestion.
+
+- **What:** `class-booking`'s already-written brief now **disagrees with the template about what a
+  section number means.** Its §6 is non-goals and its §7 is riskiest assumptions; the template's are
+  now edge cases and non-goals. Its internal pointers resolve only against the old numbering, and it
+  has no edge-cases section at all.
+- **Where:** another repo, deliberately not edited from here —
+  `~/code/personal/class-booking/PRODUCT-BRIEF.md:32` ("out of scope — see §6", whose target is that
+  file's `## 6. Non-goals` at line 50) and `:8` ("recorded in §7", target `## 7. Riskiest
+  assumptions` at line 66).
+- **What green tests do NOT prove here:** that any brief written before today still matches the
+  template a later session will read it against. devkit has exactly one filled-in brief, so n=1.
+- **Disposition:** open — needs the Owner's go, because closing it is a commit in a different repo.
+
 ## 2026-08-27 — devkit now runs its own method on itself (and where that stops)
 
 - **What:** devkit shipped a harness while having none: no `CODING_STANDARDS.md` (the file

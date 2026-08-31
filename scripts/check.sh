@@ -96,6 +96,10 @@ while IFS=$'\t' read -r src target; do
     *"<"*|*">"*|*"*"*|*NNNN*|*"{"*|*'$'*|*"|"*) continue ;;
   esac
   target="${target%%#*}"; target="${target%% *}"; target="${target%/}"
+  # A trailing line reference is evidence, not part of the path. CODING_STANDARDS.md REQUIRES
+  # file:line for any claim about another repo, so `foo.sh:119-273` has to resolve as `foo.sh`
+  # or the two rules contradict each other.
+  case "$target" in *:[0-9]*) target="${target%%:[0-9]*}" ;; esac
   [ -n "$target" ] || continue
   case "$target" in
     /*) base="." ;;

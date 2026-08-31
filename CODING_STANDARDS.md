@@ -28,7 +28,9 @@ Two meta-rules, from the template devkit ships:
   for the same thing is the "two words for one thing" anti-pattern aimed at documents.
   `[review-only]`
 - **Every cross-reference resolves.** This repo is documents pointing at documents; a dead pointer
-  is its likeliest defect and nothing else would notice. `[script]`
+  is its likeliest defect and nothing else would notice. A trailing `:NN` or `:NN-NN` is stripped
+  before the check, so the file:line evidence the rule below demands does not trip this one.
+  `[script]`
 - **A path that means "inside a generated project" is not a devkit path.** `scripts/drift-check.sh`
   is what a *project* runs; devkit's copy lives at `templates/scripts/drift-check.sh`. Keep the two
   readings distinct in prose — the reference checker deliberately cannot tell them apart.

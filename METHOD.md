@@ -35,10 +35,15 @@ validated product brief** before any repo or tech exists. This is `/product-brie
 is where high-level product design lives.
 
 It produces `PRODUCT-BRIEF.md` (template in `templates/`), which separates **vision** (why) from
-**MVP scope** (what now) from the **deferred backlog** (what later). The anti-trap it enforces:
-no tech/schemas at this altitude; only the problem, the core value, and the MVP cut count as
-scope; every number is an assumption until tested; and the real deliverable is **the riskiest
-assumption plus the cheapest test that could falsify it**.
+**MVP scope** (what now) from the **deferred backlog** (what later). The stance is a senior product
+manager's: **users, scope and constraints** are all asked about before a section is written, and an
+area the Owner short-circuits is recorded as an open question rather than quietly filled in. The
+anti-trap it enforces: no tech/schemas at this altitude; only the problem, the core value, and the
+MVP cut count as scope; every number is an assumption until tested; **edge cases are decided
+here** — empty, refused, stale, broken, each a decision about what the user is *told*, which is
+what stops "coming soon" reaching the build; and the real deliverable is **the riskiest assumption
+plus the cheapest test that could falsify it**. It carries one job per persona and no user-story
+list: `US-n` and its criteria belong to the spec, so one id scheme runs end to end.
 
 The gate out of Stage 0 is blunt: *is there a lovable MVP, and can the #1 assumption be tested
 cheaply?* If no, the next step is a validation experiment, not code. If yes, the brief's
@@ -52,8 +57,9 @@ Six steps. The skills that drive each are in brackets — **(mp)** = Matt Pocock
 installed via his plugin), **(dk)** = devkit's own (in this repo).
 
 ```
-0. DISCOVER  /product-brief (dk)      → PRODUCT-BRIEF.md: problem, core loop, MVP cut,
-   (greenfield only)                    non-goals, riskiest-assumption tests. Tech DEFERRED.
+0. DISCOVER  /product-brief (dk)      → PRODUCT-BRIEF.md: problem, core loop, MVP cut, edge
+   (greenfield only)                    cases, non-goals, riskiest-assumption tests. Asks about
+                                        users/scope/constraints first. Tech DEFERRED.
                   │  gate: lovable MVP + cheap test for the #1 risk? → /new-project (dk)
                   ▼
 0b. CRUNCH   /crunch-domain (dk)      → only if the DOMAIN DIAL is on (below), and BEFORE the first
@@ -150,7 +156,8 @@ map, so no session has to guess which shape is canonical:
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
-| `scripts/drift-check.sh`, `REVIEW-DEBT.md`, `PRODUCT-BRIEF.md`, the profiles | devkit | — |
+| `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
+| `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
 adopt its format even when yours is prettier.** Two formats for one artifact is the same defect as
