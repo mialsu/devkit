@@ -6,6 +6,58 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-08-31 — a design contract, an accessibility gate, and how little of it is proven
+
+- **What:** `/design-brief` + `templates/DESIGN.md` land the piece neither source had: a surface
+  inventory reconciled **both ways** against the MVP cut, flows, a state table that cites the
+  brief instead of re-deciding it, and `A11Y-n` rows that each name an enforcer. The look, the type
+  scale, the wireframes and the UI copy are **delegated** to `frontend-design`, and "which layout
+  wins" to `/prototype` — devkit adds only the constraint that token *values* live in code. All five
+  profiles gained a `Design & accessibility` section, `/verify-live` gained the mouse-free walk,
+  and the spec template gained `Screens & states touched`.
+- **Where:** `skills/design-brief/SKILL.md`; `templates/DESIGN.md`; `profiles/*/PROFILE.md`;
+  `skills/verify-live/SKILL.md`; `templates/spec/SPEC-template.md`; `METHOD.md`.
+- **What green tests do NOT prove here:** **only §5 of `DESIGN.md` is enforced at all.** Drift check
+  8 fails an added `A11Y-` row that names no enforcer — proven pass → fail → pass in a scratch repo,
+  with the retired-id form `~~A11Y-3~~` confirmed not to match and an honest `[review-only]`
+  confirmed to pass. Everything else in the file is `[review-only]` in its entirety: nothing
+  reconciles the surface inventory against the MVP cut, nothing checks a state column was filled,
+  and nothing notices when §4 grows into an inventory of every wrapper element.
+- **Disposition:** open — the inventory reconciliation is the one worth an enforcer eventually,
+  since it is mechanical: surfaces named in `DESIGN.md` versus bullets in `PRODUCT-BRIEF.md`.
+
+- **What:** **The accessibility enforcers this ships are unwired everywhere, including here.** devkit
+  now instructs projects to install an a11y linter and `axe`, run it per state, and watch each go
+  red — and no project on this machine has done any of it. I have never run `axe` or a keyboard walk
+  in any repo in this tree. By devkit's own rule, a gate nobody watched fail is not a gate, so every
+  `[lint]` and `[test]` tag in the `DESIGN.md` template is a **recommendation wearing a tag**, and
+  the honest reading of the template today is that A11Y-1 through A11Y-6 are all `[review-only]`
+  until a real project proves otherwise.
+- **Where:** `templates/DESIGN.md` §5; `profiles/web/PROFILE.md`, `profiles/mobile-fullstack/PROFILE.md`.
+- **What green tests do NOT prove here:** that any of the named tools still exist under those names,
+  that they catch what I claim, or that the keyboard walk finds anything — `/verify-live`'s new
+  section has never been executed once.
+- **Disposition:** open, and this is the first thing a real UI project should close.
+
+- **What:** Two smaller drifts. `[live]` is **new tag vocabulary** in
+  `templates/CODING_STANDARDS.md`, so `class-booking`'s copied standards file predates it and the
+  two now disagree about the tag set — the same class of divergence as the brief's renumbered
+  sections, one entry above. And the contrast-ratio instruction says "measure" while naming **no
+  tool** that computes a ratio.
+- **Where:** `templates/CODING_STANDARDS.md` (tag table); `templates/DESIGN.md` §5 (contrast table).
+- **What green tests do NOT prove here:** that a project reading its own older standards file would
+  recognise `[live]` as legitimate rather than a typo.
+- **Disposition:** open — both fold into the same pass over `class-booking` the previous entry owes.
+
+- **What:** `/design-brief` **has never been run.** Its per-profile branches are untested prose:
+  game keeps sections 1/3/5/6, cli-tools keeps 1/2/3/6 and treats stdout as the state table, and
+  library is told not to write the file at all. The cli-tools state table in particular asserts
+  things about `NO_COLOR` and non-TTY behaviour that were reasoned about, not observed.
+- **Where:** `skills/design-brief/SKILL.md` step 1; `profiles/cli-tools/PROFILE.md`.
+- **What green tests do NOT prove here:** that the branches produce a usable document, or that the
+  step-7 acid test (recite the flow with the file closed) is a bar an Owner can actually clear.
+- **Disposition:** open — the next field run should be a CLI or a UI slice, not another web fixture.
+
 ## 2026-08-31 — the product brief grew an edge-case section, and nothing enforces it
 
 - **What:** `/product-brief` gained a senior-product-manager stance, a **users / scope /

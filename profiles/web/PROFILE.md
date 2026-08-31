@@ -11,6 +11,7 @@ disciplines transfer most directly.
 ## Gate set (green before every commit)
 - Typecheck: `tsc --noEmit` (or `vue-tsc` / framework equivalent)
 - Lint: `eslint` over changed files
+- A11y: the a11y linter over changed components (see **Design & accessibility**)
 - Tests: the unit + component suite for the touched area
 - Build: the production build succeeds (`vite build` / `next build`)
 - Boundaries: `<boundary cmd>` (see **Standards harness**)
@@ -28,6 +29,25 @@ disciplines transfer most directly.
 - **`mapped` only when a word collides** — the `User` billing means vs. the `User` the editor means.
   A monorepo's packages, an `app/` vs `api/` split, and "it's getting big" are **not** context
   splits; they're layers and deployment units.
+
+## Design & accessibility (`/design-brief`)
+- **`DESIGN.md`** at the repo root — the surface inventory reconciled against the MVP cut, the
+  flows, the states, and the `A11Y-n` rows that each name an enforcer.
+- **The look is not devkit's to specify.** `frontend-design` owns palette, type scale, wireframes
+  and UI copy; `/prototype`'s UI branch settles which layout wins, on the real route with real
+  data. This profile insists on exactly two things: the tokens live in **code**, and `DESIGN.md`
+  points at that file instead of copying its values.
+- **Three a11y enforcers exist here and all three are cheap** — wire them in this order:
+  `eslint-plugin-jsx-a11y` or the framework equivalent `[lint]`; `axe` asserted in the Playwright
+  walk **once per state**, empty and error included `[test]`; and the keyboard walk itself `[live]`.
+  Verify the current package before wiring it (`/harness` step 1) — then break each one on purpose
+  and watch it go red, or it is not a gate (PRINCIPLES #2).
+- **Contrast is measured, never intended.** Compute the ratio from the real token values. A pair
+  that misses 4.5:1 is a debt entry with a number in it, not a rounding error.
+- **What no a11y gate catches:** screen-reader *quality* — `axe` finds a missing accessible name,
+  not a useless one ("button", a div announced as a 14-item list); a focus order that is technically
+  valid and practically baffling; a live region that announces the wrong thing at the wrong moment;
+  and a layout that collapses under a 60-character name or ten thousand rows.
 
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
@@ -52,6 +72,12 @@ Real browser (Playwright or by hand), real navigation, real login as the **real 
 including a restricted, non-admin user, because admin bypasses the permission checks you most
 need to test. Perform the real mutation. Screenshot each key state, **including empty and error
 states**. On the deployed build for `/ship`, confirm the served version matches what you merged.
+
+**Keyboard-only pass, every time.** Complete the primary flow with the mouse untouched — Tab,
+Shift-Tab, Enter, Space, Escape. Focus visible at every step, order following reading order, no
+control reachable by pointer alone, no trap you cannot Escape out of. Then run `axe` against each
+state you screenshotted, not only the loaded happy path. This walk *is* the enforcer for `A11Y-1`
+and `A11Y-2`: skip it and those rows are `[review-only]`, and the confession has to say so.
 
 ## What green tests can't prove here (watch for these)
 - Stale client cache / persisted filters hiding new data (version your persisted-state keys).

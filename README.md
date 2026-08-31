@@ -37,6 +37,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
 /crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
+/design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 ```
 
 ## Working on devkit itself
@@ -57,7 +58,7 @@ House rules are in [CODING_STANDARDS.md](CODING_STANDARDS.md); what the gates do
 | `ANTI-PATTERNS.md` | The recurring failure shapes; stop if you catch one. |
 | `skills/` | devkit's own skills (the new ones the sources didn't have as composable units). |
 | `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, and its **domain dial** default. |
-| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `INVARIANTS.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
+| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
 | `CODING_STANDARDS.md`, `scripts/check.sh` | devkit's own standards and gate set — it runs its own method on itself. |
 | `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |

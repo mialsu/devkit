@@ -32,6 +32,22 @@ it tells you that. Automated tests cover logic; playing covers fun.
 - **`mapped` is rarely right.** Subsystems are not bounded contexts. Split only if the same word
   genuinely differs — a "Level" in the editor vs. a "Level" in progression.
 
+## Design & accessibility (`/design-brief`)
+Run `/design-brief` for **HUD and menus only** — whether the mechanic *feels* right is the live
+exercise below, not a document. Be honest that this is the profile where a11y has the fewest
+automated enforcers, which makes labelling them the whole job.
+- **Enforcers that genuinely exist `[test]`:** remappable input (assert the binding layer has no
+  hard-coded key), a subtitle/caption path (assert every voiced line has a caption entry), and text
+  scale (assert the HUD renders at the largest supported size without clipping).
+- **Honest `[review-only]`, and there are many:** colour-blind-safe palettes, no essential
+  information carried by colour alone, flashing within safe thresholds, readable contrast over a
+  moving background — which is the hard one, because the background changes every frame.
+- **The live pass `[live]`:** play the slice once with **sound off** and once with the HUD's
+  smallest legible scale. Both surface information the design was quietly delivering through a
+  channel a player may not have.
+- **What no gate catches:** whether the HUD is readable *while* playing, as opposed to readable in
+  a screenshot. Only playing tells you, which is this profile's whole premise.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate, Unity/C#:** **assembly definitions (`.asmdef`) are the real mechanism** — an

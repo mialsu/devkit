@@ -31,6 +31,19 @@ as an installer would, and the docs are part of the deliverable, not an aftertho
   the README with no test is `[review-only]`, so label it.
 - **`mapped` essentially never.** A library with two bounded contexts is two libraries.
 
+## Design & accessibility (`/design-brief`)
+**Default: do not run it, and do not create `DESIGN.md`.** A library's surface is its public API,
+and `codebase-design` plus the public-surface gate above already own that better than a design
+document would. An absent file is honest here; an empty one is the pseudo-artifact.
+
+Two exceptions, both narrow:
+- **The library ships UI components.** Then accessibility *is* the public contract, not a quality
+  bar — a consumer cannot fix an unlabelled button inside your component. Every `A11Y-n` row becomes
+  a `[test]` in the component suite, and each documented a11y promise in the README gets one, or it
+  is `[review-only]` and the README should not claim it.
+- **The library renders human-facing output** (a formatter, a reporter, a CLI-adjacent printer).
+  Then borrow the cli-tools state table: `NO_COLOR`, non-TTY, no meaning in alignment alone.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate:** for a library the entry-point rule *is* the product discipline — the public

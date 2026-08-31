@@ -16,6 +16,7 @@ harnesses far more reliably than prose (ANTI-PATTERNS: *a standard with no enfor
 | `[boundary]` | the import/architecture gate fails on it |
 | `[script]` | `scripts/drift-check.sh` fails the diff on it |
 | `[test]` | a test asserts it |
+| `[live]` | a `/verify-live` recipe proves it — human-run, but a real gate (the keyboard walk, the clean install) |
 | `[review-only]` | **nothing checks this** — it holds only if a human or `/code-review` catches it |
 
 Two rules about the rules:

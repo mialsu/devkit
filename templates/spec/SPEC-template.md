@@ -70,6 +70,19 @@ When this slice is the one that implements a rule, that shows up as a criterion 
 *"INV-n's enforcer exists and fails when the rule is violated"* — so the commitment is tracked where
 verdicts are, not in a ledger nobody re-reads.
 
+## Screens & states touched  *(devkit addition — omit when the project has no surface)*
+The surfaces from `DESIGN.md` this slice builds or changes, and — the part that gets skipped —
+**which of their states this slice actually delivers.** A slice that ships only the success state
+is not an end-to-end slice; it is the happy path with four holes in it (PRINCIPLES #4).
+
+| Surface | States delivered here | States still owed | A11Y rows in scope |
+|---|---|---|---|
+| <surface> | success, empty | loading, error | A11Y-1, A11Y-3 |
+
+A state listed as owed is a confession the moment this slice lands — carry it to `REVIEW-DEBT.md`,
+not to the next session's memory. An `A11Y-n` row in scope whose enforcer is `[live]` becomes a
+criterion in the table above, because that is where verdicts live.
+
 ## Implementation decisions
 The modules touched and the interfaces that change; architectural calls, schema changes, API
 contracts, specific interactions. Tagged `D-n`, each **with its why** — the reason is the part that

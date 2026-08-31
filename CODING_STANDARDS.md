@@ -24,7 +24,7 @@ Two meta-rules, from the template devkit ships:
   and ADRs follow `domain-modeling`; specs follow `to-spec`; the standards file is named
   `CODING_STANDARDS.md` because that is what `code-review` opens. The reuse map in `METHOD.md` is
   the register — add a row before adding an artifact. `[review-only]`
-- **One id scheme, repo-wide:** `US-n` → `AC-n` → `D-n` → `INV-n` → `ADR-NNNN`. A second numbering
+- **One id scheme, repo-wide:** `US-n` → `AC-n` → `D-n` → `INV-n` → `A11Y-n` → `ADR-NNNN`. A second numbering
   for the same thing is the "two words for one thing" anti-pattern aimed at documents.
   `[review-only]`
 - **Every cross-reference resolves.** This repo is documents pointing at documents; a dead pointer

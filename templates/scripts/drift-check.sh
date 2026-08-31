@@ -21,7 +21,8 @@
 # `_Avoid_` list should hold domain synonyms, not general programming words.
 #
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
-# hand-edited generated files, oversized new files, and invariants with no enforcer.
+# hand-edited generated files, oversized new files, invariants with no enforcer, and accessibility
+# rules with no enforcer.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS.
 
@@ -284,6 +285,22 @@ while IFS= read -r rec; do
     say "     ${row:0:110}"
   fi
 done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)INVARIANTS\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*INV-[0-9]/' | grep -v 'drift-ok')
+
+# --- 8. an accessibility rule with no enforcer ------------------------------
+# Check 7 aimed at the surface instead of the domain. DESIGN.md is prose, so an A11Y row promising
+# something nothing checks is decoration — the same defect, one altitude up. The tag column carries
+# the enforcer and that table has fewer columns than the invariants one, so match the whole row
+# rather than a fixed field. Retired rows strike their id (~~A11Y-3~~) and stop matching.
+while IFS= read -r rec; do
+  [ -n "$rec" ] || continue
+  row="$(body "$rec")"
+  if ! grep -qE '\[(lint|test|live|types|boundary|script|gate|review-only)\]|test:|lint:|live:' <<<"$row"; then
+    report "accessibility — A11Y row at $(loc "$rec") names no enforcer" \
+            "a standard with no enforcer: an accessibility promise nothing checks is decoration" \
+            "tag it [lint]/[test]/[live] with the real gate, or say [review-only] honestly and confess it"
+    say "     ${row:0:110}"
+  fi
+done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)DESIGN\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*A11Y-[0-9]/' | grep -v 'drift-ok')
 
 # --- verdict ---------------------------------------------------------------
 say ""

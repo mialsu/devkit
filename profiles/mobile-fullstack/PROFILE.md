@@ -27,6 +27,23 @@ one product. Everything in the web profile applies; the differences below are wh
 - **Enforcers:** the rule lives once, in the shared/domain package, and both runtimes call it.
   A rule implemented in Swift/Kotlin *and* on the server is two rules waiting to disagree.
 
+## Design & accessibility (`/design-brief`)
+Everything in the web profile applies. What differs is that the platform ships the assistive
+technology, so the enforcer is a real screen reader rather than a browser extension.
+- **`DESIGN.md`** covers the app's surfaces; the backend has none, so it appears only where a
+  response shape *is* the surface (an error a user reads).
+- **Enforcers that exist:** `eslint-plugin-react-native-a11y` for RN, Flutter's `Semantics` widgets
+  plus its accessibility guideline tests (`meetsGuideline(textContrastGuideline)`) `[lint]` `[test]`;
+  and on native, the platform accessibility inspector.
+- **The live pass is the real gate `[live]`:** complete the primary flow with **TalkBack or
+  VoiceOver on**, then again at the **largest system font size**. Both find things nothing static
+  catches — an unlabelled icon button, a control announced as "button" and nothing else, text that
+  truncates into meaninglessness at 200% type.
+- **Touch targets:** 44x44pt (iOS) / 48x48dp (Android) minimum. A tap target measured in the
+  designer's screenshot is not measured; check it on the smallest supported device.
+- **What no gate catches:** gesture-only interactions with no accessible alternative, and a
+  reachability problem on a large phone that every emulator hides.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate, TS/RN:** `dependency-cruiser` via `/setup-ts-deep-modules`, run over the app

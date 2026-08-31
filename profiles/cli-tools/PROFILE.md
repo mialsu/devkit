@@ -30,6 +30,25 @@ command line*: the right output, the right exit code, and a tool a stranger can 
   invariants are about *idempotence and ordering*: running it twice does what running it once did,
   a partial failure leaves nothing half-applied, and `--dry-run` output matches the real run.
 
+## Design & accessibility (`/design-brief`)
+A CLI has no screens and unmistakably has a surface, so run `/design-brief` for sections 1, 2, 3
+and 6 and say plainly that components and visual a11y do not apply. Here the **surface inventory**
+is the command shapes and the **state table** is the output contract:
+
+| Surface | Empty | Loading | Refused / error | Success |
+|---|---|---|---|---|
+| `<subcommand>` | what prints when there is nothing — never a blank line and exit 0 with no word | progress on **stderr** so stdout stays pipeable, or nothing at all | the message on stderr, and the exit code | stdout shape, and exit `0` |
+
+- **Accessibility here is mostly testable, which makes it the cheapest of any profile `[test]`:**
+  honour `NO_COLOR` and a non-TTY stdout (colour codes in a pipe are corruption, not decoration);
+  never carry meaning in ASCII art, box drawing or alignment alone, because that is what a screen
+  reader flattens; wrap to the real terminal width rather than a hard-coded 80; keep every error on
+  stderr so a screen-reader user is not hunting for it inside data.
+- **Assert it the way the profile already asserts `--help`:** run the built binary with stdout piped
+  and `NO_COLOR=1`, and diff the output. Both are one integration test each.
+- **What no gate catches:** whether the output is *comprehensible* when read aloud line by line, and
+  whether a progress display degrades gracefully when the terminal is 40 columns wide.
+
 ## Standards harness (`/harness`)
 - **`CODING_STANDARDS.md`** at the repo root — the file `/code-review`'s Standards axis reads.
 - **Boundary gate by ecosystem:** Go → `depguard` (via golangci-lint) for import rules, plus

@@ -49,6 +49,23 @@ out-of-order arrival, the concurrent edit, the cancelled thing revived.
 - It goes through → that is a **BROKEN** finding on its own, whatever the AC verdicts say, and it
   outranks them: a violated invariant is a bug in every release, not an unfinished slice.
 
+## Walk it without the mouse (whenever the slice has a surface)
+The profile's recipe covers reaching it the way a user does — and *a user* includes one who never
+touches a pointer. That path has bugs of its own: a control reachable only by click, a focus ring
+someone deleted to make things look tidy, a modal that will not Escape, an error announced to
+nobody. If `DESIGN.md` carries `A11Y-n` rows, this walk **is** their enforcer, so it is not garnish:
+skipping it turns every `[live]` row into `[review-only]`, and that is a confession rather than a
+silent downgrade.
+
+- **web / mobile-fullstack** → the primary flow with the mouse untouched, or the screen reader on
+  for a device build; then `axe` against **each state you captured**, empty and error included.
+- **cli-tools** → the same command with stdout piped and `NO_COLOR=1`, checking nothing meaningful
+  was living in colour or alignment.
+- **game** → one pass with sound off, one at the smallest legible HUD scale.
+
+Report it as you would any criterion: what you tried, what happened, and which `A11Y-n` row it
+proves. A row nobody exercised is `unproven` — never assumed green because the linter was quiet.
+
 ## The task verdict is the worst criterion's verdict
 One PARTIAL makes the whole task PARTIAL, however many WORKS surround it. Report it that way and
 list the criteria that aren't green. A task-level "works" that averages over a broken criterion is

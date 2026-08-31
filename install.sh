@@ -36,7 +36,7 @@ for d in "${DESTS[@]}"; do link_into "$d"; done
 cat <<'NOTE'
 
 Done. devkit's skills are linked:
-  /product-brief  /new-project  /harness  /crunch-domain
+  /product-brief  /new-project  /harness  /crunch-domain  /design-brief
   /verify-live  /verify-claim  /confess  /ship
 
 Next — install Matt Pocock's skills (devkit references them, so you get his updates):

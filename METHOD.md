@@ -68,6 +68,14 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
                                         every invariant the test that fails when it is violated.
                   │  gate: can the Owner recite the contexts and top 3 invariants, files closed?
                   ▼
+0c. DESIGN   /design-brief (dk)       → only if the project has a surface: DESIGN.md — every
+   (has a surface)                      surface reconciled BOTH ways against the MVP cut,
+                                        states citing the brief rather than re-deciding them,
+                                        and every A11Y-n naming its enforcer. The look, the copy
+                                        and the wireframes are frontend-design's; which layout
+                                        wins is /prototype's.
+                  │  gate: can the Owner recite the main flow and its four states, file closed?
+                  ▼
 1. SHAPE     /grill-with-docs (mp)   → one question at a time, each with a recommendation.
    (+ shape)  → /to-spec (mp)          Writes the spec; devkit then adds falsifiable ACCEPTANCE
                                        CRITERIA, each naming how it will be proven, before code.
@@ -88,7 +96,7 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 
 ### The whole chain, greenfield to shipped
 
-Six commands do the work; everything after step 3 repeats per MVP-cut bullet.
+Eleven steps, four of them once per project; everything after step 4 repeats per MVP-cut bullet.
 
 ```
 1. /product-brief                 once, before a repo exists. Problem, core value, MVP cut,
@@ -102,24 +110,29 @@ Six commands do the work; everything after step 3 repeats per MVP-cut bullet.
                                   the domain dial. You author the domain guard-rails. Then it stops.
 3. /crunch-domain                 once, if the dial is on — before the first spec, because an
                                   invariant found after the schema exists costs a migration.
+4. /design-brief                  once, if the project has a surface — after the crunch, so the UI
+                                  speaks the glossary. Surfaces reconciled against the MVP cut,
+                                  states citing the brief, every A11Y-n naming its enforcer.
+                                  Look and copy DELEGATED to frontend-design, layout to /prototype.
 ── per MVP-cut bullet ────────────────────────────────────────────────────────────────────
-4. /grill-with-docs → /to-spec    the spec, then its AC table (each criterion naming
+5. /grill-with-docs → /to-spec    the spec, then its AC table (each criterion naming
                                   test:/live:/review-only) and `Invariants touched: INV-n`
-5. (/to-tickets)                  tracer slices, blockers first. Skip for small work.
-6. /implement (+ /tdd)            build the slice. The profile's gate set green before EVERY commit.
-7. /code-review                   standards + spec axes; fixes folded INTO the commits.
-8. /verify-live                   a verdict per criterion, and it ATTACKS the invariants the slice
-                                  touches. The task's verdict is the worst criterion's.
-9. /confess                       every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md
+6. (/to-tickets)                  tracer slices, blockers first. Skip for small work.
+7. /implement (+ /tdd)            build the slice. The profile's gate set green before EVERY commit.
+8. /code-review                   standards + spec axes; fixes folded INTO the commits.
+9. /verify-live                   a verdict per criterion; it ATTACKS the invariants the slice
+                                  touches and walks the surface with no mouse. The task's verdict
+                                  is the worst criterion's.
+10. /confess                      every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md
 ── when you choose to publish ────────────────────────────────────────────────────────────
-10. /ship                         the only command that puts anything on a remote.
+11. /ship                         the only command that puts anything on a remote.
 ```
 
 Anywhere in there: `/verify-claim` the moment something claims "this already works", and
 `/handoff` when a session fills up. Adding a feature to a project that already exists? Start at
 step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Four supporting skills sit outside the loop:
+Five supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
@@ -132,6 +145,11 @@ Four supporting skills sit outside the loop:
   timeline with the Owner, harvest the words into `CONTEXT.md` and the rules into `INVARIANTS.md`,
   and give every invariant the test that fails when it's violated. Its first act is to check the
   dial and try to talk you out of it. Not per-task: run it once early, re-run when the domain moves.
+- **`/design-brief` (dk)** — for a project with a **surface**: the inventory reconciled against the
+  MVP cut both ways, the states that cite the brief instead of re-deciding it, and accessibility
+  rules that each name an enforcer. It writes `DESIGN.md` and **delegates hard** — the look, the
+  type and the copy to `frontend-design`, and "which layout wins" to `/prototype`. For a library it
+  recommends not existing.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
 
@@ -155,6 +173,9 @@ map, so no session has to guess which shape is canonical:
 | `CONTEXT-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
+| design tokens, type scale, wireframes, UI copy, the signature element | `frontend-design` (installed plugin) — its two-pass token system | devkit adds one constraint: the token **values live in code**, and `DESIGN.md` points at that file rather than copying them |
+| "which of these layouts wins" | `/prototype` (mp) — its UI branch, N variants on the real route | none. Prose cannot settle a layout, and a variant judged in isolation always looks fine |
+| `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `frontend-design` writes an aesthetic plan, not a scope-reconciled contract, and neither source enforces accessibility at all |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
