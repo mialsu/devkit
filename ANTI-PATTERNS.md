@@ -20,6 +20,16 @@ failure *shapes* that recur regardless of domain.
 - **Backend/layer-only "progress."** A schema with no screen, or a screen over an API that
   doesn't exist, banks work nobody can exercise. Slice end-to-end or don't slice.
 
+- **Designing for the scale you don't have.** A caching layer before a slow query, a queue before a
+  backlog, an abstraction over the one database you will ever use, or "architecture, data flow, API
+  design, schema, caching strategy" delivered as a set of layers nobody can exercise yet. It is two
+  of these anti-patterns wearing one coat — *Speculative Generality* and *backend/layer-only
+  progress* — and it charges twice: once to build, and again on every later change that pays rent to
+  machinery which was never load-bearing. The scaling question worth asking is far smaller: **which
+  of today's decisions would be expensive to reverse at 100x?** Two or three genuinely are; those
+  earn an ADR with their rejected alternatives, and everything else takes the cheap option and stays
+  reversible. "It'll scale later" is a prediction. "This one is a one-way door" is a decision.
+
 - **Rebuilding what you already have.** A second implementation of one behavior is a divergence
   waiting for a bug. Reuse the existing one, or delete it and build one good one.
 

@@ -58,6 +58,10 @@ with real enforcers. That is this skill, and it is deliberately small.
    build. What renders instantly, what waits for real data, and what must never flash a spinner
    because it usually resolves in 50ms. If rendering a state proves the product answer wrong, that
    is an edit to the brief *plus* a spec delta — never a quiet second answer in `DESIGN.md`.
+   **Then ask the width question once:** what is the narrowest viewport this supports? Every state
+   in the table has to hold there, and the error state carrying a long message is where a layout
+   actually breaks. It lands as `A11Y-7` rather than a prose paragraph, because reflow at 320px is a
+   WCAG criterion with a real test behind it, not a preference.
 
 5. **Give every accessibility rule an enforcer, or label it honestly.** This is the section the
    method actually contributes, and the rule is PRINCIPLES #11's: a rule naming no enforcer is prose.

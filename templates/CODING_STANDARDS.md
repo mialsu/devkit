@@ -14,7 +14,7 @@ harnesses far more reliably than prose (ANTI-PATTERNS: *a standard with no enfor
 | `[types]` | the typechecker fails on it |
 | `[lint]` | the linter fails on it |
 | `[boundary]` | the import/architecture gate fails on it |
-| `[script]` | `scripts/drift-check.sh` fails the diff on it |
+| `[script]` | a repo script fails the diff or the build on it — `scripts/drift-check.sh`, a pre-commit scanner, a grep-based check where no linter exists |
 | `[test]` | a test asserts it |
 | `[live]` | a `/verify-live` recipe proves it — human-run, but a real gate (the keyboard walk, the clean install) |
 | `[review-only]` | **nothing checks this** — it holds only if a human or `/code-review` catches it |
@@ -61,7 +61,7 @@ commit, or the gate fails. `[script]`
 
 ## Secrets & data exposure
 
-Every rule here starts `[review-only]` and is **upgraded to `[gate]` only when `/audit` step 11
+Every rule here starts `[review-only]` and is **upgraded to `[script]` only when `/audit` step 11
 actually wires the tool** — labelling one before that is the false-enforcer mistake this file's own
 meta-rules forbid.
 

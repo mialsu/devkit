@@ -6,6 +6,50 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-01 — a tag I got wrong yesterday, responsive filed where it belongs, and a skill I never checked
+
+- **What:** **Tag drift I introduced and have now fixed.** `templates/CODING_STANDARDS.md` gained a
+  *Secrets & data exposure* section yesterday whose text promised rules would be "upgraded to
+  `[gate]`" — but `[gate]` is devkit's *own* root-file vocabulary and does not exist in the
+  template's tag table. Two vocabularies for one concept, in the single file whose meta-rule is
+  *never label a rule with an enforcer it doesn't have*. The fix went the other way from the obvious
+  one: rather than add `[gate]`, `[script]`'s definition was widened to match how the profiles were
+  already using it (`profiles/game/PROFILE.md` calls a grep-based check a `[script]`), so the
+  template's table was the narrow outlier, not the usage.
+- **Where:** `templates/CODING_STANDARDS.md` — the tag table and the *Secrets & data exposure* note.
+- **What green tests do NOT prove here:** nothing checks enforcer tags for vocabulary at all.
+  `CODING_STANDARDS.md` is in the drift gate's `SKIP_CONTENT`, so an invented tag in any generated
+  project goes unnoticed — already recorded yesterday as the missing check 10, and this entry is the
+  first real instance of the defect it would have caught. It was found by reading, not by a gate.
+- **Disposition:** open — the case for check 10 is now evidenced rather than theoretical.
+
+- **What:** `DESIGN.md` gained responsive coverage, which it had none of — a grep for
+  `responsive|viewport|breakpoint|mobile|width` returned nothing. It is filed as `A11Y-7` (reflow at
+  320px, WCAG 1.4.10) and `A11Y-8` (200% zoom, WCAG 1.4.4) rather than a new section, because those
+  genuinely *are* accessibility criteria, and filing them there means drift check 8 polices them for
+  free and no section had to be renumbered. §3 gained the width axis, §4 gained the rule that a
+  component's props are its interface, so `/codebase-design`'s depth test and `/prune`'s rule of
+  three both apply to extraction.
+- **Where:** `templates/DESIGN.md` §3, §4, §5, §6; `skills/design-brief/SKILL.md` step 4;
+  `profiles/web/PROFILE.md`.
+- **What green tests do NOT prove here:** `A11Y-7` and `A11Y-8` ship tagged `[test]` and **nothing
+  in this tree has ever run either**, exactly like every other a11y tag here. §6 now says the honest
+  part out loud — a layout that passes reflow can still be unusable, and a table degraded into forty
+  stacked rows satisfies the check and fails the reader.
+- **Disposition:** open.
+
+- **What:** `/context` lists a **built-in `security-review` skill** that yesterday's grounding for
+  `/audit` never saw — that grep covered `~/.claude/skills/*/SKILL.md`, so the claim "no installed
+  skill covers security" was true of the 60 user skills and untrue of built-ins. The skill is
+  bundled in the CLI and is not on disk (searched `~/.claude`, `~/.local/share/claude/versions/*`),
+  so what it actually covers is unknown.
+- **Where:** `skills/audit/SKILL.md` — its *reuse before building* table has no row for it.
+- **What green tests do NOT prove here:** `/audit` may duplicate a built-in skill in whole or in
+  part, which would be the *rebuilding what you already have* anti-pattern aimed at skills. The
+  Owner declined the edit for now; recorded so the next session checks before extending `/audit`.
+- **Disposition:** open — the cheap resolution is to run the built-in once and compare.
+
+
 ## 2026-09-01 — a security pass built to resist being a pseudo-artifact, and how little of it is proven
 
 - **What:** `/audit` fills the largest gap found so far — a grep for security/vulnerability/OWASP

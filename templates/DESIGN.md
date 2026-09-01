@@ -49,11 +49,25 @@ only because the machine takes time. Decide the thresholds before a spinner beco
 renders instantly, what waits for real data, and what must *never* flash a spinner because it
 usually resolves in 50ms. A skeleton that flickers is worse than one that never appeared.
 
+**Every state has a second axis: width.** The table above is really the table *times* the narrowest
+viewport you support — "empty at 320px" and "empty at 1440px" are two different designs, and the
+error state with a long message is where layouts actually break. Decide the narrowest width you
+support here, once, and hold every state to it. Responsive is not a separate concern from states;
+it is the same states under a constraint, which is why it is enforced in §5 rather than described
+in prose.
+
 ## 4. Components
 The shared pieces, so the second surface reuses the first one's work instead of forking it. Worth
 keeping only while it stays short — once it lists every wrapper element, it is an inventory nobody
 reads, and deleting it is the honest move.
 - **<Component>** — <the single job it does> — used by: <surfaces>
+
+**A component's props are its interface, so `/codebase-design`'s depth test applies unchanged.** A
+lot of behaviour behind a small prop list is a deep module; fifteen props that mostly pass straight
+through to one element is a **shallow** one, and the honest fix is usually to delete the wrapper and
+use the element. Apply the deletion test before extracting anything: would removing this component
+concentrate complexity, or just move it one file over? And extract on the **rule of three** — a
+component abstracted for its first caller is a guess about the second and third.
 
 ## 5. Accessibility — every line names its enforcer
 PRINCIPLES #11 applied to the surface: **an accessibility note with no enforcer is decoration.**
@@ -69,6 +83,8 @@ human-run one, and it catches what no linter can.
 | A11Y-4 | Text contrast is at least 4.5:1 — 3:1 for large text and UI boundaries | `test:axe`, run against **each** state in §3 | `[test]` |
 | A11Y-5 | Nothing conveys meaning by colour alone | nothing — a human has to look | `[review-only]` |
 | A11Y-6 | `prefers-reduced-motion` is respected | <test name, or nothing> | `[test]` / `[review-only]` |
+| A11Y-7 | Content reflows at 320px wide with no two-directional scrolling (WCAG 1.4.10) | `test:` the walk re-run at a 320px viewport | `[test]` |
+| A11Y-8 | Text stays readable and nothing is cut off at 200% zoom (WCAG 1.4.4) | <test name, or nothing> | `[test]` / `[review-only]` |
 
 Contrast, measured against the real tokens rather than intent — an intended ratio is not a ratio:
 
@@ -83,4 +99,7 @@ The honest list, because §5's tags make the *rest* of this file look more enfor
   not a useless one ("button", "click here", a div announced as a list of 14 items);
 - whether the design survives real content: a 60-character name, a zero, a negative number, one
   item, ten thousand items;
+- **whether a layout that technically reflows is actually usable** — A11Y-7 proves nothing overflows
+  at 320px, not that the result is worth using: a table degraded into forty stacked rows passes the
+  check and fails the user;
 - everything in §2 and §4, which are `[review-only]` in their entirety.

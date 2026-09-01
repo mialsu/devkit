@@ -42,6 +42,10 @@ disciplines transfer most directly.
   walk **once per state**, empty and error included `[test]`; and the keyboard walk itself `[live]`.
   Verify the current package before wiring it (`/harness` step 1) — then break each one on purpose
   and watch it go red, or it is not a gate (PRINCIPLES #2).
+- **Reflow is the cheapest a11y test you are not running.** `A11Y-7` (WCAG 1.4.10) needs one
+  Playwright viewport of 320x640 and the same assertions you already have — no new tool, no new
+  fixture. Run it over *each* state, not the loaded happy path, because the error state with a long
+  message is where a layout breaks first.
 - **Contrast is measured, never intended.** Compute the ratio from the real token values. A pair
   that misses 4.5:1 is a debt entry with a number in it, not a rounding error.
 - **What no a11y gate catches:** screen-reader *quality* — `axe` finds a missing accessible name,
