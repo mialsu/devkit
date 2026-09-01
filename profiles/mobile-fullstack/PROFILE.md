@@ -61,6 +61,25 @@ technology, so the enforcer is a real screen reader rather than a browser extens
 - **What no harness here catches:** permission-denied paths, offline behavior, and version skew
   between a shipped app and a moved backend. Those are `/verify-live`'s job.
 
+## Dead code & duplication (`/prune`)
+- **TS / React Native:** `knip`, run over the app and the backend as separate roots, so a symbol
+  used only across the wire is not mistaken for dead on either side.
+- **Flutter / Dart:** `dart analyze` covers unused imports and private members;
+  `dependency_validator` covers unused and under-declared packages. Verify maturity before wiring
+  (`/harness` step 1) — this ecosystem's static-analysis add-ons have churned.
+- **Swift:** `periphery` is the mature unused-code detector, and it needs telling about
+  Objective-C-visible symbols or it deletes half your app. **Kotlin:** `detekt`'s
+  `UnusedPrivateMember` plus the IDE inspections.
+- **The blind spot that matters most here is the platform calling in.** `AppDelegate`,
+  `MainActivity`, deep-link handlers, notification callbacks, `@objc` selectors, anything named only
+  from a `.plist`, a manifest, a storyboard or a layout XML — every static analyzer calls these dead
+  because nothing in the code calls them. Treat a hit inside a platform entry point as a false
+  positive until proven otherwise.
+- **Unused assets are the payoff on mobile.** Images, fonts and localisations nobody references
+  still ship, and bundle size is a user-visible cost — sweep them the same way, with the same proof.
+- **Env vars and build configs are reported, never deleted:** the truth is in the CI secrets, the
+  Xcode scheme, and the Gradle flavour, none of which this repo can see.
+
 ## Tracer slice
 `data → API → app screen → device → it actually does the thing`. A slice spans the backend and
 the app together — a screen with no endpoint, or an endpoint no screen calls, is not a slice.

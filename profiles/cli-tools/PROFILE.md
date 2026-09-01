@@ -63,6 +63,26 @@ is the command shapes and the **state table** is the output contract:
 - **What no harness here catches:** the clean-install experience, non-TTY behavior, and
   cross-platform path assumptions. Those need the live exercise below.
 
+## Dead code & duplication (`/prune`)
+- **Go:** `golang.org/x/tools/cmd/deadcode` for unreachable functions, `staticcheck`'s U1000 for
+  unused identifiers, and `go mod tidy` followed by `git diff --exit-code go.mod go.sum` for
+  dependencies — that pair is a real `[script]` gate and belongs in the gate set.
+- **Python:** `ruff` covers three of the categories at lint speed — F401 unused imports, F841
+  unused locals, and **ERA001 commented-out code**, which is the one ecosystem with a maintained
+  rule for it. Add `vulture` for unused functions and classes (it reports a confidence score; treat
+  anything under 100% as a candidate, not a finding) and `deptry` for unused, missing and
+  transitive dependencies.
+- **Rust:** `cargo-machete` (stable toolchain) or `cargo +nightly udeps`, plus the `dead_code` lint.
+  **Node:** `knip`.
+- **The CLI-specific blind spot: a subcommand or flag with no in-code caller is not dead — users
+  call it from a shell.** Anything registered by string (cobra, click, argparse, clap derive) and
+  anything exposed through `[project.scripts]` or a `bin` entry has callers this repo cannot see.
+  The `--help` test in **Standards harness** is the check that actually settles it: if a flag is
+  documented and tested, it is live regardless of what the scanner says.
+- **Env vars here are the honest exception:** a CLI reads its own env vars, so the repo *can* often
+  prove it — but only if you also grep the shell completions, the man page and the README, which are
+  part of the contract.
+
 ## Tracer slice
 `flag/arg → logic → output (stdout + exit code) → it does the thing`. A slice is one subcommand
 or one flag working end to end, including its error path. A flag that parses but does nothing is

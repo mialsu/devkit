@@ -62,6 +62,25 @@ disciplines transfer most directly.
 - **What no harness here catches:** whether the seam is in the *right place*, runtime coupling
   through a store/context/DI container, and prop-drilled state that no import graph can see.
 
+## Dead code & duplication (`/prune`)
+- **Two altitudes, and only one belongs in the gate set.** Unused imports and locals are a
+  *lint*: `@typescript-eslint/no-unused-vars`, plus `noUnusedLocals` / `noUnusedParameters` in
+  `tsconfig.json`. Those run on every commit. The repo-level sweep — unused files, exports, types
+  and dependencies — is **`knip`**, which understands framework entry points through its plugins
+  and has largely absorbed what `ts-prune` and `depcheck` used to do separately. Run it
+  periodically, not per-commit.
+- **Duplication candidates:** `jscpd` finds copy-paste across the tree. It is a *candidate
+  finder*, never an authority — every row still has to pass `/prune`'s three tests before anything
+  merges.
+- **The five blind spots here, all of them common:** meta-framework file conventions (`app/page.tsx`,
+  `routes/`, `+page.svelte`, middleware) that no import points at; a barrel re-export making the
+  whole subtree look reachable — the reason `/setup-ts-deep-modules` discourages barrels; dynamic
+  `import()` on a computed path; component maps keyed by string; and exports used only by Storybook
+  or tests, which are real users or real dead code depending on a judgement call.
+- **Env vars are not decidable in this repo.** `import.meta.env` / `process.env` greps plus
+  `.env.example` give you a list; the host (Vercel, Netlify, Fly, the container spec) holds the
+  truth. Report, never delete.
+
 ## Tracer slice
 `data model → API/endpoint → screen → real copy → it actually does the thing`. A slice is one
 user-visible capability working end to end, demoable alone. No screens over absent APIs; no

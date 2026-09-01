@@ -59,6 +59,23 @@ Two exceptions, both narrow:
 - **What no harness here catches:** whether the documented examples still run. That's the live
   exercise, and it's the one that catches README drift.
 
+## Dead code & duplication (`/prune`)
+- **The default inverts: for a library, "unreferenced in this repo" proves nothing about anything
+  exported.** Your callers are people you cannot grep. Dead code in a library means *internal* code
+  only, and every scanner has to be told the public entry points are roots (`knip`'s `entry` and
+  `exports` config, `#[allow(dead_code)]` on the crate surface, `__all__`) or it will cheerfully
+  propose deleting the product.
+- **Deleting a public export is a breaking change, not a prune.** It never rides in a sweep commit:
+  it goes through the deprecation path, the public-surface diff tool named in **Standards harness**
+  (`api-extractor`, `cargo-public-api`, an apidiff), and a major version. `/prune` may *list* an
+  export it suspects nobody uses; the removal is a product decision.
+- **Internal sweeps are still worth it** and are unusually safe here, because the entry-point
+  boundary gate already tells you what is internal: anything in a subfolder, unreachable from a root
+  file, with no test through the interface.
+- **The duplication that matters is between the code and the docs.** An example in the README or a
+  docstring that no longer compiles is dead code with a wider audience than any private helper —
+  the live exercise below is what catches it.
+
 ## Tracer slice
 `type / signature → implementation → test through the public interface → a runnable doc example`.
 A slice is one public capability an installer can import and use, with the example that proves

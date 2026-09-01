@@ -64,6 +64,23 @@ automated enforcers, which makes labelling them the whole job.
 - **What no harness here catches:** feel. Nothing static tells you the slice is fun; only playing
   it does (see **Verify like a user**).
 
+## Dead code & duplication (`/prune`)
+- **The engine is a caller no analyzer can see.** Unity's message methods (`Awake`, `Start`,
+  `OnTriggerEnter`) and every `[SerializeField]` private field are invoked by the runtime, not from
+  code; Godot wires callbacks through signals and `.tscn` node paths; Bevy registers systems by
+  passing function items to `add_systems`. Roslyn's IDE0051/IDE0052 and Rust's `dead_code` lint will
+  all call these dead. **Assume a hit inside engine-facing code is a false positive** and prove
+  otherwise — this profile inverts `/prune`'s usual default.
+- **Search the scenes, not just the scripts.** A `.tscn`, `.unity`, `.prefab` or `.meta` file
+  references a script by path or GUID, so any grep that only reads source is lying to you.
+- **Unused assets dominate the payoff, not unused code** — textures, audio, prefabs and animations
+  nobody references are usually the biggest thing a sweep removes. Unity's dependency queries and
+  the build report are the evidence; for Godot, resource paths in the scene files are.
+- **Rust / Bevy:** `cargo-machete` on stable, or `cargo +nightly udeps`, for unused dependencies.
+- **Duplication is often deliberate here.** Tuning variants, per-weapon behaviour that reads alike
+  today, and copy-pasted numbers that will diverge next playtest all fail the same-reason-to-change
+  test. Prefer duplication over a premature shared system, and say so in the report.
+
 ## Tracer slice
 `mechanic → input binding → on-screen feedback → it plays`. A slice is a single playable
 mechanic loop — the player can *do the thing and see it respond*. Not "the inventory data model"

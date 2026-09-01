@@ -38,6 +38,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
 /crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
+/prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
 ```
 
 ## Working on devkit itself

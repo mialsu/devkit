@@ -21,10 +21,11 @@
 # `_Avoid_` list should hold domain synonyms, not general programming words.
 #
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
-# hand-edited generated files, oversized new files, invariants with no enforcer, and accessibility
-# rules with no enforcer.
+# hand-edited generated files, oversized new files, invariants with no enforcer, accessibility
+# rules with no enforcer, and blocks of commented-out code.
 #
-# Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS.
+# Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
+#                 MIN_COMMENTED_BLOCK.
 
 set -uo pipefail
 
@@ -35,6 +36,7 @@ LEDGER="${LEDGER:-REVIEW-DEBT.md}"
 ADR_DIR="${ADR_DIR:-docs/adr}"
 MIN_TERM_LEN="${MIN_TERM_LEN:-3}"
 POLICE_STRINGS="${POLICE_STRINGS:-0}"
+MIN_COMMENTED_BLOCK="${MIN_COMMENTED_BLOCK:-3}"
 
 RANGE=("$@"); [ ${#RANGE[@]} -eq 0 ] && RANGE=(HEAD)
 DEFAULT_MODE=0
@@ -301,6 +303,44 @@ while IFS= read -r rec; do
     say "     ${row:0:110}"
   fi
 done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)DESIGN\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*A11Y-[0-9]/' | grep -v 'drift-ok')
+
+# --- 9. a block of commented-out code ---------------------------------------
+# The cheapest dead code to prevent, and the one an agent produces most: the old version left
+# commented out "just in case". Git already holds it, so the block is pure cost — it survives
+# greps, confuses the next reader, and nothing ever deletes it. A single commented line is a note;
+# a RUN of them that parses as code is a deletion someone did not finish. Doc comments (///, //!,
+# /** */, jsdoc continuations, #! and #[...]) are excluded, and the body must look like code, so
+# prose in a comment block does not fire. Exempt a deliberate block by putting drift-ok on any of
+# its lines: that splits the run in two, and both halves fall under the threshold.
+while IFS=$'\t' read -r path start count first; do
+  [ -n "${path:-}" ] || continue
+  report "dead code — $count consecutive commented-out lines at $path:$start" \
+          "the code kept just in case: git already has it, so the comment is cost with no reader" \
+          "delete it (git log -S recovers it), or if it is not in history yet, commit it before deleting"
+  say "     ${first:0:110}"
+done < <(printf '%s\n' "$LINES" | awk -F'\t' -v min="$MIN_COMMENTED_BLOCK" '
+  function flush() {
+    if (run >= min) print rpath "\t" rstart "\t" run "\t" rfirst
+    run = 0
+  }
+  {
+    path = $1; ln = $2 + 0; txt = $3; code = 0
+    s = txt; sub(/^[[:space:]]+/, "", s)
+    if (s ~ /^(\/\/\/|\/\/!|\/\*|\*|#!|#\[)/) {
+      code = 0                                        # doc comment or attribute, never a deletion
+    } else if (s ~ /^(\/\/|#|--)/) {                  # drift-ok: the comment tokens themselves
+      b = s
+      sub(/^(\/\/|#|--)[[:space:]]*/, "", b)          # drift-ok: same
+      sub(/[[:space:]]+$/, "", b)
+      if (b ~ /[;{}(),]$/) code = 1
+      if (b ~ /^(if|for|while|return|const|let|var|function|def|class|import|from|export|console|await|async|elif|else|try|catch|except|match|fn|pub|impl|print)[ (]/) code = 1
+    }
+    if (code && run > 0 && path == rpath && ln == rprev + 1) { run++; rprev = ln }
+    else if (code) { flush(); rpath = path; rstart = ln; rprev = ln; rfirst = txt; run = 1 }
+    else { flush() }
+  }
+  END { flush() }
+')
 
 # --- verdict ---------------------------------------------------------------
 say ""
