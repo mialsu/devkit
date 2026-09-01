@@ -6,6 +6,59 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-01 — a security pass built to resist being a pseudo-artifact, and how little of it is proven
+
+- **What:** `/audit` fills the largest gap found so far — a grep for security/vulnerability/OWASP
+  across devkit and all 60-odd installed skills returned nothing, and `/code-review` has exactly two
+  axes, Standards and Spec (`code-review/SKILL.md:8-9`), with no security one. The skill's whole
+  shape is a defence against the failure mode of its own genre: every finding carries a verdict —
+  `exploited`, `reachable`, or `suspected` — and scanner output starts at `suspected`, labelled and
+  counted rather than ranked. Severity comes from three Owner questions, not from the agent. It
+  starts at `INVARIANTS.md` because broken object-level authorization is the bug a solo app ships,
+  and it files what it finds as `INV-n` rows rather than report prose.
+- **Where:** `skills/audit/SKILL.md`; `profiles/*/PROFILE.md` (`Security surface`);
+  `templates/CODING_STANDARDS.md` (`Secrets & data exposure`); `skills/verify-live/SKILL.md`;
+  `METHOD.md`.
+- **What green tests do NOT prove here:** **`/audit` has never been run, and nothing in it is
+  machine-enforced.** The entire skill is `[review-only]` — no gate checks that a finding carries a
+  verdict, that the `suspected` pile was counted, or that a fix shipped with a failing-then-passing
+  test. The verdict discipline is a prompt, and a prompt is exactly what `ANTI-PATTERNS.md` says an
+  agent follows less reliably than a harness.
+- **Disposition:** open. The honest mitigation is that the skill's output is a report the Owner
+  reads, not a document that silently becomes load-bearing — but that is a property of how it is
+  used, not something devkit enforces.
+
+- **What:** Every tool named across the five `Security surface` sections is a recommendation from
+  memory rather than a verified fit: `gitleaks`, `semgrep`, `eslint-plugin-security`, `bandit`,
+  `gosec`, `pip-audit`, `govulncheck`, `cargo audit`, and the `strings`-on-a-bundle check. Step 5
+  and `/harness` step 1 both say to verify before trusting, which is the mitigation and not a
+  substitute for having checked.
+- **Where:** `profiles/*/PROFILE.md` → `Security surface`.
+- **Disposition:** open — this is the second phase in a row shipping unverified tool names
+  (`/prune`'s five sections have the same defect, recorded 2026-09-01 above). Two occurrences is the
+  point at which it stops being an incident: a field run that actually installs one of these is now
+  the highest-value thing devkit can do to itself.
+
+- **What:** `templates/CODING_STANDARDS.md` gained a **Secrets & data exposure** section whose five
+  rules are all `[review-only]` by construction, upgraded to `[gate]` only when `/audit` step 11
+  wires the tool. That is honest, and it also means a project scaffolded today carries five security
+  rules that nothing checks.
+- **Where:** `templates/CODING_STANDARDS.md`.
+- **What green tests do NOT prove here:** the drift gate polices `INVARIANTS.md` and `DESIGN.md` for
+  rows that name no enforcer, but `CODING_STANDARDS.md` is in `SKIP_CONTENT` and is not policed at
+  all — so a rule mislabelled `[gate]` in a generated project goes unnoticed by the one mechanism
+  that catches exactly this defect elsewhere.
+- **Disposition:** open — a check 10 that reads enforcer tags in `CODING_STANDARDS.md` is the
+  obvious symmetry, and was deliberately not built today rather than shipped unproven.
+
+- **What:** No drift-gate check for hardcoded secrets was added, deliberately. `gitleaks` does the
+  job properly, keeps its rules current, and scans history; a regex sweep in `drift-check.sh` would
+  be a worse second implementation of one behaviour, which is the anti-pattern.
+- **Where:** decision recorded here rather than in an ADR — devkit has no `docs/adr/`.
+- **Disposition:** accepted. The cost is real and named: a project that never runs `/audit` has no
+  secret detection at all, because the universal gate deliberately does not cover it.
+
+
 ## 2026-09-01 — deletion with proof, a commented-out-code gate, and a scanner nobody has run
 
 - **What:** `/prune` lands the half of "clean up this repo" that nothing in devkit or the installed

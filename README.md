@@ -39,6 +39,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
+/audit                          # (devkit) security findings with verdicts, not a ranked list of guesses
 ```
 
 ## Working on devkit itself

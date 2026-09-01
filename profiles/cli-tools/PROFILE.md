@@ -83,6 +83,25 @@ is the command shapes and the **state table** is the output contract:
   prove it — but only if you also grep the shell completions, the man page and the README, which are
   part of the contract.
 
+## Security surface (`/audit`)
+- **A different threat model from every other profile: the tool already runs as the user.** There is
+  no privilege boundary to cross, so the attacker is usually **the input** — a repo you were pointed
+  at, a config file, a filename, an environment. "It runs arbitrary code" is not automatically a
+  finding; "it runs arbitrary code *from data it was handed*" always is.
+- **The four that actually occur:** a shell-out built by string concatenation; user input joined
+  into a filesystem path (traversal, and the write that escapes the intended directory); a temp file
+  opened without `O_EXCL` in a shared directory (symlink and TOCTOU); and unsafe deserialization —
+  `yaml.load`, `pickle`, anything that reconstructs objects from a config.
+- **Secrets on the command line are visible to every process on the machine** (`ps`), and land in
+  shell history. Env is better; a file with `0600` is better still; a prompt is best. This is a
+  concrete, cheap fix and it belongs in the report.
+- **The tool's own supply chain counts:** anything it downloads or executes at runtime, and its
+  install instructions — `curl | sh` is a defensible decision but it is a decision, and it earns an
+  ADR rather than a default.
+- **Tools:** `gitleaks` over full history; `pip-audit` / `govulncheck` / `cargo audit` /
+  `npm audit`; `bandit` (Python) or `gosec` (Go) for the injection and file-handling patterns above;
+  `semgrep` across the rest.
+
 ## Tracer slice
 `flag/arg → logic → output (stdout + exit code) → it does the thing`. A slice is one subcommand
 or one flag working end to end, including its error path. A flag that parses but does nothing is

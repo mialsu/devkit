@@ -81,6 +81,24 @@ automated enforcers, which makes labelling them the whole job.
   today, and copy-pasted numbers that will diverge next playtest all fail the same-reason-to-change
   test. Prefer duplication over a premature shared system, and say so in the report.
 
+## Security surface (`/audit`)
+- **The threat model inverts: the client is the attacker, and the attack is cheating.** This profile
+  already frames invariants as *what a player can exploit* — that is the same axis, so the audit
+  starts there rather than at a generic vulnerability checklist.
+- **For a single-player game the honest answer is usually "mostly not applicable", and saying so is
+  the correct output.** Save-file tampering and modding are the whole surface, and both are often
+  *fine*. Manufacturing findings to fill a report is the pseudo-artifact this method refuses; a
+  three-line audit that says why there is nothing to defend is a better document.
+- **Multiplayer flips it completely: server-authoritative, or it is not a rule.** Anything computed
+  on the client — damage, currency, position, cooldowns, loot rolls — is a suggestion the client
+  is free to ignore. The audit's question is which of the game's rules are enforced anywhere but the
+  player's own machine.
+- **Everything shipped in the build is public**, including analytics and backend keys. Treat each as
+  already leaked, and give the client only credentials that are safe to be public.
+- **Tools:** `gitleaks` over full history; the ecosystem's dependency audit (`cargo audit`, NuGet
+  audit). There is no meaningful static analyzer for game-logic trust boundaries — that part is
+  reading, and the report should say so.
+
 ## Tracer slice
 `mechanic → input binding → on-screen feedback → it plays`. A slice is a single playable
 mechanic loop — the player can *do the thing and see it respond*. Not "the inventory data model"

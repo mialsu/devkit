@@ -49,6 +49,11 @@ out-of-order arrival, the concurrent edit, the cancelled thing revived.
 - It goes through → that is a **BROKEN** finding on its own, whatever the AC verdicts say, and it
   outranks them: a violated invariant is a bug in every release, not an unfinished slice.
 
+**Attack it as the wrong person, not just the wrong way.** The invariant that governs *who* may act
+is the one a passing test most often misses, because tests log in as whoever owns the row. Try the
+same operation as a second user against the first user's data. This is `/audit` step 3 aimed at one
+slice; the repo-wide version, and the rest of the security surface, is that skill's job.
+
 ## Walk it without the mouse (whenever the slice has a surface)
 The profile's recipe covers reaching it the way a user does — and *a user* includes one who never
 touches a pointer. That path has bugs of its own: a control reachable only by click, a focus ring

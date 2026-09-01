@@ -76,6 +76,28 @@ Two exceptions, both narrow:
   docstring that no longer compiles is dead code with a wider audience than any private helper —
   the live exercise below is what catches it.
 
+## Security surface (`/audit`)
+- **You are shipping the attack surface into other people's applications.** A flaw here is not your
+  incident, it is theirs, multiplied by every dependent — which raises the impact axis on findings
+  that would be minor in an app.
+- **Validate at the public surface, because you cannot assume the caller did.** Every entry point
+  takes input that reached it from somewhere you cannot see, and "the caller should have checked" is
+  not a control.
+- **The two that are genuinely library-shaped:** a regex applied to caller-supplied input
+  (catastrophic backtracking is a denial of service you hand to your users), and, in JS, prototype
+  pollution through any deep merge, clone, or path-set helper.
+- **Your dependencies become your callers' dependencies.** Dependency hygiene matters more here than
+  in any application — a transitive advisory is your problem, and a new runtime dependency is
+  already an ADR under **Dependencies & reuse**.
+- **Never put a caller's value into an exception message or a log line.** You do not control where
+  their logs go, and a token in a stack trace is a leak with your name on it.
+- **This is the one profile where `SECURITY.md` belongs** — in its GitHub sense: how someone reports
+  a vulnerability to you privately. That is a disclosure contract, not a threat model, and it is a
+  different document from anything `/audit` produces.
+- **Tools:** the ecosystem's audit command; `gitleaks` over full history; `semgrep`. The
+  public-surface diff tool named in **Standards harness** doubles as a security control — an
+  accidentally exported internal is a surface you did not mean to defend.
+
 ## Tracer slice
 `type / signature → implementation → test through the public interface → a runnable doc example`.
 A slice is one public capability an installer can import and use, with the example that proves

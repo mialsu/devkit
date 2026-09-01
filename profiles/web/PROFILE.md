@@ -81,6 +81,26 @@ disciplines transfer most directly.
   `.env.example` give you a list; the host (Vercel, Netlify, Fly, the container spec) holds the
   truth. Report, never delete.
 
+## Security surface (`/audit`)
+- **The strongest authz enforcer here is the database, not the code.** A row-level policy or a
+  constraint holds when a new route forgets; a service-layer check holds only for the paths that
+  remember. This is the same argument the **Domain dial** above makes for `constraint:` over
+  `test:`, and it matters most for the rules an attacker actually probes.
+- **Check every route, not every page.** The classic hole in an agent-built app is a page that
+  guards itself and an API route serving it that does not — the page was the thing being looked at,
+  so the check landed there. Enumerate handlers, not screens.
+- **`NEXT_PUBLIC_` / `VITE_` / `PUBLIC_` prefixed values are public by design** — they are compiled
+  into the bundle and shipped to everyone, permanently. A key that reached one is already leaked and
+  needs rotating, not renaming.
+- **Over-fetching is invisible on screen and total in the response:** the handler returns the whole
+  row and the UI renders three fields. Read the JSON, not the component.
+- **Also specific to here:** a CORS wildcard combined with credentials; missing CSRF protection when
+  auth is cookie-based; source maps served in production; a debug or seed route that survived.
+- **Tools:** `gitleaks` over the **full history** (a pre-commit hook is the gate that keeps it
+  clean); the package manager's `audit` command; `semgrep` for injection and taint patterns;
+  `eslint-plugin-security` if the repo is already ESLint-centric. Verify each fits before wiring
+  (`/harness` step 1).
+
 ## Tracer slice
 `data model → API/endpoint → screen → real copy → it actually does the thing`. A slice is one
 user-visible capability working end to end, demoable alone. No screens over absent APIs; no

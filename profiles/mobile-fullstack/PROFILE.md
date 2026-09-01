@@ -80,6 +80,22 @@ technology, so the enforcer is a real screen reader rather than a browser extens
 - **Env vars and build configs are reported, never deleted:** the truth is in the CI secrets, the
   Xcode scheme, and the Gradle flavour, none of which this repo can see.
 
+## Security surface (`/audit`)
+- **The client is shipped, and it is hostile.** Everything inside the binary is public: `strings` on
+  an APK or IPA is a five-second test that finds embedded API keys, and it produces an **exploited**
+  verdict rather than a suspected one, which makes it the first thing to run.
+- **Every check the app makes, the backend makes again.** Client-side validation and client-side
+  permission checks are UX; an attacker uses the API directly. The audit's real question on this
+  profile is *which rules exist only in the app?*
+- **Secure storage is not the default one.** Tokens and credentials belong in Keychain / Keystore,
+  not `AsyncStorage`, `SharedPreferences`, `UserDefaults`, or a plain SQLite file.
+- **Deep links and custom URL schemes are an untrusted input surface** — another app can register
+  the same scheme, and any parameter arriving through one is attacker-controlled.
+- **Certificate pinning is a real decision with a real cost** (it breaks on rotation and can brick a
+  shipped build). Record it as an ADR either way; do not add it reflexively.
+- **Tools:** `gitleaks` over full history; the package manager's `audit`; plus the bundle-strings
+  check above, which no scanner in the JS ecosystem will do for you.
+
 ## Tracer slice
 `data → API → app screen → device → it actually does the thing`. A slice spans the backend and
 the app together — a screen with no endpoint, or an endpoint no screen calls, is not a slice.

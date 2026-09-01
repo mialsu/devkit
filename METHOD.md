@@ -132,7 +132,7 @@ Anywhere in there: `/verify-claim` the moment something claims "this already wor
 `/handoff` when a session fills up. Adding a feature to a project that already exists? Start at
 step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Six supporting skills sit outside the loop:
+Seven supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
@@ -158,6 +158,14 @@ Six supporting skills sit outside the loop:
   evidence that makes "behaviour is unchanged" more than a wish. The design work goes to
   `/improve-codebase-architecture` (mp). It ends by wiring the scanner as a gate, because a sweep
   with nothing behind it just runs again in three months.
+- **`/audit` (dk)** — the security pass, shaped so it cannot become the pseudo-artifact it most
+  wants to be. Every finding carries a **verdict** — `exploited` (demonstrated), `reachable` (traced
+  with file:line at each hop), or `suspected` (pattern matched, path untraced) — and the suspected
+  pile is labelled and counted rather than ranked, because that is where a generated finding hides.
+  Severity is not the agent's to assign: three questions to the Owner set the impact axis, and
+  findings rank by **reachability first**. It starts at `INVARIANTS.md`, since broken object-level
+  authorization is the bug a solo app actually ships, and it ends by wiring `gitleaks` and the
+  ecosystem's audit command as gates.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
 
@@ -186,6 +194,7 @@ map, so no session has to guess which shape is canonical:
 | `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `frontend-design` writes an aesthetic plan, not a scope-reconciled contract, and neither source enforces accessibility at all |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
+| the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |
 | "what should this module's interface be", "is this refactor worth doing" | `codebase-design` + `improve-codebase-architecture` (mp) — module/interface/depth/**seam**, the deletion test | `/prune` adds the two things neither has: proof-before-deletion, and the three tests that say *don't* merge |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
 

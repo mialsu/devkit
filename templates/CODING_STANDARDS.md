@@ -59,6 +59,21 @@ Two rules about the rules:
 but each one is a confession — it lands together with its `REVIEW-DEBT.md` entry, in the same
 commit, or the gate fails. `[script]`
 
+## Secrets & data exposure
+
+Every rule here starts `[review-only]` and is **upgraded to `[gate]` only when `/audit` step 11
+actually wires the tool** — labelling one before that is the false-enforcer mistake this file's own
+meta-rules forbid.
+
+- No secret in the repo — not in the working tree, and not anywhere in history. `[review-only]`
+- A leaked secret is **rotated first**, then removed from history. Removal alone leaves a live
+  credential: the value has been on a remote, in forks, and in CI logs. `[review-only]`
+- A handler returns the fields the caller is entitled to, never the whole row. Hiding a field in the
+  UI does not hide it in the response. `[review-only]`
+- Errors reaching a client carry no stack trace, no query, and no internal id. `[review-only]`
+- Logs and crash reports carry no credentials and no PII — list the fields that count as PII here,
+  or the rule is unenforceable by anyone but its author. `[review-only]`
+
 ## Dependencies & reuse
 
 - Reuse before building: never re-implement what the language, framework, or an existing
