@@ -128,11 +128,11 @@ Eleven steps, four of them once per project; everything after step 4 repeats per
 11. /ship                         the only command that puts anything on a remote.
 ```
 
-Anywhere in there: `/verify-claim` the moment something claims "this already works", and
-`/handoff` when a session fills up. Adding a feature to a project that already exists? Start at
-step 4 — Stage 0 and the bootstrap are once-per-project.
+Anywhere in there: `/verify-claim` the moment something claims "this already works",
+`/handoff` when a session fills up, and `/resume` when the next one opens. Adding a feature to a
+project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Seven supporting skills sit outside the loop:
+Eight supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
@@ -168,6 +168,14 @@ Seven supporting skills sit outside the loop:
   ecosystem's audit command as gates.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
+- **`/resume` (dk)** — the other half, because `/handoff` writes and nothing reads back, which
+  leaves the Owner remembering a path. It finds the newest handoff for the current project, follows
+  its pointers, and **verifies its claims before acting** — a handoff was true when it was written
+  and the repo has moved since, so it is a claim like any other (PRINCIPLES #6). It refuses to
+  invent one when the directory is empty. Handoffs live in
+  `~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md`, one directory per *project* rather than
+  per repo; the personal-tree `CLAUDE.md` states that and redirects `/handoff` there, because its
+  own instruction to use the OS temp directory loses the document at the next reboot.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
 profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, wires the
@@ -197,6 +205,7 @@ map, so no session has to guess which shape is canonical:
 | the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |
 | "what should this module's interface be", "is this refactor worth doing" | `codebase-design` + `improve-codebase-architecture` (mp) — module/interface/depth/**seam**, the deletion test | `/prune` adds the two things neither has: proof-before-deletion, and the three tests that say *don't* merge |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
+| reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
 adopt its format even when yours is prettier.** Two formats for one artifact is the same defect as
