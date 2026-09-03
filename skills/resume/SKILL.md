@@ -16,14 +16,16 @@ building*). This skill only finds, reads and interrogates one.
 ~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md
 ```
 
-`<project-slug>` is the basename of the project root — the directory under `~/code/personal/`, not
-the repo you happen to be standing in. A project with four sibling repos has **one** handoff
-directory.
+`<project-slug>` is the basename of the project root — the child of your **projects root**, not the
+repo you happen to be standing in. A project with four sibling repos has **one** handoff directory.
 
-`~/code/personal/CLAUDE.md` states this and redirects `/handoff` there, because its own `SKILL.md`
-says "the temporary directory of the user's OS" and this machine's `tmpfiles.d` has
-`D /tmp 1777 root root 30d` — `D` empties `/tmp` on boot, which destroys the handoff at exactly the
-moment it is needed.
+The projects root is the directory whose `CLAUDE.md` imports devkit (`@./devkit/METHOD.md`); on this
+setup that is `~/code/personal`. Derive it rather than assuming it, so the skill survives someone
+laying their tree out differently.
+
+Deliberately **not** the OS temp directory that `/handoff`'s own `SKILL.md` names — most Linux boxes
+empty `/tmp` on boot. METHOD.md's *Session handoffs* is the rule and carries the reasoning; this is
+the path you need to do the job.
 
 ## Arguments
 
@@ -36,8 +38,10 @@ moment it is needed.
 ## Steps
 
 ### 1. Find it
-Derive the slug from `$PWD` by walking up to the child of `~/code/personal`. Then list
-`~/.claude/handoffs/<slug>/` newest-first and take the top file.
+Walk up from `$PWD` to the first directory containing a `CLAUDE.md` that imports devkit; the slug is
+the basename of the child you came through. Then list `~/.claude/handoffs/<slug>/` newest-first and
+take the top file. Confirm the slug out loud before reading — a wrong slug silently reads another
+project's handoff, which is worse than reading none.
 
 If the directory is empty or absent, **say so and stop**. Do not go hunting through `/tmp`, do not
 reconstruct a handoff from git log, and above all do not improvise a summary — a fabricated "where

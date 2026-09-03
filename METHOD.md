@@ -169,13 +169,9 @@ Eight supporting skills sit outside the loop:
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
 - **`/resume` (dk)** — the other half, because `/handoff` writes and nothing reads back, which
-  leaves the Owner remembering a path. It finds the newest handoff for the current project, follows
-  its pointers, and **verifies its claims before acting** — a handoff was true when it was written
-  and the repo has moved since, so it is a claim like any other (PRINCIPLES #6). It refuses to
-  invent one when the directory is empty. Handoffs live in
-  `~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md`, one directory per *project* rather than
-  per repo; the personal-tree `CLAUDE.md` states that and redirects `/handoff` there, because its
-  own instruction to use the OS temp directory loses the document at the next reboot.
+  leaves the Owner holding a path they will not remember. It finds the newest handoff for the
+  current project, follows its pointers, and **verifies its claims before acting**. See *Session
+  handoffs* below for where they live and why not `/tmp`.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
 profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, wires the
@@ -274,6 +270,31 @@ yourself, after the lanes land. If you can't partition cleanly, don't paralleliz
 serially. Research and read-only verification parallelize freely; code does not.
 
 ---
+
+## Session handoffs
+
+A session ends; the next one starts cold. `/handoff` (mp) writes the document and `/resume` (dk)
+reads it back. Two rules make the pair work, and both exist because the obvious version fails.
+
+**Handoffs live in `~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md`, newest last.** One
+directory per **project**, not per repo — a project with four sibling repos has one. `<project-slug>`
+is the directory under your projects root.
+
+**Not the OS temp directory, which is what `/handoff`'s own `SKILL.md` says.** A typical Linux
+`tmpfiles.d` carries `D /tmp 1777 root root 30d`, and `D` empties `/tmp` **on boot** — so a handoff
+written there is gone after a reboot, which is precisely the moment it was written for. This rule
+redirects his skill rather than forking it: a fork stops receiving his updates, and two
+implementations of one behaviour is the defect this document spends a whole section on.
+
+**A handoff is a claim, not a fact** (PRINCIPLES #6). It was true when it was written and the repo
+has moved since — commits landed, CI ran, a deploy may have fired. Anything load-bearing it asserts
+(test counts, coverage, "X already works", file:line references) gets `/verify-claim`'d **before**
+the first edit, not after. `/resume` is built around this: finding the document is the easy half,
+and refusing to trust it is the half that earns the skill.
+
+And when there is no handoff, `/resume` says so and stops. A fabricated "where we were" reads
+exactly like a real one and the Owner acts on it, which makes it worse than silence — the same
+argument ANTI-PATTERNS makes about the pseudo-artifact, at session scale.
 
 ## How this maps to the sources (for when you want to go deeper)
 

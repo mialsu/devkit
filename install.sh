@@ -37,7 +37,7 @@ cat <<'NOTE'
 
 Done. devkit's skills are linked:
   /product-brief  /new-project  /harness  /crunch-domain  /design-brief
-  /verify-live  /verify-claim  /confess  /ship  /prune  /audit
+  /verify-live  /verify-claim  /confess  /ship  /prune  /audit  /resume
 
 Next — install Matt Pocock's skills (devkit references them, so you get his updates):
 
@@ -48,5 +48,10 @@ Next — install Matt Pocock's skills (devkit references them, so you get his up
   or, from a local clone, run HIS link script:  skills/scripts/link-skills.sh
 
 Then, in any project:  /new-project   (picks a domain profile and scaffolds it)
+Coming back to one:    /resume        (reads the last handoff, then checks what it claims)
+
+Handoffs live in ~/.claude/handoffs/<project>/ — NOT /tmp, which most Linux boxes empty on
+boot. METHOD.md's "Session handoffs" says why; it is the rule, this is just the reminder.
+
 Read METHOD.md for the loop, PRINCIPLES.md for the spine.
 NOTE
