@@ -30,6 +30,11 @@
 set -uo pipefail
 
 cd "$(git rev-parse --show-toplevel)" || exit 2
+# Every `git diff` below carries `--relative`. With the cd above it is a NO-OP — cwd is already the
+# git root. It matters when a project vendors this script into a package subdirectory and changes
+# that cd, which a monorepo of several packages will: `git ls-files` reports paths relative to the
+# cwd while `git diff` reports them from the GIT ROOT, so every check that took a path from a diff
+# and handed it back to git matched nothing and printed clean. Found the hard way on 2026-09-04.
 
 MAX_NEW_FILE_LINES="${MAX_NEW_FILE_LINES:-400}"
 LEDGER="${LEDGER:-REVIEW-DEBT.md}"
@@ -89,12 +94,12 @@ else
   UNTRACKED=""
 fi
 
-changed()     { { git diff --name-only "${RANGE[@]}"; printf '%s' "$UNTRACKED"; } | grep -v '^$' | sort -u; }
-added_files() { { git diff --diff-filter=A --name-only "${RANGE[@]}"; printf '%s' "$UNTRACKED"; } | grep -v '^$' | sort -u; }
+changed()     { { git diff --relative --name-only "${RANGE[@]}"; printf '%s' "$UNTRACKED"; } | grep -v '^$' | sort -u; }
+added_files() { { git diff --relative --diff-filter=A --name-only "${RANGE[@]}"; printf '%s' "$UNTRACKED"; } | grep -v '^$' | sort -u; }
 
 # path<TAB>lineno<TAB>content, for every ADDED line in the range (untracked files: every line).
 added_lines() {
-  git diff --unified=0 "${RANGE[@]}" -- "$@" | awk '
+  git diff --relative --unified=0 "${RANGE[@]}" -- "$@" | awk '
     /^\+\+\+ /{ f=substr($0,5); sub(/^b\//,"",f); next }
     /^@@ /{ if (match($0, /\+[0-9]+/)) n = substr($0, RSTART+1, RLENGTH-1) + 0; next }
     /^\+/{ print f "\t" n "\t" substr($0,2); n++; next }
@@ -106,7 +111,7 @@ added_lines() {
 }
 # Number of added lines per newly-added file: count<TAB>path.
 added_sizes() {
-  git diff --diff-filter=A --numstat "${RANGE[@]}" | awk -F'\t' '$1!="-"{ print $1 "\t" $3 }'
+  git diff --relative --diff-filter=A --numstat "${RANGE[@]}" | awk -F'\t' '$1!="-"{ print $1 "\t" $3 }'
   while IFS= read -r u; do
     [ -n "$u" ] && [ -f "$u" ] && printf '%s\t%s\n' "$(wc -l <"$u" | tr -d ' ')" "$u"
   done <<<"$UNTRACKED"
@@ -214,12 +219,20 @@ fi
 # A dependency line is one that carries a VERSION. That discriminates a real dep from a manifest
 # key far better than a denylist of key names — and a version *bump* shows the same name on both
 # sides of the diff, so only genuinely NEW names survive.
+#
+# The name is cut at the first version operator. The cut class was ["':= ] until 2026-09-04, which
+# handles JSON ("pkg": "^1.0") and a pinned pip line (pkg==1.0) and NOTHING else: `pkg>=1.0` cut at
+# the `=` left `pkg>` with the operator still attached, and the charset filter below then dropped
+# it — so in any project pinning with `>=`, which is most Python projects, this check silently saw
+# no dependencies at all. `[` is in the class for the same reason one level up: extras like
+# `uvicorn[standard]>=0.24.0` otherwise survive as `uvicorn[standard]` and fail the same filter.
+# Verified by instantiating this template in a scratch repo and watching it go from clean to red.
 dep_names() {                   # dep_names <manifest> <+|->
-  git diff --unified=0 "${RANGE[@]}" -- "$1" \
+  git diff --relative --unified=0 "${RANGE[@]}" -- "$1" \
     | grep "^[$2]" | grep -Ev '^[-+]{3}' | grep -v 'drift-ok' \
     | { if printf '%s' "$1" | grep -q 'requirements'; then cat; \
         else grep -E '[0-9]+\.[0-9]+|"\*"|latest|\{'; fi; } \
-    | sed 's/^.//; s/^[[:space:]]*//; s/^["'"'"']//' | sed 's/["'"'"':= ].*$//' \
+    | sed 's/^.//; s/^[[:space:]]*//; s/^["'"'"']//' | sed 's/["'"'"':=<>~![ ].*$//' \
     | grep -E '^[A-Za-z0-9@._/-]+$' \
     | grep -Eiv '^(version|name|description|license|author|authors|readme|repository|keywords|main|types|type|private|files|exports|scripts|engines|node|npm|packageManager|requires-python|python|edition|go|rust-version|module|require|tool|project|package|lib|bin|workspace|features|profile|target|(dev-|build-|optional|peer|dev|Dev|Peer|Optional|Build)?[dD]ependenc(y|ies)|dependency-groups|build-system|plugins|resolutions|overrides)$' \
     | sort -u

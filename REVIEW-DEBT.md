@@ -6,6 +6,36 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-04 — the drift gate template shipped a dead dependency check, and nothing here could have caught it
+
+- **What:** `templates/scripts/drift-check.sh` check 3 refuses a dependency added without an ADR.
+  Its `dep_names` parser cut the package name at the first of `["':= ]`, which handles JSON
+  (`"pkg": "^1.0"`) and a pinned pip line (`pkg==1.0`) and nothing else. `fastapi>=0.104.0` cut at
+  the `=` and left `fastapi>` with the operator attached; the charset filter below then dropped it.
+  **In any project pinning with `>=` — which is most Python projects — the check saw no dependencies
+  at all.** Extras were a second miss: `uvicorn[standard]>=0.24.0` survives the operator fix as
+  `uvicorn[standard]` and fails the same filter.
+- **Where:** `templates/scripts/drift-check.sh` — `dep_names`, the second `sed`.
+- **Found:** in `student-attendance-tracker`, whose 22 requirements all use `>=`, so the check had
+  never fired there. Reproduced against **this template as shipped** in a scratch repo with cwd at
+  the git root, which rules out that project's monorepo layout as the cause.
+- **Fixed 2026-09-04.** The cut class is now `["':=<>~![ ]`. Proven by instantiating the template in
+  a throwaway repo: `httpx-sse>=0.4.0` with no ADR goes red naming the package, `uvicorn[standard]`
+  yields `uvicorn`, and adding an ADR makes it clean again. JSON, scoped JSON, pyproject array
+  entries and the `!=` / `~=` operators were checked so the widened class breaks nothing.
+- **Also fixed, defensively:** every `git diff` in the template now carries `--relative`. It is a
+  no-op with the template's own `cd` to the git root, and it is what makes the script work when a
+  project vendors it into a package subdirectory and changes that cd — which a monorepo will. In
+  `student-attendance-tracker` that mismatch had silently killed the migration check for a day:
+  `git ls-files` reports paths relative to the cwd, `git diff` reports them from the git root.
+- **What green gates do NOT prove here, and this is the real entry:** **devkit has no way to exercise
+  its own templates.** There is no test, no scratch-repo harness, no CI — a template can ship a
+  check that cannot fire and nothing notices, because `drift-check: clean` is what a working check
+  and a dead one both print. This bug reached at least one project and sat there. The scratch-repo
+  proof used above is four commands and could be a script in `scripts/`.
+- **Disposition:** the two parser bugs are **fixed**; the missing harness is **open**, and it is the
+  one that will produce the next instance of this.
+
 ## 2026-09-01 — a tag I got wrong yesterday, responsive filed where it belongs, and a skill I never checked
 
 - **What:** **Tag drift I introduced and have now fixed.** `templates/CODING_STANDARDS.md` gained a
