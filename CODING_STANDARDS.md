@@ -49,7 +49,8 @@ Two meta-rules, from the template devkit ships:
   `[script]`
 - **Owner-driven skills set `disable-model-invocation: true`.** `/new-project`, `/harness`,
   `/crunch-domain` and `/ship` change a repo or publish; the model must not start them on its own.
-  `[review-only]`
+  `/spike` and `/sketch` join them: both write code, and `/spike` is meant to run in repos that
+  are not yours. `[review-only]`
 
 ## The shipped script (`templates/scripts/drift-check.sh`)
 

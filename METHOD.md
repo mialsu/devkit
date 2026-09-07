@@ -45,6 +45,14 @@ what stops "coming soon" reaching the build; and the real deliverable is **the r
 plus the cheapest test that could falsify it**. It carries one job per persona and no user-story
 list: `US-n` and its criteria belong to the spec, so one id scheme runs end to end.
 
+**Before even this, sometimes:** an idea can be cheaper to build for a day than to argue about for
+two hours. `/sketch` (dk) is that day — one slice end to end, throwaway, ending in a verdict: ALIVE
+(worth a brief, and here is what it taught), DEAD (and precisely why), or PIVOTED (the interesting
+question was the adjacent one). It runs *cold*, before the brief, when you don't yet know what the
+brief should say; and it runs *prescribed*, when the brief's cheapest falsifying test turns out to
+be "build a one-day version". Either way the exit is fixed — a sketch graduates to `/product-brief`,
+never straight to `/new-project`, and its **code never carries over**.
+
 The gate out of Stage 0 is blunt: *is there a lovable MVP, and can the #1 assumption be tested
 cheaply?* If no, the next step is a validation experiment, not code. If yes, the brief's
 platform reality picks the domain profile for `/new-project`, and each MVP-cut bullet becomes a
@@ -97,8 +105,14 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 ### The whole chain, greenfield to shipped
 
 Eleven steps, four of them once per project; everything after step 4 repeats per MVP-cut bullet.
+An optional step 0 sits in front, for when the idea is cheaper to build than to discuss.
 
 ```
+0. /sketch                        optional, greenfield. One slice end to end, in a day, throwaway,
+   (idea, not yet a brief)        answering "is there anything here?" → ALIVE / DEAD / PIVOTED.
+                                  ALIVE graduates to step 1 carrying what it learned; the CODE
+                                  never carries over. Also reachable FROM step 1, when the brief's
+                                  cheapest falsifying test is "build a one-day version".
 1. /product-brief                 once, before a repo exists. Problem, core value, MVP cut,
                                   non-goals, riskiest assumption + its cheapest test. No tech.
                                   → its platform reality picks the profile, and its MVP cut is
@@ -132,11 +146,20 @@ Anywhere in there: `/verify-claim` the moment something claims "this already wor
 `/handoff` when a session fills up, and `/resume` when the next one opens. Adding a feature to a
 project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Eight supporting skills sit outside the loop:
+Nine supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
   return a MET / PARTIAL / NOT-MET verdict with file:line evidence.
+- **`/spike` (dk)** — the feasibility question, asked of a codebase that already exists: *could
+  this work here at all?* Timeboxed, throwaway, and it ends in a verdict — FEASIBLE (with the
+  command that reproduces it), FEASIBLE-WITH-COST (and the named things that must change first),
+  BLOCKED (the wall, at file:line), or INCONCLUSIVE (the clock won; here is the next probe worth
+  running). Its report lives **outside** the repo, at `~/.claude/spikes/<repo>/`, because the report
+  is the deliverable and the code is an appendix. This is the one devkit skill built to run outside
+  this tree — in an employer's monorepo, where none of these files load — so it carries its own
+  spine and probes what it is allowed to touch before it touches anything. Pairs with
+  `/verify-claim`: that one answers *does it work today*, this one *could it work at all*.
 - **`/harness` (dk)** — install and *prove* a project's standards harness: `CODING_STANDARDS.md`
   (the exact filename `/code-review`'s Standards axis reads), the import/architecture boundary
   gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
@@ -195,6 +218,8 @@ map, so no session has to guess which shape is canonical:
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
 | design tokens, type scale, wireframes, UI copy, the signature element | `frontend-design` (installed plugin) — its two-pass token system | devkit adds one constraint: the token **values live in code**, and `DESIGN.md` points at that file rather than copying them |
 | "which of these layouts wins" | `/prototype` (mp) — its UI branch, N variants on the real route | none. Prose cannot settle a layout, and a variant judged in isolation always looks fine |
+| "could this work here at all" (feasibility, in a codebase that exists) | devkit — `/spike`; neither source asks it. `/prototype` (mp) answers *design* questions, `/verify-claim` (dk) answers *does it work today* | the whole skill, plus the artifact neither source has: a spike report outside the repo, carrying the verdict, its evidence, and what the spike faked |
+| "is there anything here worth building" (before a brief exists) | devkit — `/sketch`; `/product-brief` demands a cheapest falsifying test and ships no tool that builds a whole app in a day | the whole skill. It feeds the brief, is reachable from it, and its code is never promoted |
 | `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `frontend-design` writes an aesthetic plan, not a scope-reconciled contract, and neither source enforces accessibility at all |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
@@ -224,6 +249,12 @@ agent states which weight it's running.
 
 A one-file script still gets **gated and verified** — that's the spine. It just skips the
 tickets, the ADRs, and the multi-session paperwork.
+
+Light has two doors, and until they existed this column was a table row nothing invoked:
+**`/sketch`** for a whole app in a day, **`/spike`** for one question against a codebase that
+already exists. Neither is an exemption from *gates before every commit* — neither lands on a
+shared branch, so there is nothing to gate until something does, and then the rule applies in
+full and the code is rewritten rather than promoted.
 
 ---
 

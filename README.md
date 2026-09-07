@@ -27,6 +27,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 
 ## Use
 ```
+/sketch                         # (devkit) before the brief: a whole app in a day, to find out if there's anything here
 /product-brief                  # (devkit) Stage 0: turn a raw idea into a lean, validated brief
 /new-project                    # scaffold: pick a domain profile, lay down CLAUDE.md + gates
 /grill-with-docs                # (Pocock) shape one question at a time → /to-spec
@@ -35,11 +36,13 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /confess                        # (devkit) record what was cut → REVIEW-DEBT.md
 /ship                           # (devkit) the explicit publish gate
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
+/spike                          # (devkit) could this work here at all? timeboxed, throwaway, a verdict with evidence
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
 /crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
 /audit                          # (devkit) security findings with verdicts, not a ranked list of guesses
+/resume                         # (devkit) read the last handoff back, and verify what it claims
 ```
 
 ## Working on devkit itself
