@@ -37,6 +37,14 @@ disciplines transfer most directly.
   and UI copy; `/prototype`'s UI branch settles which layout wins, on the real route with real
   data. This profile insists on exactly two things: the tokens live in **code**, and `DESIGN.md`
   points at that file instead of copying its values.
+- **`ui-ux-pro-max` supplies the rules; this profile supplies the enforcers.** `search.py --domain ux`
+  is where the `A11Y-n` rows come from — 119 guidelines, WCAG 2.2 cited — and
+  `--stack react|nextjs|vue|svelte|astro|shadcn|html-tailwind` is a build-time read for
+  `/implement`, with `--domain react` covering rerenders, bundles and Suspense waterfalls. Two
+  limits: `--design-system` is a **read**, never a `--persist` (its `MASTER.md` duplicates the token
+  file the bullet above just put in code), and web's target-size bar is **24x24 CSS px** under WCAG
+  2.2 — the 44pt/48dp figure in the dataset's mobile rows is native guidance and does not define web
+  conformance.
 - **Three a11y enforcers exist here and all three are cheap** — wire them in this order:
   `eslint-plugin-jsx-a11y` or the framework equivalent `[lint]`; `axe` asserted in the Playwright
   walk **once per state**, empty and error included `[test]`; and the keyboard walk itself `[live]`.
@@ -121,6 +129,11 @@ Shift-Tab, Enter, Space, Escape. Focus visible at every step, order following re
 control reachable by pointer alone, no trap you cannot Escape out of. Then run `axe` against each
 state you screenshotted, not only the loaded happy path. This walk *is* the enforcer for `A11Y-1`
 and `A11Y-2`: skip it and those rows are `[review-only]`, and the confession has to say so.
+
+**Watch the focus ring, not only the tab order.** A sticky header, a cookie banner or a chat widget
+that covers the focused control passes every tab-order assertion and still fails WCAG 2.2 AA
+(`A11Y-9`). Tab through the flow with the page scrolled so focus lands at both the top and the
+bottom of the viewport.
 
 ## What green tests can't prove here (watch for these)
 - Stale client cache / persisted filters hiding new data (version your persisted-state keys).

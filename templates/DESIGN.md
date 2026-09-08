@@ -75,6 +75,11 @@ Every row carries a tag, and an honest `[review-only]` beats a tag the project h
 `[live]` means a `/verify-live` recipe proves it — the keyboard walk is a real enforcer, just a
 human-run one, and it catches what no linter can.
 
+The rows below are a **floor, not a ceiling** — and not a list to write from memory. `ui-ux-pro-max`'s
+`search.py --domain ux` holds 119 guidelines with WCAG 2.2, Apple HIG and Material citations; query
+one observable outcome at a time and add what this surface actually owes. Delete any row whose
+platform is not yours: a rule that cannot apply here is decoration too.
+
 | # | Must be true | Enforced by | Tag |
 |---|---|---|---|
 | A11Y-1 | Every interactive element is reachable *and* operable with the keyboard alone | `live:keyboard-walk` — the whole flow, mouse unplugged | `[live]` |
@@ -85,6 +90,13 @@ human-run one, and it catches what no linter can.
 | A11Y-6 | `prefers-reduced-motion` is respected | <test name, or nothing> | `[test]` / `[review-only]` |
 | A11Y-7 | Content reflows at 320px wide with no two-directional scrolling (WCAG 1.4.10) | `test:` the walk re-run at a 320px viewport | `[test]` |
 | A11Y-8 | Text stays readable and nothing is cut off at 200% zoom (WCAG 1.4.4) | <test name, or nothing> | `[test]` / `[review-only]` |
+| A11Y-9 | Keyboard focus is never hidden behind a sticky header, footer, banner or chat widget (WCAG 2.2 AA, *Focus Not Obscured*) | `live:keyboard-walk` — watch the focus **ring**, not just the tab order; `scroll-padding-top` is the usual fix | `[live]` |
+| A11Y-10 | Every drag action has a single-pointer *and* a keyboard alternative (WCAG 2.2 AA, *Dragging Movements*) | `live:` reorder once with clicks only, once with the keyboard only | `[live]` |
+| A11Y-11 | Pointer targets are at least **24×24 CSS px** on web, or meet a documented exception (WCAG 2.2 AA, *Target Size*). 44pt/48dp is *native* guidance and does not define web conformance | `test:axe` (`target-size`) | `[test]` |
+| A11Y-12 | Authentication allows password managers and paste, and offers a non-cognitive path (WCAG 2.2 AA, *Accessible Authentication*) | `live:` paste a password, then a one-time code | `[live]` |
+| A11Y-13 | Information already given in this process is never asked for twice (WCAG 2.2 A, *Redundant Entry*) | nothing automated — walk the multi-step flow | `[review-only]` |
+| A11Y-14 | Repeated help mechanisms stay in the same relative order across pages (WCAG 2.2 A, *Consistent Help*) | nothing automated | `[review-only]` |
+| A11Y-15 | Auto-rotating content has a pause/stop control, and stops on focus and under reduced motion | `live:` tab into it, then re-run with `prefers-reduced-motion` set | `[live]` |
 
 Contrast, measured against the real tokens rather than intent — an intended ratio is not a ratio:
 

@@ -6,6 +6,44 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-08 — drift check 11 adjudicates against an installed skill's own instructions
+
+- **What:** `ui-ux-pro-max` was wired into the method as a *read* — `--domain ux` supplies the
+  `A11Y-n` rows, `--stack <name>` is a build-time lookup — and its `--persist` path was refused in
+  prose in three places (`METHOD.md`'s reuse table, `skills/design-brief/SKILL.md`, the cheatsheet).
+  Prose alone is a suggestion, so drift check 11 now enforces it: trigger A on an added
+  `design-system/<slug>/MASTER.md` or page override, trigger B on **3+ markdown table rows carrying
+  a custom-property name *and* a value literal** in any `.md`.
+- **Where:** `templates/scripts/drift-check.sh` check 11; `METHOD.md:221-223`;
+  `skills/design-brief/SKILL.md` (the delegation table, and step 5); `templates/DESIGN.md` §5.
+- **Proven by breaking it:** both triggers were run red in a throwaway repo against real `--persist`
+  output (27 token/value rows detected), then the negatives confirmed green — a 2-row table, and
+  devkit's own reuse-table rows that name `--persist`, `--design-system` and `--space-*` with no
+  values attached. The `drift-ok` hatch was confirmed to drop a row below the threshold.
+- **What green gates do NOT prove here:**
+  - **The threshold of 3 is a judgement call.** Two token rows pass. It buys the legitimate case (a
+    token quoted while explaining a decision) at the cost of the smallest real table.
+  - **Only pipe tables are seen.** A token list written as a YAML block, an HTML `<table>`, or a
+    CSS code fence in markdown passes. The fence is deliberate — an example component snippet is
+    legitimate documentation — but it is also the obvious way around the check.
+  - **Only *added* lines are seen.** A project that already contains a persisted `MASTER.md` stays
+    clean until someone edits it. This is every check's shape here, worth stating for this one
+    because the file arrives in a single generated batch.
+  - **Nothing stops the values being retyped as prose.** An agent that reads `MASTER.md` and writes
+    "primary is a deep blue, spacing steps at 4/8/16" into `DESIGN.md` defeats the check and the
+    intent both.
+- **The odd part, and the reason to re-read this later:** check 11 refuses something an installed
+  skill's own `SKILL.md` (Step 2b) actively instructs an agent to do. That is the point — it is why
+  prose was not enough — but it also means the check's rationale is pinned to a third party's
+  document. If `ui-ux-pro-max` changes how it persists, or drops `--persist`, re-read this entry
+  before assuming the check still earns its place.
+- **Retrofit gap:** the same one the entry below records for check 10, now covering two checks.
+  `/harness` retrofits a project's harness and has not been taught either. A project bootstrapped
+  before today gets neither check until its `scripts/drift-check.sh` is refreshed by hand.
+- **Disposition:** open — the check is proven but has never met a real project's `design-system/`
+  directory, and the pipe-table-only limit is the first thing to revisit if it lets one through.
+
+
 ## 2026-09-08 — the ladder is prose, and the ceiling convention has never met a real corner
 
 - **What:** `PRINCIPLES.md` #3 gained a seven-rung ladder and `templates/CODING_STANDARDS.md` gained

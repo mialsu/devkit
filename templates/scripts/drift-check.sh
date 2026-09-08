@@ -22,8 +22,8 @@
 #
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
 # hand-edited generated files, oversized new files, invariants with no enforcer, accessibility
-# rules with no enforcer, blocks of commented-out code, and deliberate ceilings that name no
-# upgrade path or arrive with no confession.
+# rules with no enforcer, blocks of commented-out code, deliberate ceilings that name no
+# upgrade path or arrive with no confession, and token VALUES living in a markdown file.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
 #                 MIN_COMMENTED_BLOCK.
@@ -396,6 +396,43 @@ if [ -n "$LINES" ]; then
     ')
   fi
 fi
+
+# --- 11. token values living in a markdown file -----------------------------
+# DESIGN.md records WHERE the tokens live; the VALUES live in code, because a token table in prose
+# beside tokens in code is two implementations of one thing — they drift, and then both are suspect
+# (ANTI-PATTERNS: two formats for one artifact).
+#
+# Two ways that line gets crossed, so two triggers. `ui-ux-pro-max --design-system --persist` writes
+# a whole tree of them (design-system/<slug>/MASTER.md plus its page overrides); its own SKILL.md
+# says not to persist unverified output, and METHOD.md's reuse table says devkit never does.
+# The likelier crossing needs no skill at all: an agent filling DESIGN.md in with a tidy palette
+# table, because a table looks like diligence.
+#
+# Trigger B demands BOTH a custom-property name AND a value literal on the same table row. The name
+# alone is ordinary prose — devkit's own reuse table names `--persist` and `--space-*`, and DESIGN.md
+# is meant to be able to say the tokens are called `--color-*`. It is the name carrying its VALUE
+# that duplicates the code. Three rows, not one, so a token quoted while explaining a decision
+# stays legal and a TABLE does not. Value forms come from real `--persist` output: `#1E40AF` in a
+# colour row, `4px` / `0.25rem` in a spacing row. Intervals like {3,8} are avoided so this reads the
+# same under mawk as under gawk.
+PERSISTED_DS='(^|/)design-system/[^/]+/(MASTER\.md|pages/[^/]+\.md)$'
+ds_tok='\-\-[a-z][a-z0-9-]*'                                   # drift-ok: this line IS the pattern
+ds_val='#[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]|[0-9](px|rem|em)'   # drift-ok: same
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
+  report "tokens — $f is a persisted design system" \
+          "two formats for one artifact: its token table is a second home for values that live in code" \
+          "delete it; take --design-system as a READ and keep the values in the token file (METHOD.md)"
+done < <(added_files | grep -E "$PERSISTED_DS")
+
+while IFS= read -r rec; do
+  [ -n "$rec" ] || continue
+  report "tokens — $(cut -f2 <<<"$rec") carries $(cut -f1 <<<"$rec") token/value rows" \
+          "two formats for one artifact: a token table in prose drifts from the tokens in code" \
+          "move the values to the token file in code, and cite its PATH here instead"
+done < <(added_lines | grep -v 'drift-ok' | awk -F'\t' -v t="$ds_tok" -v v="$ds_val" '
+    $1 ~ /\.md$/ && $3 ~ /^[[:space:]]*\|/ && $3 ~ t && $3 ~ v { c[$1]++ }
+    END { for (f in c) if (c[f] >= 3) print c[f] "\t" f }')
 
 # --- verdict ---------------------------------------------------------------
 say ""

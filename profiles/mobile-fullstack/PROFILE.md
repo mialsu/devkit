@@ -39,6 +39,12 @@ technology, so the enforcer is a real screen reader rather than a browser extens
   VoiceOver on**, then again at the **largest system font size**. Both find things nothing static
   catches — an unlabelled icon button, a control announced as "button" and nothing else, text that
   truncates into meaninglessness at 200% type.
+- **`ui-ux-pro-max` is the rule source here too**, and its mobile coverage is the deeper half:
+  `search.py --domain ux` for the `A11Y-n` rows, `--domain web` for app-interface rules
+  (`accessibilityLabel`, safe areas, Dynamic Type), and
+  `--stack react-native|swiftui|flutter|jetpack-compose` as a build-time read for `/implement`.
+  `--design-system` stays a **read** — never `--persist`, whose `MASTER.md` would duplicate the
+  token file.
 - **Touch targets:** 44x44pt (iOS) / 48x48dp (Android) minimum. A tap target measured in the
   designer's screenshot is not measured; check it on the smallest supported device.
 - **What no gate catches:** gesture-only interactions with no accessible alternative, and a
@@ -107,6 +113,19 @@ the real flow as the real persona. Exercise the things phones break: **offline /
 small screens, permission prompts (camera, location, notifications), cold start, background→foreground.**
 Capture screen recordings or frames. Verify the app against the *actually deployed* backend, not
 a local mock, before `/ship`.
+
+**Then the four passes that a single-device run silently skips.** `ui-ux-pro-max`'s pre-delivery
+checklist is scoped to exactly this profile — App UI, iOS/Android/RN/Flutter — and these are the
+items mobile's walk above does not already cover:
+- **Both themes, tested rather than inferred from one.** Light *and* dark: primary and secondary
+  text at 4.5:1 in each, dividers and interaction states distinguishable in each, and a modal scrim
+  measured against the real background behind it.
+- **Three sizes, two orientations.** Small phone, large phone, tablet — portrait and landscape.
+  Horizontal insets adapt; long-form text does not run edge to edge on the tablet.
+- **Pressed feedback on every tappable element**, within ~100ms, and without shifting layout bounds.
+  A control that changes nothing on touch reads as broken before it reads as slow.
+- **Nothing important hidden behind a fixed bar.** Scroll each screen to its end: the last row, the
+  bottom CTA and the tab bar must not overlap each other.
 
 ## What green tests can't prove here
 - Behavior on real network conditions (loss, latency, airplane mode) vs the fast local API.

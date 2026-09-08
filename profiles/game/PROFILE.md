@@ -45,6 +45,14 @@ automated enforcers, which makes labelling them the whole job.
 - **The live pass `[live]`:** play the slice once with **sound off** and once with the HUD's
   smallest legible scale. Both surface information the design was quietly delivering through a
   channel a player may not have.
+- **`ui-ux-pro-max` mostly does not reach here, and the reason is worth stating.** Its 22 stacks
+  contain no engine — `search.py "godot unity unreal engine" --domain ux` returns **0 results**, and
+  `threejs` is the only game-adjacent one, so it applies to a web-delivered game's chrome and
+  nothing else. What still transfers is the *rule* half for menus and settings screens
+  (`--domain ux`: remappable input, captions, text scale, colour-not-alone) — but its enforcers are
+  browser enforcers, so importing a rule here means finding an engine-side enforcer or labelling the
+  row `[review-only]` honestly. Pulling in a web checklist and inheriting its tags would manufacture
+  exactly the confidence this profile spends its whole a11y section refusing.
 - **What no gate catches:** whether the HUD is readable *while* playing, as opposed to readable in
   a screenshot. Only playing tells you, which is this profile's whole premise.
 

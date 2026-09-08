@@ -20,6 +20,7 @@ their formats; do not grow a second one.
 | Thing | Owner | How to use it |
 |---|---|---|
 | Palette, type scale, spacing, the signature element, ASCII wireframes, UI copy | **`frontend-design`** | Invoke it when the UI is actually built. It already writes a compact token system and better copy guidance than a table here would — including that errors do not apologise and an empty screen is an invitation to act. `DESIGN.md` records only *where the tokens live in code* |
+| Which palette, style family or font pairing fits *this* product type | **`ui-ux-pro-max`** — `search.py "<product> <industry>" --design-system` | A **read**, and only that: it returns candidates with the reasoning behind them, while `frontend-design` keeps the format and the taste. Never `--persist` — its `MASTER.md` puts a `--space-*` token table beside the one in code, and a one-pass file nobody read is the pseudo-artifact its own `SKILL.md` warns against |
 | "Which of these three layouts is right?" | **`/prototype`** (mp), UI branch | N radically different variants on the *real* route with *real* data, switchable by a URL param. Prose cannot settle a layout; flipping between them can, and a variant judged in isolation always looks fine |
 | Mockups the Owner wants to push pixels around in | **`/design`** (canvas artboards), where available | Only when they would rather edit the design by hand than in code |
 | A library's public API, or any module's interface | **`codebase-design`** | A library's "design" *is* its API surface. This skill is the wrong tool for it |
@@ -65,6 +66,14 @@ with real enforcers. That is this skill, and it is deliberately small.
 
 5. **Give every accessibility rule an enforcer, or label it honestly.** This is the section the
    method actually contributes, and the rule is PRINCIPLES #11's: a rule naming no enforcer is prose.
+
+   **Take the rows from the dataset, not from memory.** `ui-ux-pro-max`'s `search.py --domain ux`
+   holds 119 guidelines with stable ids and WCAG 2.2 citations, and it covers criteria the template's
+   eight examples do not: `focus-not-obscured`, `dragging-alternative`, `web-target-size`,
+   `accessible-authentication`, `redundant-entry`, `consistent-help`, `auto-rotation-controls`.
+   Query **one observable outcome at a time** — `"focus not obscured" --domain ux`, not a sweep —
+   and verify the returned id fits this product and platform before it becomes a row. Then do the
+   half the dataset has no opinion on:
    - `[lint]` — the ecosystem's a11y linter, wired into the profile's gate set, not merely installed.
    - `[test]` — `axe` or the platform equivalent, run against **each state** in §3, not the happy one.
    - `[live]` — the keyboard walk: the whole flow with the mouse unplugged. A real enforcer that
