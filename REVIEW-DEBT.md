@@ -6,6 +6,32 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-08 — the ladder is prose, and the ceiling convention has never met a real corner
+
+- **What:** `PRINCIPLES.md` #3 gained a seven-rung ladder and `templates/CODING_STANDARDS.md` gained
+  a *Deliberate ceilings* section, but only one half is enforced. Drift check 10 catches a
+  `CEILING:` marker with no upgrade line, or one landing with no ledger entry. **Nothing checks that
+  the ladder was climbed** — that a helper already in the repo was looked for, that the stdlib was
+  considered, that an abstraction was actually requested. Those rules are `[review-only]`, tagged
+  honestly, and `/code-review`'s Speculative Generality baseline is the only thing in their vicinity.
+- **Where:** `PRINCIPLES.md` #3; `templates/CODING_STANDARDS.md` — *Dependencies & reuse*,
+  *Deliberate ceilings*, and the one-runnable-check rule under *Tests*.
+- **What green gates do NOT prove here:** that the convention survives contact with a real corner.
+  No project has written a `CEILING:` comment during actual work. The failure mode to watch for is
+  the upgrade line becoming a box-tick — "Upgrade: refactor later" satisfies check 10 and carries
+  nothing, which is the pseudo-artifact one altitude further down. If that is what the first real
+  use produces, either the gate learns to reject a vague upgrade path or the section goes.
+- **Retrofit gap:** `templates/CODING_STANDARDS.md`, `templates/CLAUDE.md` and the drift gate reach
+  a project only through `/new-project`. Every project already bootstrapped keeps its current files
+  and never sees the ladder, the ceilings section, or check 10. `/harness` is the skill that
+  retrofits a project's harness, and it has not been taught these sections.
+- **Related:** the 2026-09-04 entry's open item — devkit cannot exercise its own templates — is
+  still why check 10 was proven by hand in a throwaway repo rather than by anything in `scripts/`.
+- **Disposition:** the `[review-only]` half is **accepted-with-reason** (the rungs are a judgement
+  call, and a false enforcer would be worse than none). The field run and the `/harness` retrofit
+  are **open**.
+
+
 ## 2026-09-04 — the drift gate template shipped a dead dependency check, and nothing here could have caught it
 
 - **What:** `templates/scripts/drift-check.sh` check 3 refuses a dependency added without an ADR.

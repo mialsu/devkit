@@ -62,7 +62,15 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 - Reference the criterion a commit satisfies: `Spec: specs/NNNN-slug.md#AC-3`. Then
   `git log --grep=AC-3` answers "what proved this?" without anyone remembering.
 - Spec wrong? Append a dated line to its **Spec deltas**. Never silently edit the decision.
-- Reuse before building. Write load-bearing decisions down as ADRs at the moment of decision.
+- Reuse before building, as a **ladder** (PRINCIPLES #3): needed at all → already in this repo →
+  stdlib → platform → installed dependency → one line → the minimum that works. Stop at the first
+  rung that holds, and climb only after the real flow is traced — the smallest change in the wrong
+  place buys a second bug. No abstraction, wrapper or knob nobody asked for. A bug fix lands at the
+  shared owner, not at the caller the report happened to name. A simplification with a known limit
+  gets a `CEILING:` comment, an `Upgrade:` line, and its `REVIEW-DEBT.md` entry in the same commit.
+  Shortest is measured *inside* a slice, never against one: no rung licenses stopping at the logic
+  layer.
+- Write load-bearing decisions down as ADRs at the moment of decision.
 - A domain rule is the Owner's to state, never the agent's to infer (PRINCIPLES #11). A slice cuts
   layers, never contexts.
 

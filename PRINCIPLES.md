@@ -21,6 +21,24 @@ contradicts one of these, the principle wins.
    existing dependency already gives you. Look first, verify how it fits, then extend or
    consume it. The most expensive waste is re-implementing an engine you already own.
 
+   The rule is a **ladder**, and it runs *after* you understand the problem — read the task, read
+   the code it touches, trace the real flow end to end, then climb. Stop at the first rung that
+   holds:
+
+   1. Does this need to be built at all?
+   2. Does this codebase already do it? Reuse the helper, util, or pattern that is already here.
+   3. Does the standard library do it?
+   4. Does a native platform feature cover it?
+   5. Does an already-installed dependency solve it?
+   6. Can it be one line?
+   7. Only then: the minimum code that works.
+
+   The shortest working diff wins, but only once the problem is understood: **the smallest change
+   in the wrong place buys a second bug.** And "shortest" is measured *inside* a slice, never
+   against one — no rung on this ladder licenses stopping at the logic layer (#4). The corners it
+   is right to cut are the ones that carry their own ceiling: a known limit, a named way out, and
+   a confession (#5).
+
 4. **Slice end-to-end.** Every unit of work cuts the whole stack and is demoable alone:
    data → logic → surface → words → *it actually does the thing*. No layers banked as
    "progress" that no one can exercise yet. A slice cuts **layers, never contexts**: all the way

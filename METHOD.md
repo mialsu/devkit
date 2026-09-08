@@ -225,6 +225,7 @@ map, so no session has to guess which shape is canonical:
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
 | the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |
 | "what should this module's interface be", "is this refactor worth doing" | `codebase-design` + `improve-codebase-architecture` (mp) — module/interface/depth/**seam**, the deletion test | `/prune` adds the two things neither has: proof-before-deletion, and the three tests that say *don't* merge |
+| the stance code is written in — build less, reuse first, bound what you simplify | absorbed from an external "lazy senior developer" skill, and **not installed as one**. `/simplify` (installed) is the *after* pass over a diff; this is the stance the diff is written in | no second document: the **ladder** goes into PRINCIPLES #3, since a rival home for the reuse rule is the exact defect this table prevents. devkit adds what the source lacks — a precedence line against #4 (shortest is measured *inside* a slice, never against one), the root-cause rule as an anti-pattern, and an enforcer: a `CEILING:` marker gated against `REVIEW-DEBT.md` by drift check 10 |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
 | reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
@@ -245,10 +246,13 @@ agent states which weight it's running.
 | **Sessions** | one | one or two | many, joined by `/handoff` |
 | **Confession** | a line in the commit message | REVIEW-DEBT entry | REVIEW-DEBT + disposition pass |
 | **Harness** | drift gate | + boundary gate | + `CODING_STANDARDS.md` and layering rules |
-| **Acceptance criteria** | one falsifiable line in the commit message | an AC table, verdicts filled by `/verify-live` | AC table + `Serves` column back to user stories + spec-delta log |
+| **Acceptance criteria** | one falsifiable line in the commit message + one runnable check | an AC table, verdicts filled by `/verify-live` | AC table + `Serves` column back to user stories + spec-delta log |
 
 A one-file script still gets **gated and verified** — that's the spine. It just skips the
-tickets, the ADRs, and the multi-session paperwork.
+tickets, the ADRs, and the multi-session paperwork. What it never skips is the check: non-trivial
+logic leaves **one runnable thing** that fails if the logic breaks — an assert-based self-check or
+one small test file, no framework and no fixtures. Light is the weight where the ladder
+(PRINCIPLES #3) produces its shortest diffs, which is exactly where a wrong one goes unnoticed.
 
 Light has two doors, and until they existed this column was a table row nothing invoked:
 **`/sketch`** for a whole app in a day, **`/spike`** for one question against a codebase that

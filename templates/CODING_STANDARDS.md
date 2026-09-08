@@ -48,6 +48,10 @@ Two rules about the rules:
 
 - Test external behavior through the module's interface, never implementation detail. `[review-only]`
 - Prefer an existing seam to a new one, and the highest seam that works. `[review-only]`
+- Non-trivial logic leaves **one runnable check** behind: the smallest thing that fails if the
+  logic breaks. No new framework, no fixture scaffolding — an assert-based self-check or one small
+  test file. A trivial one-liner needs none. Code with no check is unfinished, and it is where a
+  short diff goes wrong quietly (PRINCIPLES #3). `[review-only]`
 - No skipped, focused, or silently-deleted test lands without a `REVIEW-DEBT.md` entry. `[script]`
 - Green tests gate; they do not prove. The live exercise proves (PRINCIPLES #1). `[review-only]`
 - A behavior change names the criterion it satisfies in its commit (`Spec: …#AC-N`), so the proof
@@ -58,6 +62,29 @@ Two rules about the rules:
 `TODO`, `FIXME`, `@ts-ignore`, `eslint-disable`, `type: ignore`, `#nosec`, skipped tests: allowed,
 but each one is a confession — it lands together with its `REVIEW-DEBT.md` entry, in the same
 commit, or the gate fails. `[script]`
+
+## Deliberate ceilings
+
+A simplification that is correct today and has a known limit — a global lock, an O(n²) scan over a
+list that is small *for now*, a naive heuristic, a fixed retry count — is a decision worth making.
+It lands with three things: a `CEILING:` comment naming what breaks, an `Upgrade:` line naming the
+way out, and a `REVIEW-DEBT.md` entry in the same commit. `[script]`
+
+```
+// CEILING: global lock, single process only.
+//   Upgrade: per-key locks when a second worker exists.
+```
+
+`git grep -n 'CEILING:'` is then the standing list of every corner this repo has knowingly cut.
+Distinct from its neighbours, and the distinction is the point: `TODO` is unfinished, `FIXME` is
+broken, a ceiling is **finished and bounded**. A `CEILING:` with no `Upgrade:` line is an excuse
+wearing a convention, and the drift gate fails it.
+
+What never gets a ceiling: input validation at a trust boundary, error handling that prevents data
+loss, authorization, accessibility, and the calibration real hardware needs — a clock drifts, a
+sensor reads off, and the platform is never the spec ideal. Cutting one of those is a defect with
+a comment on it. `[review-only]` (`/audit` attacks the authorization half; drift check 8 catches an
+`A11Y-n` row promising what nothing checks)
 
 ## Secrets & data exposure
 
@@ -78,6 +105,17 @@ meta-rules forbid.
 
 - Reuse before building: never re-implement what the language, framework, or an existing
   dependency already gives you (PRINCIPLES #3). `[review-only]`
+- Climb the **ladder** before writing code and stop at the first rung that holds — needed at all,
+  already here, stdlib, platform, installed dependency, one line, then the minimum that works.
+  The ladder runs after the flow is traced, never instead of tracing it. `[review-only]`
+- No abstraction, wrapper, indirection, or config knob nobody asked for. The second caller is the
+  earliest a shared helper may appear. This bans the *shallow* layer; where a genuine seam goes is
+  a design call and `/codebase-design`'s to make. `[review-only]` (`/code-review`'s Speculative
+  Generality baseline)
+- Two stdlib approaches, same size: take the edge-case-correct one. Fewer lines, never the
+  flimsier algorithm. `[review-only]`
+- A bug fix lands at the shared owner, not at the caller the report happened to name. Grep every
+  caller before choosing where the guard goes. `[review-only]`
 - A new runtime dependency needs an ADR — what it replaces, and what was rejected. `[script]`
 - Generated, vendored, and lockfile content is touched only through its generator. `[script]`
 

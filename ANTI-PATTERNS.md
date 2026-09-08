@@ -33,6 +33,14 @@ failure *shapes* that recur regardless of domain.
 - **Rebuilding what you already have.** A second implementation of one behavior is a divergence
   waiting for a bug. Reuse the existing one, or delete it and build one good one.
 
+- **The smallest diff in the wrong place.** Patching the caller the bug report names, when the
+  fault is in the function every caller shares. Adding the same guard at one of six call sites.
+  "Minimal change" picked before the flow was traced. It wears the costume of restraint and ships
+  a sibling bug nobody has reported yet. A report names a **symptom**: grep every caller of the
+  function you touch and fix the shared function once — one guard at the owner is a smaller diff
+  than one per caller, and it is the only version that still holds when the seventh caller
+  arrives. Understanding the problem is the rung the ladder (PRINCIPLES #3) never lets you skip.
+
 - **Roadmap copy in the product.** No "coming soon", no "unsupported", no placeholder dressed
   up as real. A labeled honest empty state, or nothing.
 

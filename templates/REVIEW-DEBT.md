@@ -12,5 +12,6 @@ ledger is worse than none, because sessions trust it.
 - **Where:** <file:line anchors>
 - **Criterion:** <`AC-N` from `specs/NNNN-slug.md`, quoted — omit if there was no spec>
 - **Invariant:** `INV-N` from `INVARIANTS.md`, quoted  (omit unless a domain rule is involved)
+- **Ceiling:** <what breaks at the limit, and the upgrade path — omit unless a `CEILING:` landed>
 - **What green tests do NOT prove here:** <the specific gap>
 - **Disposition:** open

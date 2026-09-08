@@ -9,6 +9,10 @@ in it. This skill writes the truth down while it's still fresh.
 ## What counts as a confession
 Anything you did that a future reader would be surprised by:
 - a stub, a hardcoded value, a `TODO`, a happy-path-only implementation;
+- **a deliberate ceiling** — a simplification that is correct today with a known limit (a global
+  lock, an O(n²) scan, a naive heuristic). It carries a `CEILING:` comment and an `Upgrade:` line
+  in the code; the ledger entry is the other half, and the drift gate fails a marker that lands
+  without one;
 - a test that asserts less than the behavior actually needs;
 - something built narrower than the spec, or a spec ambiguity you resolved by guessing;
 - a thing that works locally but you couldn't fully verify (say why);
@@ -32,6 +36,7 @@ Append to the project's `REVIEW-DEBT.md`, one entry per confession:
 - **Where:** file:line anchors.
 - **Criterion:** `AC-N` from `specs/NNNN-slug.md`, quoted  (omit if there was no spec)
 - **Invariant:** `INV-N` from `INVARIANTS.md`, quoted  (omit unless a domain rule is involved)
+- **Ceiling:** what breaks at the limit, and the upgrade path  (omit unless a `CEILING:` landed)
 - **What green tests do NOT prove here:** the specific gap.
 - **Disposition:** open  (later: fixed / accepted-with-reason / promoted-to-issue)
 ```

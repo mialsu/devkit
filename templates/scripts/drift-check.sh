@@ -22,7 +22,8 @@
 #
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
 # hand-edited generated files, oversized new files, invariants with no enforcer, accessibility
-# rules with no enforcer, and blocks of commented-out code.
+# rules with no enforcer, blocks of commented-out code, and deliberate ceilings that name no
+# upgrade path or arrive with no confession.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
 #                 MIN_COMMENTED_BLOCK.
@@ -99,7 +100,7 @@ added_files() { { git diff --relative --diff-filter=A --name-only "${RANGE[@]}";
 
 # path<TAB>lineno<TAB>content, for every ADDED line in the range (untracked files: every line).
 added_lines() {
-  git diff --relative --unified=0 "${RANGE[@]}" -- "$@" | awk '
+  git diff --relative --unified=0 "${RANGE[@]}" | awk '
     /^\+\+\+ /{ f=substr($0,5); sub(/^b\//,"",f); next }
     /^@@ /{ if (match($0, /\+[0-9]+/)) n = substr($0, RSTART+1, RLENGTH-1) + 0; next }
     /^\+/{ print f "\t" n "\t" substr($0,2); n++; next }
@@ -354,6 +355,47 @@ done < <(printf '%s\n' "$LINES" | awk -F'\t' -v min="$MIN_COMMENTED_BLOCK" '
   }
   END { flush() }
 ')
+
+# --- 10. a deliberate ceiling with no way out, or no confession -------------
+# A simplification that is correct today and has a known limit is a decision worth making
+# (PRINCIPLES #3). The marker is what keeps it a decision rather than a surprise: a grep for the
+# token is the standing list of corners this repo has knowingly cut. Two ways it decays, so two
+# branches. A marker naming no upgrade path is the pseudo-artifact of checks 7 and 8 one altitude
+# down — it reads like a bounded choice and states no bound. A marker with no ledger entry is the
+# defect check 2 catches: the confession deferred until it is lost. The upgrade line gets 3 lines
+# of slack so a wrapped comment block still passes, and the tokens are passed INTO awk rather than
+# written inside it, so only the two definition lines below need exempting from the gate this repo
+# runs on itself.
+ceil_re='CEILING:'                              # drift-ok: this line IS the pattern definition
+up_re='Upgrade:'                                # drift-ok: same
+if [ -n "$LINES" ]; then
+  ceilings="$(printf '%s\n' "$LINES" | grep -F "$ceil_re")"
+  if [ -n "$ceilings" ]; then
+    if ! grep -qxF "$LEDGER" <<<"$CHANGED"; then
+      report "ceiling — a deliberate ceiling landed without a confession" \
+              "deferring the confession: a corner cut on purpose is still a corner nobody else knows about" \
+              "add the entry to $LEDGER in THIS commit, with its Ceiling line (PRINCIPLES #5)"
+      while IFS= read -r h; do say "     $(loc "$h")  →  $(body "$h" | sed 's/^[[:space:]]*//' | cut -c1-100)"; done <<<"$ceilings"
+    fi
+    while IFS= read -r rec; do
+      [ -n "$rec" ] || continue
+      report "ceiling — the marker at $(loc "$rec") names no way out" \
+              "a standard with no enforcer: a ceiling with no upgrade path is an excuse wearing a convention" \
+              "add the upgrade line under it, naming what has to change and when that becomes necessary"
+      say "     $(body "$rec" | sed 's/^[[:space:]]*//' | cut -c1-110)"
+    done < <(printf '%s\n' "$LINES" | awk -F'\t' -v c="$ceil_re" -v u="$up_re" '
+      { if (index($3, u)) up[$1 ":" ($2 + 0)] = 1
+        if (index($3, c)) { n++; cp[n] = $1; cl[n] = $2 + 0; ct[n] = $3 } }
+      END {
+        for (i = 1; i <= n; i++) {
+          found = 0
+          for (d = 0; d <= 3; d++) if (up[cp[i] ":" (cl[i] + d)]) found = 1
+          if (!found) print cp[i] "\t" cl[i] "\t" ct[i]
+        }
+      }
+    ')
+  fi
+fi
 
 # --- verdict ---------------------------------------------------------------
 say ""
