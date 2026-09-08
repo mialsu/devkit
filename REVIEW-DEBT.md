@@ -37,9 +37,13 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   prose was not enough — but it also means the check's rationale is pinned to a third party's
   document. If `ui-ux-pro-max` changes how it persists, or drops `--persist`, re-read this entry
   before assuming the check still earns its place.
-- **Retrofit gap:** the same one the entry below records for check 10, now covering two checks.
-  `/harness` retrofits a project's harness and has not been taught either. A project bootstrapped
-  before today gets neither check until its `scripts/drift-check.sh` is refreshed by hand.
+- **Retrofit gap, and it is now two files wide:** the same gap the entry below records for check
+  10. `/harness` retrofits a project's harness and has not been taught either check, so a project
+  bootstrapped before today gets neither until its `scripts/drift-check.sh` is refreshed by hand.
+  `templates/CLAUDE.md` gained the **Surface work** section in the same change — the delegation to
+  `frontend-design`, `ui-ux-pro-max` and `/prototype` — and reaches a project only through
+  `/new-project` for the same reason. `/design-brief` step 6 now tells a session to check for that
+  section and add it if missing, which is a human-run enforcer standing in for a retrofit skill.
 - **Disposition:** open — the check is proven but has never met a real project's `design-system/`
   directory, and the pipe-table-only limit is the first thing to revisit if it lets one through.
 

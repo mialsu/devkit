@@ -85,10 +85,16 @@ with real enforcers. That is this skill, and it is deliberately small.
    you have not watched fail is not a gate — delete a label or a focus style on purpose, watch the
    linter or `axe` go red, revert. Until you have, the row is aspiration.
 
-6. **Delegate the look, and say that you are.** Choose no palette here. When the first UI slice is
-   built, `frontend-design` does that work; where more than one layout is plausible, `/prototype`'s
-   UI branch lets the Owner flip between variants against real data. `DESIGN.md` records only the
-   path where the tokens live.
+6. **Delegate the look, and hand the delegation forward.** Choose no palette here. When the first
+   UI slice is built, `frontend-design` does that work; where more than one layout is plausible,
+   `/prototype`'s UI branch lets the Owner flip between variants against real data. `DESIGN.md`
+   records only the path where the tokens live.
+
+   **Then write it where it will still be read.** This skill stops before the UI exists, so an
+   "invoke `frontend-design` at build time" note left *here* is out of context at the moment it
+   applies. Confirm the project's `CLAUDE.md` carries the **Surface work** section
+   (`templates/CLAUDE.md` ships it) — that file loads every session, which is the only reason the
+   delegation survives this skill's own STOP. If the project predates that section, add it now.
 
 7. **The acid test is the Owner's, not yours.** Ask them to recite the main flow, and name the four
    states of the primary surface, **with the file closed**. If they cannot, this is a

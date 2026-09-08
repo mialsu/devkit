@@ -47,6 +47,10 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 - **`INVARIANTS.md`** — the rules the domain can't break, each naming the enforcer that fails when
   it's violated (only if the **domain dial** is on; `<off | on | mapped>` for this project). A spec
   says which `INV-n` its slice touches; `/verify-live` then tries to break exactly those.
+- **`DESIGN.md`** — the surface contract (only if this project has a surface): the inventory
+  reconciled against scope, the flows, the four states of each surface, and the `A11Y-n` rows that
+  each name an enforcer. It records *where* the design tokens live in code; it never copies their
+  values. See **Surface work** below for who owns the parts this file deliberately does not.
 - **`CODING_STANDARDS.md`** — how code here is written, every rule tagged with its enforcer. A rule
   tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
 - **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate
@@ -73,6 +77,25 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 - Write load-bearing decisions down as ADRs at the moment of decision.
 - A domain rule is the Owner's to state, never the agent's to infer (PRINCIPLES #11). A slice cuts
   layers, never contexts.
+
+## Surface work  (only if this project has a surface)
+The look is not this project's to invent. Three installed skills own the parts devkit deliberately
+does not, and they are reached for **at build time** — `DESIGN.md` is the contract, not the design.
+- **The look** — palette, type scale, spacing, the signature element, wireframes, UI copy:
+  **`frontend-design`**. Invoke it when the UI is actually built, not while shaping. One constraint
+  survives from `DESIGN.md`: the token **values live in code**, and that file points at them.
+- **Which a11y rules this surface owes** — **`ui-ux-pro-max`**, `search.py --domain ux`: 119
+  guidelines citing WCAG 2.2, Apple HIG and Material. It supplies the *rule*; the `A11Y-n` row in
+  `DESIGN.md` supplies the `[test]`/`[live]`/`[review-only]` tag. One observable outcome per query,
+  and verify the returned id fits this platform before it becomes a row.
+- **How it is done in this stack** — **`ui-ux-pro-max`**, `search.py --stack <name>`; `--domain
+  react` for rerenders, bundles and Suspense waterfalls. A read that writes nothing.
+- **Which of two layouts wins** — **`/prototype`**, N variants on the real route with real data.
+  Prose cannot settle a layout, and a variant judged in isolation always looks fine.
+- **Never `--persist` or `--force`.** They write `design-system/<slug>/MASTER.md`, whose token table
+  is a second home for values that live in code. **Drift check 11 fails the commit** — and it also
+  fires on 3+ markdown table rows pairing a `--token` name with its value, so a hand-written palette
+  table in `DESIGN.md` is caught too.
 
 ## Domain guard-rails  (THE section to write yourself)
 - **Scope (one sentence):** <what this project is>
