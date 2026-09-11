@@ -95,8 +95,9 @@ When a piece of the slice turns into a real design question — which layout, wh
 that is `/prototype` (mp), and it is worth the detour only if the answer blocks the demo.
 
 The surface still has to not look like a default, because a sketch judged on an ugly screen answers
-the wrong question — you learn that you dislike the screen. That is `frontend-design`, and
-`ui-ux-pro-max --stack <name>` for how a component is built in whatever you reached for. What a
+the wrong question — you learn that you dislike the screen. That is `ui-ux-pro-max` —
+`--design-system` for the look, `--stack <name>` for how a component is built in whatever you
+reached for. What a
 sketch does **not** get: no `DESIGN.md`, no `A11Y-n` table, no persisted design system. There is no
 contract to write for code that is being thrown away, and `--persist` fails drift check 11 anyway.
 

@@ -6,6 +6,40 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-11 — ui-ux-pro-max took the look, and two things it does not carry now have no owner
+
+- **What:** the Owner moved the whole look — palette, type scale, spacing, the style family, font
+  pairing, UI copy — from `frontend-design` to `ui-ux-pro-max`, which now owns every UI decision
+  devkit delegates. devkit no longer points at `frontend-design` anywhere (the plugin stays
+  installed; devkit simply stops routing to it). The dataset genuinely covers most of what moved:
+  192 product palettes with reasoning profiles, 74 font pairings, 79 styles, and the
+  `--variance`/`--motion`/`--density` dials. **Two things it does not carry**: a copy *voice* pass
+  — it holds the empty-state and error-message **rules** (guidelines 79, 80 and 44) but not the
+  craft `frontend-design` supplied, *"errors do not apologise, an empty screen is an invitation to
+  act"* — and **ASCII wireframes**.
+- **Where:** `METHOD.md` (the loop diagram, the whole-chain diagram, the `/design-brief` bullet,
+  and three reuse-table rows); `profiles/web/PROFILE.md`; `skills/design-brief/SKILL.md` (the
+  frontmatter, the delegation table, step 6); `skills/sketch/SKILL.md`; `templates/CLAUDE.md`;
+  `templates/DESIGN.md`.
+- **What the green gates do NOT prove here:** that the replacement is adequate. devkit's gates
+  check that cross-references resolve and that skills are advertised — none of them can tell
+  whether a palette picked from a dataset reads as well as one picked with taste, and **no project
+  has yet built a surface under the new routing.** The first one to do it is the test.
+- **The copy-voice and wireframe gap has no skill owner.** It falls to the Owner with
+  `/code-review` as the only backstop, and it is `[review-only]` by construction. The delegation
+  table names it as a row rather than leaving it implied, so a session cannot read the swap as
+  free.
+- **Corrected in the same pass, and it was a real error:** the refusal row banned `-p`, which is
+  `--project-name` — a harmless label. Verified against the skill's own `design_system.py`, where
+  the write is gated on `--persist` alone (`--page`, `--output-dir` and `--force` only act under
+  it). So devkit banned a flag that writes nothing while never naming `--page`. Both halves are
+  fixed here and in `templates/CLAUDE.md`.
+- **Two entries below this one still name `frontend-design`** (2026-09-08, and the `/design-brief`
+  entry). They are dated records of what was true when written and are deliberately **not**
+  rewritten — this entry supersedes them.
+- **Disposition:** open, accepted by the Owner on 2026-09-11. Revisit if a surface built under this
+  routing reads as templated; the way back is one row in the reuse table.
+
 ## 2026-09-08 — drift check 11 adjudicates against an installed skill's own instructions
 
 - **What:** `ui-ux-pro-max` was wired into the method as a *read* — `--domain ux` supplies the

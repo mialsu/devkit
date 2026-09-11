@@ -80,7 +80,7 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
    (has a surface)                      surface reconciled BOTH ways against the MVP cut,
                                         states citing the brief rather than re-deciding them,
                                         and every A11Y-n naming its enforcer. The look, the copy
-                                        and the wireframes are frontend-design's; which layout
+                                        and the wireframes are ui-ux-pro-max's; which layout
                                         wins is /prototype's.
                   │  gate: can the Owner recite the main flow and its four states, file closed?
                   ▼
@@ -127,7 +127,7 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
 4. /design-brief                  once, if the project has a surface — after the crunch, so the UI
                                   speaks the glossary. Surfaces reconciled against the MVP cut,
                                   states citing the brief, every A11Y-n naming its enforcer.
-                                  Look and copy DELEGATED to frontend-design, layout to /prototype.
+                                  Look and copy DELEGATED to ui-ux-pro-max, layout to /prototype.
 ── per MVP-cut bullet ────────────────────────────────────────────────────────────────────
 5. /grill-with-docs → /to-spec    the spec, then its AC table (each criterion naming
                                   test:/live:/review-only) and `Invariants touched: INV-n`
@@ -171,7 +171,7 @@ Nine supporting skills sit outside the loop:
 - **`/design-brief` (dk)** — for a project with a **surface**: the inventory reconciled against the
   MVP cut both ways, the states that cite the brief instead of re-deciding it, and accessibility
   rules that each name an enforcer. It writes `DESIGN.md` and **delegates hard** — the look, the
-  type and the copy to `frontend-design`, and "which layout wins" to `/prototype`. For a library it
+  type and the copy to `ui-ux-pro-max`, and "which layout wins" to `/prototype`. For a library it
   recommends not existing.
 - **`/prune` (dk)** — dead code, and the duplication behind it. Every candidate carries the proof
   that it is dead *before* anything is deleted, and the bar differs per category: an unused import is
@@ -216,14 +216,14 @@ map, so no session has to guess which shape is canonical:
 | `CONTEXT-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
-| design tokens, type scale, wireframes, UI copy, the signature element | `frontend-design` (installed plugin) — its two-pass token system | devkit adds one constraint: the token **values live in code**, and `DESIGN.md` points at that file rather than copying them |
+| design tokens, type scale, wireframes, UI copy, the signature element | `ui-ux-pro-max` (installed skill) — `search.py "<product> <industry>" --design-system`: 192 product palettes with reasoning profiles, 74 font pairings, 79 styles, and the `--variance`/`--motion`/`--density` dials | devkit adds one constraint: the token **values live in code**, and `DESIGN.md` points at that file rather than copying them. Two things the dataset does **not** carry — **copy voice** and **ASCII wireframes** — have no skill owner and fall to the Owner, with `/code-review` as the backstop; `REVIEW-DEBT.md` carries that as an open entry |
 | "which of these layouts wins" | `/prototype` (mp) — its UI branch, N variants on the real route | none. Prose cannot settle a layout, and a variant judged in isolation always looks fine |
 | *which* accessibility rules a surface owes — the `A11Y-n` rows themselves | `ui-ux-pro-max` (installed skill) — `search.py --domain ux`: 119 guidelines with stable ids, citing WCAG 2.2, Apple HIG and Material | devkit supplies the half the dataset has no opinion on: the **enforcer tag**. The rule comes from the query, `[test]`/`[live]`/`[review-only]` comes from `/design-brief`, and the row still lands in `DESIGN.md` in devkit's format — a source, not a second artifact |
 | per-stack UI implementation rules (`swiftui`, `flutter`, `jetpack-compose`, `threejs`, `react`, `nextjs`, `shadcn` — 22 in all) | `ui-ux-pro-max` — `search.py --stack <name>`, plus `--domain react` for render and bundle work | none as a format: it writes nothing. It is a **read at `/implement` time**, and which stacks matter is per-domain — so the pointer lives in `profiles/*/PROFILE.md`, not here |
-| a persisted `design-system/<slug>/MASTER.md` | **nothing — devkit refuses this one** | `ui-ux-pro-max`'s `--design-system` is a **read**; `--persist`, `-p` and `--force` stay unused. That MASTER.md carries a `--space-*` token table, a second home for values this table already puts in code, and a one-pass file nobody read that every later session then cites is the *pseudo-artifact* exactly. Its own `SKILL.md` says "Do not persist unverified output" — so take the palette, font and style recommendation, and hand it to `frontend-design` and the token file |
+| a persisted `design-system/<slug>/MASTER.md` | **nothing — devkit refuses this one** | `ui-ux-pro-max`'s `--design-system` is a **read**; `--persist` stays unused, and with it `--page`, `--output-dir` and `--force`, which only act under it — the write is gated on `--persist` alone. (`-p` is `--project-name`, a harmless label; devkit banned it by mistake until 2026-09-11.) That MASTER.md carries a `--space-*` token table, a second home for values this table already puts in code, and a one-pass file nobody read that every later session then cites is the *pseudo-artifact* exactly. Its own `SKILL.md` says "Do not persist unverified output" — so take the palette, font and style recommendation straight into the token file |
 | "could this work here at all" (feasibility, in a codebase that exists) | devkit — `/spike`; neither source asks it. `/prototype` (mp) answers *design* questions, `/verify-claim` (dk) answers *does it work today* | the whole skill, plus the artifact neither source has: a spike report outside the repo, carrying the verdict, its evidence, and what the spike faked |
 | "is there anything here worth building" (before a brief exists) | devkit — `/sketch`; `/product-brief` demands a cheapest falsifying test and ships no tool that builds a whole app in a day | the whole skill. It feeds the brief, is reachable from it, and its code is never promoted |
-| `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `frontend-design` writes an aesthetic plan, not a scope-reconciled contract, and neither source enforces accessibility at all |
+| `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `ui-ux-pro-max` returns an aesthetic recommendation, not a scope-reconciled contract, and neither source enforces accessibility at all |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
 | the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |

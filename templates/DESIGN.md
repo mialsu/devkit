@@ -8,7 +8,7 @@ enforced. Written by `/design-brief`, before the first UI slice, and re-read bef
 | Not in this file | Where it lives | Why not here |
 |---|---|---|
 | Palette values, type scale, spacing steps | the token file in code (`tokens.css`, a theme module, the platform equivalent) | a token table here *plus* tokens in code is two implementations of one thing — they drift, and then both are suspect |
-| Aesthetic direction, wireframes, UI copy | the `frontend-design` skill, applied when the UI is built | that skill owns the format (palette as named hex values, 2+ type roles, ASCII wireframes, copy that never apologises). Reuse it; do not grow a second one here |
+| Aesthetic direction, palette, type, UI copy | `ui-ux-pro-max --design-system`, applied when the UI is built | that skill owns the recommendation — 192 product palettes with reasoning, 74 font pairings, 79 styles. Reuse it; do not grow a second one here. Copy *voice* and ASCII wireframes it does **not** carry: those are the Owner's, and `[review-only]` |
 | Which layout wins | a `/prototype` UI run — N variants on the real route with real data | a layout argued in prose has no verdict. One you can flip between in the browser does, and *"every variant looks fine in isolation"* |
 
 **Not every project has screens.** For **cli-tools** the surfaces are commands and the states are

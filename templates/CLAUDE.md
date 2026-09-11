@@ -79,11 +79,15 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   layers, never contexts.
 
 ## Surface work  (only if this project has a surface)
-The look is not this project's to invent. Three installed skills own the parts devkit deliberately
+The look is not this project's to invent. Two installed skills own the parts devkit deliberately
 does not, and they are reached for **at build time** — `DESIGN.md` is the contract, not the design.
-- **The look** — palette, type scale, spacing, the signature element, wireframes, UI copy:
-  **`frontend-design`**. Invoke it when the UI is actually built, not while shaping. One constraint
-  survives from `DESIGN.md`: the token **values live in code**, and that file points at them.
+- **The look** — palette, type scale, spacing, the style family, font pairing, UI copy:
+  **`ui-ux-pro-max`**, `search.py "<product> <industry>" --design-system`: 192 product palettes
+  with reasoning profiles, 74 font pairings, 79 styles, and the `--variance`/`--motion`/`--density`
+  dials. Invoke it when the UI is actually built, not while shaping. One constraint survives from
+  `DESIGN.md`: the token **values live in code**, and that file points at them.
+- **Copy voice and wireframes have no skill owner.** The dataset carries the empty-state and
+  error-message *rules*, not the craft. Write the words yourself; `/code-review` is the backstop.
 - **Which a11y rules this surface owes** — **`ui-ux-pro-max`**, `search.py --domain ux`: 119
   guidelines citing WCAG 2.2, Apple HIG and Material. It supplies the *rule*; the `A11Y-n` row in
   `DESIGN.md` supplies the `[test]`/`[live]`/`[review-only]` tag. One observable outcome per query,
@@ -92,8 +96,9 @@ does not, and they are reached for **at build time** — `DESIGN.md` is the cont
   react` for rerenders, bundles and Suspense waterfalls. A read that writes nothing.
 - **Which of two layouts wins** — **`/prototype`**, N variants on the real route with real data.
   Prose cannot settle a layout, and a variant judged in isolation always looks fine.
-- **Never `--persist` or `--force`.** They write `design-system/<slug>/MASTER.md`, whose token table
-  is a second home for values that live in code. **Drift check 11 fails the commit** — and it also
+- **Never `--persist`.** It is the only flag that writes — `--page`, `--output-dir` and `--force`
+  only act under it, and `-p` is `--project-name`, a harmless label. It writes
+  `design-system/<slug>/MASTER.md`, whose token table is a second home for values that live in code. **Drift check 11 fails the commit** — and it also
   fires on 3+ markdown table rows pairing a `--token` name with its value, so a hand-written palette
   table in `DESIGN.md` is caught too.
 

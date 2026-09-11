@@ -33,9 +33,9 @@ disciplines transfer most directly.
 ## Design & accessibility (`/design-brief`)
 - **`DESIGN.md`** at the repo root — the surface inventory reconciled against the MVP cut, the
   flows, the states, and the `A11Y-n` rows that each name an enforcer.
-- **The look is not devkit's to specify.** `frontend-design` owns palette, type scale, wireframes
-  and UI copy; `/prototype`'s UI branch settles which layout wins, on the real route with real
-  data. This profile insists on exactly two things: the tokens live in **code**, and `DESIGN.md`
+- **The look is not devkit's to specify.** `ui-ux-pro-max --design-system` owns palette, type
+  scale and style family; `/prototype`'s UI branch settles which layout wins, on the real route
+  with real data. This profile insists on exactly two things: the tokens live in **code**, and `DESIGN.md`
   points at that file instead of copying its values.
 - **`ui-ux-pro-max` supplies the rules; this profile supplies the enforcers.** `search.py --domain ux`
   is where the `A11Y-n` rows come from — 119 guidelines, WCAG 2.2 cited — and

@@ -1,6 +1,6 @@
 ---
 name: design-brief
-description: Turn a product brief into a design contract — a surface inventory reconciled against scope, flows, states, components, and accessibility rules that each name their enforcer. Delegates the look (palette, type, wireframes, copy) to frontend-design and the "which layout wins" question to /prototype. Use when a project is about to build its first UI, or when the user says "design brief", "act as a product designer", "screen inventory", "user flows", "design system", or asks how the surface should be shaped.
+description: Turn a product brief into a design contract — a surface inventory reconciled against scope, flows, states, components, and accessibility rules that each name their enforcer. Delegates the look (palette, type, style family, copy) to ui-ux-pro-max and the "which layout wins" question to /prototype. Use when a project is about to build its first UI, or when the user says "design brief", "act as a product designer", "screen inventory", "user flows", "design system", or asks how the surface should be shaped.
 disable-model-invocation: true
 argument-hint: "[project or feature]"
 ---
@@ -19,8 +19,8 @@ their formats; do not grow a second one.
 
 | Thing | Owner | How to use it |
 |---|---|---|
-| Palette, type scale, spacing, the signature element, ASCII wireframes, UI copy | **`frontend-design`** | Invoke it when the UI is actually built. It already writes a compact token system and better copy guidance than a table here would — including that errors do not apologise and an empty screen is an invitation to act. `DESIGN.md` records only *where the tokens live in code* |
-| Which palette, style family or font pairing fits *this* product type | **`ui-ux-pro-max`** — `search.py "<product> <industry>" --design-system` | A **read**, and only that: it returns candidates with the reasoning behind them, while `frontend-design` keeps the format and the taste. Never `--persist` — its `MASTER.md` puts a `--space-*` token table beside the one in code, and a one-pass file nobody read is the pseudo-artifact its own `SKILL.md` warns against |
+| Palette, type scale, spacing, the style family, font pairing, UI copy | **`ui-ux-pro-max`** — `search.py "<product> <industry>" --design-system` | Invoke it when the UI is actually built, never here. 192 product palettes with reasoning profiles, 74 font pairings, 79 styles, and the `--variance`/`--motion`/`--density` dials; its 119 UX guidelines carry the empty-state and error-message rules. `DESIGN.md` records only *where the tokens live in code*. Never `--persist` — its `MASTER.md` puts a `--space-*` token table beside the one in code, and a one-pass file nobody read is the pseudo-artifact its own `SKILL.md` warns against |
+| Copy **voice**, and ASCII wireframes | **nobody — the Owner, with `/code-review` as the backstop** | The dataset holds the empty-state and error-message *rules* (guidelines 79, 80 and 44) but not the craft: that errors do not apologise, and an empty screen is an invitation to act. Write that yourself. It is `[review-only]` by construction, and it is the one thing moving the look to `ui-ux-pro-max` cost |
 | "Which of these three layouts is right?" | **`/prototype`** (mp), UI branch | N radically different variants on the *real* route with *real* data, switchable by a URL param. Prose cannot settle a layout; flipping between them can, and a variant judged in isolation always looks fine |
 | Mockups the Owner wants to push pixels around in | **`/design`** (canvas artboards), where available | Only when they would rather edit the design by hand than in code |
 | A library's public API, or any module's interface | **`codebase-design`** | A library's "design" *is* its API surface. This skill is the wrong tool for it |
@@ -86,12 +86,12 @@ with real enforcers. That is this skill, and it is deliberately small.
    linter or `axe` go red, revert. Until you have, the row is aspiration.
 
 6. **Delegate the look, and hand the delegation forward.** Choose no palette here. When the first
-   UI slice is built, `frontend-design` does that work; where more than one layout is plausible,
-   `/prototype`'s UI branch lets the Owner flip between variants against real data. `DESIGN.md`
-   records only the path where the tokens live.
+   UI slice is built, `ui-ux-pro-max --design-system` does that work; where more than one layout
+   is plausible, `/prototype`'s UI branch lets the Owner flip between variants against real data.
+   `DESIGN.md` records only the path where the tokens live.
 
    **Then write it where it will still be read.** This skill stops before the UI exists, so an
-   "invoke `frontend-design` at build time" note left *here* is out of context at the moment it
+   "invoke `ui-ux-pro-max` at build time" note left *here* is out of context at the moment it
    applies. Confirm the project's `CLAUDE.md` carries the **Surface work** section
    (`templates/CLAUDE.md` ships it) — that file loads every session, which is the only reason the
    delegation survives this skill's own STOP. If the project predates that section, add it now.
