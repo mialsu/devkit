@@ -65,11 +65,74 @@ else:
 PY
 }
 
+# The method's rules live in two CLAUDE.md files that are deliberately NOT in this repo: devkit is
+# public and those files are personal config -- a public method repo carrying one person's prose
+# preferences is weaker as a showcase, and the template/instance split is one this repo already
+# makes (see templates/CLAUDE.md). They travel in a private companion repo instead, and this links
+# them so one `git pull` per repo updates every machine.
+#
+# Discovery is by $CLAUDE_CONFIG or by path, never by URL: a public repo must not carry a private
+# remote. Absent the companion repo this is a no-op with a notice, so devkit stays usable by
+# anyone who clones it.
+link_rules() {
+  local cc="" cand
+  for cand in "${CLAUDE_CONFIG:-}" "$HOME/code/personal/claude-config" "$(dirname "$REPO")/claude-config"; do
+    if [ -n "$cand" ] && [ -f "$cand/manifest.tsv" ]; then cc="$cand"; break; fi
+  done
+  if [ -z "$cc" ]; then
+    echo "  no claude-config found -- skipping rule files"
+    echo "  (clone it beside devkit, or export CLAUDE_CONFIG=/path/to/it)"
+    return 0
+  fi
+  echo "  using $cc"
+
+  local linked=0 skipped=0 src dest parent
+  while IFS=$'\t' read -r src dest || [ -n "${src:-}" ]; do
+    case "$src" in ''|'#'*) continue ;; esac
+    [ -n "${dest:-}" ] || continue
+    dest="${dest/#\$HOME/$HOME}"
+
+    if [ ! -f "$cc/$src" ]; then
+      echo "  warn: $src is in the manifest but missing from $cc" >&2
+      continue
+    fi
+
+    parent="$(dirname "$dest")"
+    if [ ! -d "$parent" ]; then
+      echo "  skip $dest ($parent absent on this machine)"
+      skipped=$((skipped+1)); continue
+    fi
+
+    # A real file here is somebody's existing rules. Never delete it silently -- ln -sfn would.
+    if [ -f "$dest" ] && [ ! -L "$dest" ]; then
+      if cmp -s "$dest" "$cc/$src"; then
+        : # identical; replacing with a symlink loses nothing
+      else
+        mv "$dest" "$dest.before-devkit"
+        echo "  kept your existing $(basename "$dest") as $(basename "$dest").before-devkit" >&2
+      fi
+    fi
+
+    ln -sfn "$cc/$src" "$dest"
+    linked=$((linked+1))
+  done < "$cc/manifest.tsv"
+
+  local noun="rule files"; [ "$linked" -eq 1 ] && noun="rule file"
+  if [ "$skipped" -gt 0 ]; then
+    echo "  linked $linked $noun, skipped $skipped not applicable to this machine"
+  else
+    echo "  linked $linked $noun"
+  fi
+}
+
 echo "Installing devkit skills from $REPO"
 for d in "${DESTS[@]}"; do link_into "$d"; done
 
 echo "Enforcing the attribution rule"
 set_no_attribution || echo "  warn: could not set includeCoAuthoredBy; do it by hand" >&2
+
+echo "Linking rule files"
+link_rules
 
 cat <<'NOTE'
 
@@ -94,6 +157,10 @@ boot. METHOD.md's "Session handoffs" says why; it is the rule, this is just the 
 Attribution is now enforced, not just documented: ~/.claude/settings.json carries
 `"includeCoAuthoredBy": false`, so the harness stops adding Co-Authored-By trailers to commits
 and PR bodies. The rule itself lives in CLAUDE.md; this is what makes it hold.
+
+Rule files (the CLAUDE.md pair) come from the private claude-config repo, not this one --
+devkit is public and those files are personal. Clone it beside devkit, or export
+CLAUDE_CONFIG, and re-run this script; without it you get the skills and no standing rules.
 
 Read METHOD.md for the loop, PRINCIPLES.md for the spine.
 NOTE
