@@ -146,8 +146,16 @@ Anywhere in there: `/verify-claim` the moment something claims "this already wor
 `/handoff` when a session fills up, and `/resume` when the next one opens. Adding a feature to a
 project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Nine supporting skills sit outside the loop:
+Twelve supporting skills sit outside the loop:
 
+- **`/cycle-plan`, `/cycle-groom`, `/cycle-close` (dk)** — the **cadence** trio, for a project whose
+  work is tracked in cycles (the dial below). Planning commits a capacity-checked set of `ready`
+  work and **snapshots the commitment**, because a tracker records its current contents rather than
+  what was agreed; groom walks the *next* cycle up the readiness ladder, dispatching to the
+  project's own refinement skills; close measures against the snapshot, reports unplanned work
+  separately, and never marks anything done. Bindings live in `CADENCE.md`, so none of the three
+  names a tracker. The one to protect is **groom** — a cycle planned well from unready work costs
+  the defect shipped inside it.
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
   return a MET / PARTIAL / NOT-MET verdict with file:line evidence.
@@ -212,7 +220,7 @@ map, so no session has to guess which shape is canonical:
 |---|---|---|
 | `CONTEXT.md` (ubiquitous language) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
 | `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7) |
-| `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file, not a tracker issue (solo work has no tracker); adds Tracer slices (#4) and Open questions (#7) |
+| `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file by default; a tracker issue instead when the **cadence dial** is on (below); adds Tracer slices (#4) and Open questions (#7) |
 | `CONTEXT-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
@@ -229,6 +237,8 @@ map, so no session has to guess which shape is canonical:
 | the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |
 | "what should this module's interface be", "is this refactor worth doing" | `codebase-design` + `improve-codebase-architecture` (mp) — module/interface/depth/**seam**, the deletion test | `/prune` adds the two things neither has: proof-before-deletion, and the three tests that say *don't* merge |
 | the stance code is written in — build less, reuse first, bound what you simplify | absorbed from an external "lazy senior developer" skill, and **not installed as one**. `/simplify` (installed) is the *after* pass over a diff; this is the stance the diff is written in | no second document: the **ladder** goes into PRINCIPLES #3, since a rival home for the reuse rule is the exact defect this table prevents. devkit adds what the source lacks — a precedence line against #4 (shortest is measured *inside* a slice, never against one), the root-cause rule as an anti-pattern, and an enforcer: a `CEILING:` marker gated against `REVIEW-DEBT.md` by drift check 10 |
+| `CADENCE.md` (tracker bindings, rungs, fenced classes, write envelope) | devkit — `/cycle-plan` bootstraps it; neither source has this | the whole file: both sources assume either no tracker or a team behind it, so a **solo** cadence had no bindings and every skill would have hardcoded one tracker |
+| "what did this cycle actually deliver" | devkit — `/cycle-close`; a tracker reports its current contents, which is a different question | the cycle **record**: the commitment snapshotted at planning, because a tracker forgets it and drifts in the flattering direction |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
 | reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
@@ -296,6 +306,50 @@ Two rules keep the dial honest:
 - **On means enforced.** An invariant with no named enforcer, or a context boundary not in the
   import graph's rules, is the *pseudo-artifact* — the document that manufactures confidence. Down
   the dial is always available; a decorative model is not.
+
+---
+
+## The cadence dial
+
+The weight dial scales ceremony inside a task; the domain dial decides whether a domain gets
+modelled. This one answers: **is work here tracked in cycles?**
+
+Most solo projects: **off**. A backlog you hold in your head, or a list in a file, and the loop
+above is the whole process. The `/cycle-*` skills are not installed ceremony you owe — they are
+machinery for a specific situation, and on a one-person project with no outside dates they cost more
+than they return.
+
+The bar for **on** is at least **two**:
+
+1. **Dates come from outside you** — a customer, a steerco, a contract. You cannot move them by
+   deciding to.
+2. **More than one stream competes for the same week**, and the competition is currently invisible.
+3. **Somebody asks what the state is** on a rhythm — and a truthful answer needs a commitment to
+   compare against.
+4. **It runs long enough that throughput beats estimation** — roughly four cycles, the point at
+   which what you actually finished is better evidence than what you thought you would.
+
+| Setting | What exists | When |
+|---|---|---|
+| **off** (the floor) | nothing. The loop, a backlog, `/handoff` between sessions | most solo work |
+| **on** | `CADENCE.md`, a cycle record per cycle, the three ceremonies | ≥2 triggers above |
+
+Three rules keep it honest, and each was paid for:
+
+- **The commitment is snapshotted, or the close is theatre.** A tracker shows what the cycle holds
+  now; mid-cycle additions make that a different set from what was agreed, and the difference always
+  flatters. `/cycle-plan` writes the record; `/cycle-close` refuses to run without it.
+- **Fenced work is budgeted, not ignored.** Work that occupies the cycle without being committed
+  needs a reserved share at planning and a separate line at close. Fold it into the commitment and a
+  capacity finding turns into an apparent performance problem. And if it is most of your week, the
+  fence is what is wrong.
+- **A cycle's last working day is not its end date.** Absences, travel and a day-long commitment
+  move it, sometimes by several days, and anything dated into that gap is due after its own close.
+
+**On means three ceremonies, not five.** Daily standup coordinates between people; solo it is a
+status report to yourself. Story-point poker needs a second opinion. Team velocity does not transfer
+to n=1 — personal throughput does, after a few cycles. Down the dial is always available; a cadence
+you perform and do not use is the *pseudo-artifact* with a calendar invite.
 
 ---
 
