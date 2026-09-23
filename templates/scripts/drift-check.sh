@@ -324,7 +324,11 @@ done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)DESIGN\.md$/ && $3 ~ /^[[:space:]
 # greps, confuses the next reader, and nothing ever deletes it. A single commented line is a note;
 # a RUN of them that parses as code is a deletion someone did not finish. Doc comments (///, //!,
 # /** */, jsdoc continuations, #! and #[...]) are excluded, and the body must look like code, so
-# prose in a comment block does not fire. Exempt a deliberate block by putting drift-ok on any of
+# prose in a comment block does not fire. Stylesheets are a special case: `--` opens a custom
+# property and `#` an id selector, so in .css/.scss/.sass/.less/.styl only `//` counts as a comment
+# token. Without that, three consecutive CSS variables read as an unfinished deletion — which is
+# every design-token block and every Tailwind `@theme`. Found at tekstiilikierto's bootstrap,
+# 2026-09-23. Exempt a deliberate block by putting drift-ok on any of
 # its lines: that splits the run in two, and both halves fall under the threshold.
 while IFS=$'\t' read -r path start count first; do
   [ -n "${path:-}" ] || continue
@@ -342,6 +346,8 @@ done < <(printf '%s\n' "$LINES" | awk -F'\t' -v min="$MIN_COMMENTED_BLOCK" '
     s = txt; sub(/^[[:space:]]+/, "", s)
     if (s ~ /^(\/\/\/|\/\/!|\/\*|\*|#!|#\[)/) {
       code = 0                                        # doc comment or attribute, never a deletion
+    } else if (path ~ /\.(css|scss|sass|less|styl)$/ && s !~ /^\/\//) {
+      code = 0                                        # stylesheet: -- opens a custom property and # an id selector, neither is a comment
     } else if (s ~ /^(\/\/|#|--)/) {                  # drift-ok: the comment tokens themselves
       b = s
       sub(/^(\/\/|#|--)[[:space:]]*/, "", b)          # drift-ok: same
