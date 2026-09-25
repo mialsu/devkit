@@ -58,6 +58,45 @@ else
   ok "clean"
 fi
 
+# --- 3b. the vocabulary check actually MATCHES ------------------------------
+# The smoke test above proves the awk program runs. It cannot prove the matcher matches, and for
+# a long time it did not: banned terms were stored whole while identifiers were compared segment
+# by segment, so every multi-word entry in every project glossary was inert and the check printed
+# clean forever. A gate that silently passes is worse than no gate, and only an assertion on real
+# input catches it. Built as a throwaway repo because the gate reads CONTEXT.md via git ls-files.
+group "3b. vocabulary check behaviour (fires on what it must, ignores what it must not)"
+vt="$(mktemp -d)"
+(
+  cd "$vt" || exit 2
+  git init -q . && git config user.email t@t && git config user.name t
+  printf '%s\n' '_Avoid_: run, step, flag, purchase, end customer, write_off, orderRow' > CONTEXT.md
+  : > seed.txt && git add -A && git commit -qm seed
+  # MUST fire: one-segment, its plural, a two-segment term in all four spellings, a run inside a
+  # longer identifier, and a snake_case / space-separated term written camelCase in the code.
+  printf '%s\n' 'runTask' 'purchases' 'createPurchase' 'endCustomer' 'end_customer' \
+                 'EndCustomers' 'endCustomerId' 'writeOff' 'orderRow' 'order_rows' > must.ts
+  # MUST NOT fire: substring collisions the segment split exists to prevent, and plurals of terms
+  # under the 5-letter floor.
+  printf '%s\n' 'runtime' 'overrun' 'lockstep' 'setWindowFlags' 'flagship' 'Flags' \
+                 'runs' 'steps' 'flags' 'stepper' > mustnot.ts
+  git add -N must.ts mustnot.ts
+) >/dev/null 2>&1
+if [ ! -d "$vt/.git" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  vout="$(cd "$vt" && bash "$OLDPWD/templates/scripts/drift-check.sh" 2>&1)"
+  missed=""
+  for want in runTask purchases createPurchase endCustomer end_customer EndCustomers \
+              endCustomerId writeOff orderRow order_rows; do
+    printf '%s' "$vout" | grep -q "must\.ts.*$want(" || missed="$missed $want"
+  done
+  wrong="$(printf '%s' "$vout" | grep 'mustnot\.ts' | sed 's/^/        /')"
+  if [ -n "$missed" ]; then bad "banned words the check did NOT catch:$missed"; fi
+  if [ -n "$wrong" ]; then bad "false positives — the segment split over-matched"; printf '%s\n' "$wrong"; fi
+  [ -z "$missed" ] && [ -z "$wrong" ] && ok "10 must-fire, 10 must-not-fire"
+fi
+rm -rf "$vt"
+
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter
 # `name:`. A mismatch means the skill installs and then cannot be invoked — silently.

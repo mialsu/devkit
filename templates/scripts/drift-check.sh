@@ -15,7 +15,9 @@
 # test the intended remedy is a REVIEW-DEBT.md entry, not drift-ok.
 #
 # Sensitivity: the vocabulary check matches whole identifier SEGMENTS (clientId -> client + id),
-# so it catches `createPurchase` without flagging `runtime`, `overrun`, or `setWindowFlags`. It
+# and a multi-word banned term as a RUN of them (clientRef -> client + ref, which flags
+# client_ref and clientRefId but not `ref`), so it catches `createPurchase` without
+# flagging `runtime`, `overrun`, or `setWindowFlags`. It
 # still errs toward catching: a missed synonym silently forks the project's language (expensive),
 # a false positive costs one `drift-ok` (cheap). If it is noisy, suspect CONTEXT.md first — an
 # `_Avoid_` list should hold domain synonyms, not general programming words.
@@ -139,12 +141,26 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
   # while runtime / overrun / lockstep / setWindowFlags do NOT match run / step / flag. Plurals
   # count only for terms of 5+ chars, so `flag` never flags Qt's `Flags` but `purchase` catches
   # `purchases`.
+  #
+  # A banned word is ITSELF an identifier, so it is split the same way and matched as a run of
+  # CONSECUTIVE segments: a two-word term becomes [client, ref] and flags clientRef, client_ref,
+  # ClientRefs and clientRefId, while leaving `ref` and `clientName` alone.
+  # Storing the term whole instead left every multi-word entry in a glossary permanently inert:
+  # segment `client` can never equal key `clientref`, so the check printed clean forever and the
+  # words most likely to fork a domain's language — a two-word concept's synonym is naturally
+  # itself two words — were exactly the ones that could not fire. Found at tekstiilikierto on
+  # 2026-09-24 by probing the gate rather than reading it: 30 of that project's 80 banned words
+  # had never been able to match. The longest run wins, so a 3-segment term reports itself
+  # rather than the 2-segment term nested inside it.
+  #
+  # Examples here are deliberately generic programming words: this file is policed by its own
+  # gate, so a real domain synonym in a comment would report itself as a violation.
   hits="$(printf '%s\n' "$LINES" | awk -F'\t' -v terms="$terms" -v SQ="'" -v police="$POLICE_STRINGS" '
   function seglist(id, out,    i,c,prev,nxt,cur,k,isup,prevlow,nxtlow) {
     k=0; cur="";
     for (i=1; i<=length(id); i++) {
       c = substr(id,i,1);
-      if (c=="_" || c=="-") { if (cur!="") { out[++k]=tolower(cur); cur="" } ; continue }
+      if (c=="_" || c=="-" || c==" ") { if (cur!="") { out[++k]=tolower(cur); cur="" } ; continue }
       isup    = (c ~ /[A-Z]/);
       prev    = (i>1) ? substr(id,i-1,1) : "";
       nxt     = (i<length(id)) ? substr(id,i+1,1) : "";
@@ -156,17 +172,40 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
     if (cur!="") out[++k]=tolower(cur);
     return k;
   }
-  function banned(seg,   sing) {
-    if (seg in BAN) return seg;
-    if (length(seg) > 1 && substr(seg,length(seg)) == "s") {
-      sing = substr(seg,1,length(seg)-1);
-      if ((sing in BAN) && length(sing) >= 5) return sing;
+  function banned(seg, k, start,   L, max, key, j, last, sing) {
+    max = k - start + 1; if (max > MAXSEG) max = MAXSEG;
+    for (L = max; L >= 1; L--) {
+      key = seg[start];
+      for (j = start+1; j < start+L; j++) key = key SEP seg[j];
+      if (key in BAN) return BANDISP[key];
+      last = seg[start+L-1];
+      if (length(last) > 1 && substr(last,length(last)) == "s") {
+        sing = substr(last,1,length(last)-1);
+        key = seg[start];
+        for (j = start+1; j < start+L-1; j++) key = key SEP seg[j];
+        if (L > 1) key = key SEP sing; else key = sing;
+        # The 5-char floor counts LETTERS, not separators, so a one-segment term keeps exactly
+        # its old behaviour: `flag` still ignores `Flags`, `purchase` still catches `purchases`.
+        if ((key in BAN) && length(key) - (L-1) >= 5) return BANDISP[key];
+      }
     }
     return "";
   }
   BEGIN {
+    # SEP is a space: seglist emits only [A-Za-z0-9] runs, so it cannot occur inside a segment.
+    SEP = " "; MAXSEG = 1;
     n = split(terms, T, "\n");
-    for (i=1;i<=n;i++) { t=tolower(T[i]); sub(/^[ \t]+/,"",t); sub(/[ \t]+$/,"",t); if (t!="") BAN[t]=1 }
+    for (i=1;i<=n;i++) {
+      t=T[i]; sub(/^[ \t]+/,"",t); sub(/[ \t]+$/,"",t);
+      if (t=="") continue;
+      kb = seglist(t, B);                               # NOT tolower()d first: seglist needs the case
+      if (kb == 0) continue;
+      key = B[1];
+      for (j=2;j<=kb;j++) key = key SEP B[j];
+      BAN[key]=1; BANDISP[key]=t;                       # BANDISP reports the CONTEXT.md spelling
+      if (kb > MAXSEG) MAXSEG = kb;
+      delete B;
+    }
   }
   {
     rest=$3; found=""; delete SEEN;
@@ -184,7 +223,7 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
       rest = substr(rest, RSTART+RLENGTH);
       k = seglist(id, S);
       for (j=1;j<=k;j++) {
-        b = banned(S[j]);
+        b = banned(S, k, j);
         if (b != "") { if (!(id in SEEN)) { SEEN[id]=1; found = found (found==""?"":" ") id "(" b ")" } break }
       }
       delete S;
