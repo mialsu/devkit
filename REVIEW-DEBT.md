@@ -6,6 +6,36 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-09-25 — /design-brief sent the session hunting for seven rules its own template ships
+
+- **What:** step 5 told the session the dataset "covers criteria the template's eight examples do
+  not" and named seven: `focus-not-obscured`, `dragging-alternative`, `web-target-size`,
+  `accessible-authentication`, `redundant-entry`, `consistent-help`, `auto-rotation-controls`. All
+  seven have been rows in `templates/DESIGN.md` — `A11Y-9` … `A11Y-15`, enforcer tags filled in —
+  since `76a1b95`, **the same commit that wrote the sentence denying them**. The template ships 15
+  rows, not eight. The cost when the skill runs: seven `search.py` queries re-deriving rows that
+  are already in the file, and an invitation to a sixteenth row restating `A11Y-9` in different
+  words. Live for 17 days, which is `/design-brief`'s whole existence; no project has run the skill
+  yet, so no `DESIGN.md` shipped a duplicated table.
+- **Where:** `skills/design-brief/SKILL.md`, step 5
+- **Fixed, 2026-09-25:** the paragraph points at `templates/DESIGN.md` instead of restating what it
+  contains, so the count cannot go stale in two files again. It also says what the skill actually
+  owes each shipped row — keep or delete it against this surface, and name its enforcer in this
+  stack — rather than treating the table as a floor to pile onto.
+- **What green gates do NOT prove:** `scripts/check.sh` has no check that a skill's prose agrees
+  with the template it describes, and cannot cheaply have one: the false claim was prose about a
+  count. A reader found this, not a gate. The class is still live — this skill, `METHOD.md`,
+  `profiles/web/PROFILE.md` and `templates/DESIGN.md` each quote `ui-ux-pro-max`'s dataset counts
+  (119 guidelines, 192 palettes, 74 pairings, 79 styles), four places repeating numbers owned by a
+  third-party skill that updates on its own schedule.
+- **Checked while fixing, and NOT a defect:** *"119 guidelines with stable ids, citing WCAG 2.2,
+  Apple HIG and Material"* is true of `ui-ux-pro-max/SKILL.md`'s ux index (its lines 69-90) and
+  false only of the CSV that `search.py` prints — 9 of the 119 CSV rows mention WCAG, none carries
+  a criterion number, and the search output shows neither the kebab id nor the `No` column. The
+  three files above stay as written. Step 5 now says where to read the id and its WCAG level, and
+  that the criterion number comes from the spec.
+- **Disposition:** fixed.
+
 ## 2026-09-11 — ui-ux-pro-max took the look, and two things it does not carry now have no owner
 
 - **What:** the Owner moved the whole look — palette, type scale, spacing, the style family, font

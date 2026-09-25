@@ -67,13 +67,22 @@ with real enforcers. That is this skill, and it is deliberately small.
 5. **Give every accessibility rule an enforcer, or label it honestly.** This is the section the
    method actually contributes, and the rule is PRINCIPLES #11's: a rule naming no enforcer is prose.
 
-   **Take the rows from the dataset, not from memory.** `ui-ux-pro-max`'s `search.py --domain ux`
-   holds 119 guidelines with stable ids and WCAG 2.2 citations, and it covers criteria the template's
-   eight examples do not: `focus-not-obscured`, `dragging-alternative`, `web-target-size`,
-   `accessible-authentication`, `redundant-entry`, `consistent-help`, `auto-rotation-controls`.
-   Query **one observable outcome at a time** — `"focus not obscured" --domain ux`, not a sweep —
-   and verify the returned id fits this product and platform before it becomes a row. Then do the
-   half the dataset has no opinion on:
+   **Start from the template's rows, then go past them.** `templates/DESIGN.md` ships the `A11Y-n`
+   table populated, enforcers included — read it rather than trusting a list here, which is how this
+   paragraph went stale once. Every shipped row is also a candidate for deletion: a surface with no
+   drag and no carousel owes nothing for *Dragging Movements* or auto-rotation, and an aspiration row
+   is worse than an absent one. What survives gets its enforcer named in **this** stack.
+
+   **For the rest, take the rows from the dataset, not from memory.** `ui-ux-pro-max`'s
+   `search.py --domain ux` holds 119 guidelines. Query **one observable outcome at a time** —
+   `"focus not obscured" --domain ux`, not a sweep — and check the returned row's `Platform` before
+   it becomes a row here: the dataset sets mobile touch-target guidance beside the web criterion, and
+   they are different numbers. Two things the search output does not print: the stable id and the
+   standard it cites both live in that skill's own `SKILL.md` ux index (`focus-not-obscured` …
+   `accessible-authentication`, each with its WCAG 2.2 level), so read the index for those. The
+   criterion **number** is in neither — take `1.4.10` from the WCAG spec, and never cite the CSV's
+   row number, which is a line in one snapshot of somebody else's file. Then do the half the dataset
+   has no opinion on:
    - `[lint]` — the ecosystem's a11y linter, wired into the profile's gate set, not merely installed.
    - `[test]` — `axe` or the platform equivalent, run against **each state** in §3, not the happy one.
    - `[live]` — the keyboard walk: the whole flow with the mouse unplugged. A real enforcer that
