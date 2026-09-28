@@ -205,8 +205,8 @@ Twelve supporting skills sit outside the loop:
   handoffs* below for where they live and why not `/tmp`.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
-profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, wires the
-gate commands via **`/harness`**, and runs the acid test. Publishing is **`/ship` (dk)** — the per-profile,
+profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, and wires the
+gate commands via **`/harness`**. Publishing is **`/ship` (dk)** — the per-profile,
 explicit-keystroke publish checklist.
 
 ---

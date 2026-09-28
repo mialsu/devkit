@@ -56,13 +56,7 @@ a recommendation marked "(Recommended)", plain language. Cover:
 - any hard limit specific to this project (data it must not touch, keys it must not spend).
 Keep the generic hard limits from the template verbatim.
 
-## 5. Acid test
-Open the intent of a cold session: from `CLAUDE.md`, `CONTEXT.md` and `CODING_STANDARDS.md` alone,
-restate the project's scope, its hard limits, its gate set, the domain dial's setting, and which of
-its rules are enforced versus `[review-only]`. If a cold read wouldn't get them right, the
-setup isn't done — fix the docs, not your memory.
-
-## 6. First commit
+## 5. First commit
 `git init` if needed; commit the scaffold. Report: profile chosen, gates wired (with the literal
-commands), guard-rails captured, acid test result. Then STOP and wait for the first real task —
+commands), and guard-rails captured. Then STOP and wait for the first real task —
 which starts with `/grill-with-docs`, not with code.
