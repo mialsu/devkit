@@ -32,6 +32,9 @@
 
 set -uo pipefail
 
+# The gate's own file, as an absolute path taken BEFORE the cd below changes what a relative $0
+# points at. Check 6 waives its size cap for this one file.
+case "$0" in /*) SELF="$0" ;; *) SELF="$PWD/$0" ;; esac
 cd "$(git rev-parse --show-toplevel)" || exit 2
 # Every `git diff` below carries `--relative`. With the cd above it is a NO-OP — cwd is already the
 # git root. It matters when a project vendors this script into a package subdirectory and changes
@@ -315,9 +318,16 @@ if [ -n "$hand_edited" ]; then
 fi
 
 # --- 6. an oversized new file ----------------------------------------------
+# The gate's own file is waived. Every project vendors it and it is longer than the cap, so check 6
+# flagged it in every project on the commit that added it. Found at sitesmith on 2026-09-28 by
+# running the gate over its bootstrap commit. The match is by inode (`-ef` against SELF), so a
+# second big file named drift-check.sh is still caught, and so is a vendored copy checked by a
+# different copy of the gate. The waiver covers the size cap alone; the content checks still police
+# this file.
 while IFS=$'\t' read -r add path; do
   [ -n "${path:-}" ] || continue
   printf '%s\n' "$path" | grep -Eq "$SKIP_CONTENT" && continue
+  [ "$path" -ef "$SELF" ] && continue
   if [ "$add" -gt "$MAX_NEW_FILE_LINES" ]; then
     report "size — new file is $add lines (cap $MAX_NEW_FILE_LINES)" \
             "backend/layer-only progress: a file this big is usually several modules in a trench coat" \

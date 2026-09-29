@@ -97,6 +97,30 @@ else
 fi
 rm -rf "$vt"
 
+# --- 3c. the size check waives the gate's own file, and only that file ------
+# Every project copies the gate into its repo, and the gate is longer than the size cap it
+# enforces, so check 6 used to flag it on the commit that added it. The waiver matches the RUNNING
+# file, so this puts a copy inside the throwaway repo the way a project does. It runs that copy
+# through a relative path out of a subdirectory, which the gate's own cd would otherwise invalidate.
+group "3c. size check behaviour (still fires on a big new file, waives the gate's own)"
+st="$(mktemp -d)"
+(
+  cd "$st" || exit 2
+  git init -q . && git config user.email t@t && git config user.name t
+  mkdir scripts src && cp "$OLDPWD/templates/scripts/drift-check.sh" scripts/
+  seq 1 450 > src/big.ts
+) >/dev/null 2>&1
+if [ ! -f "$st/scripts/drift-check.sh" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  sout="$(cd "$st/src" && bash ../scripts/drift-check.sh 2>&1)"
+  sfail=0
+  printf '%s\n' "$sout" | grep -qxF '     src/big.ts' || { sfail=1; bad "a 450-line new file was NOT flagged"; }
+  printf '%s\n' "$sout" | grep -qxF '     scripts/drift-check.sh' && { sfail=1; bad "the gate flagged its own file"; }
+  [ "$sfail" = 0 ] && ok "flags a 450-line new file, waives its own"
+fi
+rm -rf "$st"
+
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter
 # `name:`. A mismatch means the skill installs and then cannot be invoked — silently.
