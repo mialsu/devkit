@@ -20,7 +20,7 @@ their formats; do not grow a second one.
 | Thing | Owner | How to use it |
 |---|---|---|
 | Palette, type scale, spacing, the style family, font pairing, UI copy | **`ui-ux-pro-max`** — `search.py "<product> <industry>" --design-system` | Invoke it when the UI is actually built, never here. 192 product palettes with reasoning profiles, 74 font pairings, 79 styles, and the `--variance`/`--motion`/`--density` dials; its 119 UX guidelines carry the empty-state and error-message rules. `DESIGN.md` records only *where the tokens live in code*. Never `--persist` — its `MASTER.md` puts a `--space-*` token table beside the one in code, and a one-pass file nobody read is the pseudo-artifact its own `SKILL.md` warns against |
-| Copy **voice**, and ASCII wireframes | **nobody — the Owner, with `/code-review` as the backstop** | The dataset holds the empty-state and error-message *rules* (guidelines 79, 80 and 44) but not the craft: that errors do not apologise, and an empty screen is an invitation to act. Write that yourself. It is `[review-only]` by construction, and it is the one thing moving the look to `ui-ux-pro-max` cost |
+| Copy **voice**, and ASCII wireframes | **nobody — the Owner, with `/code-review` as the backstop** | The dataset holds the empty-state and error-message *rules* but not the craft: that errors do not apologise, and an empty screen is an invitation to act. Write that yourself. It is `[review-only]` by construction |
 | "Which of these three layouts is right?" | **`/prototype`** (mp), UI branch | N radically different variants on the *real* route with *real* data, switchable by a URL param. Prose cannot settle a layout; flipping between them can, and a variant judged in isolation always looks fine |
 | Mockups the Owner wants to push pixels around in | **`/design`** (canvas artboards), where available | Only when they would rather edit the design by hand than in code |
 | A library's public API, or any module's interface | **`codebase-design`** | A library's "design" *is* its API surface. This skill is the wrong tool for it |
@@ -68,8 +68,8 @@ with real enforcers. That is this skill, and it is deliberately small.
    method actually contributes, and the rule is PRINCIPLES #11's: a rule naming no enforcer is prose.
 
    **Start from the template's rows, then go past them.** `templates/DESIGN.md` ships the `A11Y-n`
-   table populated, enforcers included — read it rather than trusting a list here, which is how this
-   paragraph went stale once. Every shipped row is also a candidate for deletion: a surface with no
+   table populated, enforcers included — read it rather than a list here, which would drift from it.
+   Every shipped row is also a candidate for deletion: a surface with no
    drag and no carousel owes nothing for *Dragging Movements* or auto-rotation, and an aspiration row
    is worse than an absent one. What survives gets its enforcer named in **this** stack.
 

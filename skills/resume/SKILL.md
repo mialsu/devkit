@@ -19,8 +19,8 @@ building*). This skill only finds, reads and interrogates one.
 `<project-slug>` is the basename of the project root — the child of your **projects root**, not the
 repo you happen to be standing in. A project with four sibling repos has **one** handoff directory.
 
-The projects root is the directory whose `CLAUDE.md` imports devkit (`@./devkit/METHOD.md`); on this
-setup that is `~/code/personal`. Derive it rather than assuming it, so the skill survives someone
+The projects root is the directory whose `CLAUDE.md` imports devkit's `METHOD.md`; on this setup
+that is `~/code/personal`. Derive it rather than assuming it, so the skill survives someone
 laying their tree out differently.
 
 Deliberately **not** the OS temp directory that `/handoff`'s own `SKILL.md` names — most Linux boxes

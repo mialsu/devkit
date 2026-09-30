@@ -62,7 +62,8 @@ overclaim PRINCIPLES #10 exists to forbid.
 
 ## 4. Triage into three verdicts, not two
 Unreferenced is not the same as unwanted. Before anything is deleted, read `REVIEW-DEBT.md`, the
-specs' non-goals and open questions, and `INVARIANTS.md`'s *enforcers owed* table:
+specs' non-goals and open questions, and the `Enforced by` and `Owner in code` columns of
+`INVARIANTS.md`:
 
 - **dead** — nothing wants it. Delete it.
 - **owed** — it is unreferenced because a slice was banked half-built, or the ledger already says

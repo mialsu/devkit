@@ -84,8 +84,8 @@ Two meta-rules, from the template devkit ships:
 
 ## What isn't enforced here, and honestly isn't
 
-- **`shellcheck` is not installed on this machine**, so check 2 prints `SKIP` and runs nothing.
-  It is a labelled hole, not a passing gate.
+- **`shellcheck` is optional.** Check 2 runs it when it is on `PATH` and prints `SKIP` otherwise,
+  so on a machine without it the check is a labelled hole, not a passing gate.
 - **`scripts/check.sh` is not wired to anything** — no CI, no hook. It runs when someone types it,
   which by devkit's own anti-pattern list makes it a suggestion.
 - **The shipped script has no test suite.** Every check in it was proven by hand, in scratch repos

@@ -52,7 +52,8 @@ Two rules about the rules:
   logic breaks. No new framework, no fixture scaffolding — an assert-based self-check or one small
   test file. A trivial one-liner needs none. Code with no check is unfinished, and it is where a
   short diff goes wrong quietly (PRINCIPLES #3). `[review-only]`
-- No skipped, focused, or silently-deleted test lands without a `REVIEW-DEBT.md` entry. `[script]`
+- No skipped, focused, or silently-deleted test lands without a `REVIEW-DEBT.md` entry.
+  `[script]` (skipped, focused), `[review-only]` (deleted)
 - Green tests gate; they do not prove. The live exercise proves (PRINCIPLES #1). `[review-only]`
 - A behavior change names the criterion it satisfies in its commit (`Spec: …#AC-N`), so the proof
   is greppable later. `[review-only]`

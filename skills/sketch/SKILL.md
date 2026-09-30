@@ -99,7 +99,8 @@ the wrong question — you learn that you dislike the screen. That is `ui-ux-pro
 `--design-system` for the look, `--stack <name>` for how a component is built in whatever you
 reached for. What a
 sketch does **not** get: no `DESIGN.md`, no `A11Y-n` table, no persisted design system. There is no
-contract to write for code that is being thrown away, and `--persist` fails drift check 11 anyway.
+contract to write for code that is being thrown away, and a sketch runs no drift gate, so check 11
+will not catch a `--persist` here.
 
 ### 5. Use it like a user, for ten minutes
 
