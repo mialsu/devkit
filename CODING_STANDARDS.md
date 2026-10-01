@@ -91,4 +91,5 @@ Two meta-rules, from the template devkit ships:
 - **The shipped script has no test suite.** Every check in it was proven by hand, in scratch repos
   that were never committed, so no future edit has a regression net.
 
-All three are open entries in `REVIEW-DEBT.md`.
+The last two are open entries in `REVIEW-DEBT.md`. The `shellcheck` one is closed: this machine
+has had it since 2026-09-08, and anywhere without it check 2 still prints `SKIP`.

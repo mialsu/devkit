@@ -413,8 +413,14 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 - **What green tests do NOT prove here:** **`shellcheck` is not installed on this machine**, so
   check 2 prints `SKIP` and runs nothing. It is a labelled hole, not a passing gate — the first
   `shellcheck` run on `drift-check.sh` should be expected to find real things.
-- **Disposition:** open — `apt install shellcheck` closes it; the SKIP line is deliberately loud
-  until then.
+- **Disposition:** closed 2026-10-01, for a condition met on 2026-09-08. `shellcheck` 0.9.0 was
+  installed that day, and its first run found what this entry predicted: `SC2120` in
+  `drift-check.sh` (`added_lines` took arguments nobody passed), fixed in `af2fd22`. Check 2 now
+  runs `-S warning` over the three tracked `.sh` files and is green, and it has been watched red
+  twice — on that real finding, and on a probe on 2026-10-01 (`SC2034`, an unused variable
+  appended to `install.sh`, then reverted). Below warning level two notes stay ungated: `SC2016` in
+  `scripts/check.sh` and `SC2004` in `templates/scripts/drift-check.sh`. On a machine without
+  `shellcheck`, check 2 still prints the `SKIP`.
 
 - **What:** `scripts/check.sh` **is not wired to anything.** No CI, no pre-commit hook — it runs when
   someone types it. By devkit's own anti-pattern list that makes it a suggestion, and it is exactly
