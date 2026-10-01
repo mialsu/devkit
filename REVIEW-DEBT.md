@@ -421,6 +421,10 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   what `/harness` step 6 tells every *other* project not to accept.
 - **Where:** `scripts/check.sh`; no `.github/`, no hook.
 - **What green tests do NOT prove here:** that a future commit ran it at all.
+- **Observed cost, 2026-10-01:** `ffa2c56` (2026-09-18) added `/cycle-plan`, `/cycle-groom` and
+  `/cycle-close` without listing them in `README.md` or `install.sh` — the exact miss check 5 exists
+  to catch. The six commits after it, `d8d38c4` included, landed on a red check 5 with nothing to
+  stop them.
 - **Disposition:** open — needs the Owner's call, since a hook changes their local settings and CI
   means a workflow file that eventually leaves the machine.
 
