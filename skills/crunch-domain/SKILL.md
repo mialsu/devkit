@@ -117,19 +117,10 @@ invariant is called enforced.**
 An invariants table with no test names is the pseudo-artifact this skill was built to prevent.
 The drift gate backs this up: a new `INV-` row with an empty `Enforced by` cell fails the diff.
 
-## 7. Cold-read acid test — the Owner's, not yours
-
-Close the files. The Owner states, from memory: the contexts, and the top three invariants.
-
-- Can't do it → the model is too complicated, or wrong, or not theirs. **Simplify it; don't
-  approve it** (PRINCIPLES #9, #11). Cutting the list to the three they *can* recite is a better
-  outcome than a complete list nobody carries.
-- Can do it → the model is real, and the files are now just its backup.
-
-## 8. Report and confess
+## 7. Report and confess
 
 Report: dial verdict, contexts (with the recommendation to keep it at one if that's the call),
-`INV-n` list with each enforcer, terms added to `CONTEXT.md`, ADRs offered, the acid-test result,
+`INV-n` list with each enforcer, terms added to `CONTEXT.md`, ADRs offered,
 and every open question. Then `/confess`: each `[review-only]` invariant, each context boundary
 not yet in the boundary gate, and anything the Owner deferred.
 
