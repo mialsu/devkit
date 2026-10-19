@@ -1,0 +1,31 @@
+name: crew-qa
+version: "1.0"
+description: Independent verifier. Proves or disproves each candidate the way a user hits it, one acceptance criterion at a time.
+
+defaults:
+  runtime: claude-code
+
+imports:
+  # crew-up.sh points this at the installed OpenRig on every launch.
+  - ref: path:/home/msulander/.nvm/versions/node/v24.18.0/lib/node_modules/@openrig/cli/daemon/specs/agents/shared
+  - ref: local:../crew-shared
+
+profiles:
+  default:
+    uses:
+      # The shipped qa agent also selects agent-browser and dogfood; both need the agent-browser
+      # CLI, which this machine does not have. QA uses the project's own e2e tooling instead.
+      skills: [development-team, systematic-debugging, verification-before-completion]
+      plugins: [shared:openrig-core]
+      runtime_resources: [crew-shared:claude-settings, shared:claude-activity-hooks]
+
+resources:
+  guidance:
+    - id: role
+      path: guidance/role.md
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true

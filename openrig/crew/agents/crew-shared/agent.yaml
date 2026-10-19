@@ -1,0 +1,12 @@
+name: crew-shared
+version: "1.0"
+description: >
+  Resources the crew agents share. Its Claude settings fragment sets acceptEdits and nothing else,
+  so a crew launch adds no MCP servers to a project.
+
+resources:
+  runtime_resources:
+    - id: claude-settings
+      path: runtime/claude-settings.fragment.json
+      runtime: claude-code
+      type: claude_settings_fragment

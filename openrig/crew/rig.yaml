@@ -1,0 +1,54 @@
+version: "0.2"
+name: crew
+summary: >
+  The Owner's three-seat team for any repository: an architect who shapes goals into slices and
+  reports, a builder who delivers one slice at a time end to end, and a QA seat that verifies each
+  candidate the way a user hits it. Launch it per project with crew-up.sh, which names the rig
+  crew-<project>.
+culture_file: CULTURE.md
+
+# Keep OpenRig's instruction blocks out of the project's tracked CLAUDE.md.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+
+pods:
+  - id: orch
+    label: Lead
+    members:
+      - id: architect
+        agent_ref: "local:agents/architect"
+        profile: default
+        runtime: claude-code
+        cwd: "."
+
+  - id: dev
+    label: Build and verify
+    members:
+      - id: builder
+        agent_ref: "local:agents/builder"
+        profile: default
+        runtime: claude-code
+        cwd: "."
+      - id: qa
+        agent_ref: "local:agents/qa"
+        profile: default
+        runtime: claude-code
+        cwd: "."
+    edges:
+      - kind: delegates_to
+        from: builder
+        to: qa
+
+edges:
+  - kind: delegates_to
+    from: orch.architect
+    to: dev.builder
+  - kind: delegates_to
+    from: orch.architect
+    to: dev.qa
+  - kind: escalates_to
+    from: dev.builder
+    to: orch.architect
+  - kind: escalates_to
+    from: dev.qa
+    to: orch.architect

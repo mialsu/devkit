@@ -6,6 +6,35 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-10-09 — crew: an OpenRig team for any project, validated and planned but never launched
+
+- **What:** `openrig/crew/` is a three-seat OpenRig team (architect, builder, qa) whose roles defer
+  to each project's `CLAUDE.md` and name devkit's skills for each step. `openrig/crew/crew-up.sh`
+  (linked as `~/.local/bin/crew-up`) names each project's rig `crew-<folder>`, regenerates its copy
+  under `<workspace.root>/crew/<project>/`, and launches or resumes it.
+- **Where:** `openrig/crew/`
+- **What green gates do NOT prove:**
+  - It passed `rig agent validate` on all four agents, `rig spec validate`, and `rig spec audit`
+    (one advisory: no rig-level startup files, deliberate). `crew-up --plan` in
+    student-attendance-tracker planned it (`resolve_spec: ok`, `preflight: ok`). No crew has been
+    launched, so nothing shows the seats boot ready, read their role files, or move work through
+    the queue the way the guidance says.
+  - The resume path (`rig up <name> --existing`) and the `--fresh` replacement have never run.
+  - Only `crew-shared`'s fragment sets `acceptEdits`. On the shipped starter, a resumed seat ran
+    `claude --resume` with no permission flag, so the settings file is what sets its mode; that the
+    floor holds for a resumed crew seat is inferred, not observed.
+  - `scripts/check.sh` reads `git ls-files`, so it covers `crew-up.sh` and these docs only once they
+    are tracked. Today `bash -n` and `shellcheck` were run by hand and are clean, the same-name guard
+    was watched refusing a second folder called student-attendance-tracker, and the crew docs carry
+    no link the reference check would test.
+  - The template's `agent.yaml` imports hold this machine's nvm path. `crew-up.sh` rewrites them to
+    the installed OpenRig on every launch, but the template validates as-is only here.
+  - `rig up rig.yaml` without `--cwd` would start the seats inside `openrig/crew/`; only `crew-up.sh`
+    passes the project root.
+  - OpenRig 0.6.6 shows healthy Claude seats as `attention_required` on Linux (its pane identity
+    check cannot parse the `--settings` JSON). Seen on the kernel and the starter; expected on crew.
+- **Disposition:** open. The first real launch is the test; record what it shows here.
+
 ## 2026-09-25 — /design-brief sent the session hunting for seven rules its own template ships
 
 - **What:** step 5 told the session the dataset "covers criteria the template's eight examples do

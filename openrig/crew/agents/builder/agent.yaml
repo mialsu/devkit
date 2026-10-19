@@ -1,0 +1,29 @@
+name: crew-builder
+version: "1.0"
+description: Builds one slice at a time, end to end, and hands each candidate to QA.
+
+defaults:
+  runtime: claude-code
+
+imports:
+  # crew-up.sh points this at the installed OpenRig on every launch.
+  - ref: path:/home/msulander/.nvm/versions/node/v24.18.0/lib/node_modules/@openrig/cli/daemon/specs/agents/shared
+  - ref: local:../crew-shared
+
+profiles:
+  default:
+    uses:
+      skills: [development-team, test-driven-development, systematic-debugging, verification-before-completion]
+      plugins: [shared:openrig-core]
+      runtime_resources: [crew-shared:claude-settings, shared:claude-activity-hooks]
+
+resources:
+  guidance:
+    - id: role
+      path: guidance/role.md
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
