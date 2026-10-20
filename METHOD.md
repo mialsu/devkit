@@ -378,6 +378,16 @@ written there is gone after a reboot, which is precisely the moment it was writt
 redirects his skill rather than forking it: a fork stops receiving his updates, and two
 implementations of one behaviour is the defect this document spends a whole section on.
 
+**The redirect has to ride in the project's `CLAUDE.md`, not only here.** A rule no session loads
+is not a rule. It used to live in this file and the `claude-config` rule files alone, and on a
+machine without `claude-config` nothing carried it into the session: `/handoff` followed its own
+`SKILL.md`, the harness steered the file into a session scratchpad under `/tmp`, and `/resume` —
+told never to look in temp — reported no handoff at all (prep-planner, 2026-10-20). So
+`templates/CLAUDE.md` now carries the one-line rule into every project, where it is always loaded,
+and `/resume` checks temp once for a file named like a handoff and offers to move it. That is a
+safety net for the miss, not a second home: the handoffs directory stays the only place a handoff
+is meant to be.
+
 **A handoff is a claim, not a fact** (PRINCIPLES #6). It was true when it was written and the repo
 has moved since — commits landed, CI ran, a deploy may have fired. Anything load-bearing it asserts
 (test counts, coverage, "X already works", file:line references) gets `/verify-claim`'d **before**

@@ -19,13 +19,16 @@ building*). This skill only finds, reads and interrogates one.
 `<project-slug>` is the basename of the project root — the child of your **projects root**, not the
 repo you happen to be standing in. A project with four sibling repos has **one** handoff directory.
 
-The projects root is the directory whose `CLAUDE.md` imports devkit's `METHOD.md`; on this setup
-that is `~/code/personal`. Derive it rather than assuming it, so the skill survives someone
-laying their tree out differently.
+The projects root is the directory whose `CLAUDE.md` imports devkit's `METHOD.md` (it comes from
+`claude-config`, linked by `install.sh`). Derive it rather than assuming it, so the skill survives
+someone laying their tree out differently. A machine without `claude-config` has no such file, so
+derivation has a fallback (step 1) — and a `CLAUDE.md` that merely *mentions* `METHOD.md`, as every
+project's does, is not an import and does not count.
 
 Deliberately **not** the OS temp directory that `/handoff`'s own `SKILL.md` names — most Linux boxes
-empty `/tmp` on boot. METHOD.md's *Session handoffs* is the rule and carries the reasoning; this is
-the path you need to do the job.
+empty `/tmp` on boot. METHOD.md's *Session handoffs* is the rule and carries the reasoning; each
+project's `CLAUDE.md` carries the one line that makes `/handoff` obey it. A handoff written before
+that line existed, or by a session that ignored it, lands in temp anyway — step 1 knows where.
 
 ## Arguments
 
@@ -38,14 +41,32 @@ the path you need to do the job.
 ## Steps
 
 ### 1. Find it
-Walk up from `$PWD` to the first directory containing a `CLAUDE.md` that imports devkit; the slug is
-the basename of the child you came through. Then list `~/.claude/handoffs/<slug>/` newest-first and
-take the top file. Confirm the slug out loud before reading — a wrong slug silently reads another
+Walk up from `$PWD` to the first directory containing a `CLAUDE.md` that imports devkit (an `@`
+import of `METHOD.md`, not a mention); the slug is the basename of the child you came through. If no
+such directory exists, the slug is the basename of `git rev-parse --show-toplevel`. Say which of the
+two you used, and confirm the slug out loud before reading — a wrong slug silently reads another
 project's handoff, which is worse than reading none.
 
-If the directory is empty or absent, **say so and stop**. Do not go hunting through `/tmp`, do not
-reconstruct a handoff from git log, and above all do not improvise a summary — a fabricated "where
-we were" is worse than an honest "there is no handoff here", because the Owner will act on it. Offer
+Then list `~/.claude/handoffs/<slug>/` newest-first and take the top file.
+
+**If that directory is empty or absent, look in temp once — for a file, not for clues.** A handoff
+written to the wrong place is still a handoff, and losing it to a reboot is the failure the
+directory exists to prevent. Search only these, for `*.md` files whose **name** contains `handoff`
+(any case):
+
+```bash
+find "${TMPDIR:-/tmp}" /tmp -maxdepth 5 -iname '*handoff*.md' 2>/dev/null
+```
+
+That depth reaches Claude Code's session scratchpads (`/tmp/claude-<uid>/<encoded-cwd>/<session>/
+scratchpad/`). Keep a hit only if its name or its encoded-cwd path names this project's slug. If
+one or more remain, say where each was found and its timestamp, read the newest, and **offer** to
+move it to `~/.claude/handoffs/<slug>/YYYY-MM-DD-HHMM.md` (its mtime) — moving is the Owner's call,
+since a scratchpad is another session's directory.
+
+If neither place has one, **say so and stop**. Do not reconstruct a handoff from git log, do not
+read other files in temp, and above all do not improvise a summary — a fabricated "where we were" is
+worse than an honest "there is no handoff here", because the Owner will act on it. Offer
 `git log --since` and the project's `REVIEW-DEBT.md` as the honest fallback and let them choose.
 
 ### 2. Read it, and read what it points at

@@ -77,6 +77,10 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 - Write load-bearing decisions down as ADRs at the moment of decision.
 - A domain rule is the Owner's to state, never the agent's to infer (PRINCIPLES #11). A slice cuts
   layers, never contexts.
+- `/handoff` saves to `~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md`, **not** the OS temp
+  directory or a session scratchpad that its own `SKILL.md` and the harness point at: both are
+  emptied on reboot, and `/resume` reads only the handoffs directory (METHOD.md, *Session
+  handoffs*). This line is the rule's carrier; it lives here because this file is always loaded.
 
 ## Surface work  (only if this project has a surface)
 The look is not this project's to invent. Two installed skills own the parts devkit deliberately
