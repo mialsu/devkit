@@ -123,7 +123,10 @@ added_sizes() {
   done <<<"$UNTRACKED"
 }
 # Added lines in files this gate polices, minus any line the author exempted.
-policed_lines() { added_lines | awk -F'\t' -v skip="$SKIP_CONTENT" '$1 !~ skip' | grep -v 'drift-ok'; }
+# Regexes reach awk through ENVIRON, never -v: awk processes backslash escapes in a -v assignment,
+# so `\.md$` arrived as `.md$` (any character, then md) and gawk warned on every run. Found at
+# prep-planner's bootstrap, 2026-10-20, when check.sh step 3 had been reporting the gate BROKEN.
+policed_lines() { added_lines | SKIP="$SKIP_CONTENT" awk -F'\t' '$1 !~ ENVIRON["SKIP"]' | grep -v 'drift-ok'; }
 loc()  { printf '%s:%s' "$(cut -f1 <<<"$1")" "$(cut -f2 <<<"$1")"; }
 body() { cut -f3- <<<"$1"; }
 
@@ -485,7 +488,8 @@ while IFS= read -r rec; do
   report "tokens — $(cut -f2 <<<"$rec") carries $(cut -f1 <<<"$rec") token/value rows" \
           "two formats for one artifact: a token table in prose drifts from the tokens in code" \
           "move the values to the token file in code, and cite its PATH here instead"
-done < <(added_lines | grep -v 'drift-ok' | awk -F'\t' -v t="$ds_tok" -v v="$ds_val" '
+done < <(added_lines | grep -v 'drift-ok' | DS_TOK="$ds_tok" DS_VAL="$ds_val" awk -F'\t' '
+    BEGIN { t = ENVIRON["DS_TOK"]; v = ENVIRON["DS_VAL"] }
     $1 ~ /\.md$/ && $3 ~ /^[[:space:]]*\|/ && $3 ~ t && $3 ~ v { c[$1]++ }
     END { for (f in c) if (c[f] >= 3) print c[f] "\t" f }')
 
