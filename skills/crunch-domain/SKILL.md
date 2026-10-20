@@ -1,6 +1,6 @@
 ---
 name: crunch-domain
-description: Crunch a project's domain with the Owner — walk the timeline out loud, harvest the language into CONTEXT.md, and turn the rules into INVARIANTS.md entries that each name a failing test. Use when the user says "crunch the domain", "model the domain", "what are the invariants", "event storm", when a word keeps meaning two things, or before a project with real rules (money, scheduling, permissions, state machines) gets big.
+description: Crunch a project's domain with the Owner — walk the timeline out loud, harvest the language into GLOSSARY.md, and turn the rules into INVARIANTS.md entries that each name a failing test. Use when the user says "crunch the domain", "model the domain", "what are the invariants", "event storm", when a word keeps meaning two things, or before a project with real rules (money, scheduling, permissions, state machines) gets big.
 disable-model-invocation: true
 ---
 
@@ -26,13 +26,13 @@ Check the **domain dial** (METHOD.md). It is `on` only when at least two of thes
 - money, scheduling, permissions, or state machines are in scope;
 - the project will be alive longer than a month, across many sessions.
 
-Fewer than two: say so plainly, recommend glossary-only (`CONTEXT.md` alone, which is always on),
+Fewer than two: say so plainly, recommend glossary-only (`GLOSSARY.md` alone, which is always on),
 and stop. Refusing to model a to-do list is the skill working, not failing. If the Owner wants it
 anyway, that's their call (PRINCIPLES #8) — proceed, and note in the report that the dial said no.
 
 ## 2. Ground yourself first, out loud
 
-Before the first question, read and *state what you found*: `CONTEXT.md` (and `CONTEXT-MAP.md` if
+Before the first question, read and *state what you found*: `GLOSSARY.md` (and `GLOSSARY-MAP.md` if
 it exists), the top-level code folders, the existing specs, `REVIEW-DEBT.md`. Every "the code
 already does X" is a claim needing file:line (PRINCIPLES #6) — `/verify-claim` it if it matters.
 Say which terms already exist so the Owner doesn't re-invent their own vocabulary at you.
@@ -55,9 +55,9 @@ marked "(Recommended)":
    - what if two actors do it **at the same time**?
    - who can **undo** it, and what does undone mean — reversed, or never happened?
    - what does this look like **a year later**, when the data is old?
-5. **Challenge the words as they're spoken.** A term that conflicts with `CONTEXT.md` gets called
+5. **Challenge the words as they're spoken.** A term that conflicts with `GLOSSARY.md` gets called
    out immediately; a fuzzy term gets a proposed canonical name. That is `/domain-modeling`'s job —
-   invoke it rather than re-implementing it, and let it write `CONTEXT.md` in its own format.
+   invoke it rather than re-implementing it, and let it write `GLOSSARY.md` in its own format.
 
 Stop when the Owner starts repeating themselves. That's the model, not a shortage of questions.
 
@@ -67,10 +67,10 @@ Nothing new is invented here; every output has a home that already exists:
 
 | What came out | Goes to | Owned by |
 |---|---|---|
-| a word, its definition, its rejected synonyms | `CONTEXT.md` (`_Avoid_:`, `_Unresolved_:`) | `/domain-modeling` (mp) |
+| a word, its definition, its rejected synonyms | `GLOSSARY.md` (`_Avoid_:`, `_Unresolved_:`) | `/domain-modeling` (mp) |
 | a rule that must always hold | `INVARIANTS.md` (`INV-n`) | devkit — `templates/INVARIANTS.md` |
 | a hard-to-reverse call with real alternatives | `docs/adr/NNNN-*.md` | `/domain-modeling` (mp) |
-| contexts, where they live, how they relate | `CONTEXT-MAP.md` | `/domain-modeling` (mp) |
+| contexts, where they live, how they relate | `GLOSSARY-MAP.md` | `/domain-modeling` (mp) |
 | a question the Owner couldn't answer | the spec's **Open questions**, or `_Unresolved_:` on the term | — |
 
 ## 5. Split contexts only when a word actually collides
@@ -80,8 +80,8 @@ different actors and no single definition serves both — that's the trigger, no
 not "it feels like two systems". Splitting early buys the cost of a boundary with none of the
 benefit.
 
-When you do split: `CONTEXT-MAP.md` names each context, the folder it lives in, and how they
-relate; each context gets its own `CONTEXT.md` and its own `INVARIANTS.md` beside its code.
+When you do split: `GLOSSARY-MAP.md` names each context, the folder it lives in, and how they
+relate; each context gets its own `GLOSSARY.md` and its own `INVARIANTS.md` beside its code.
 
 Then make the boundary real: **each context folder becomes a layering rule in the boundary gate**
 (`/harness` step 3). A context that isn't in the import graph's rules is a suggestion, and the
@@ -120,7 +120,7 @@ The drift gate backs this up: a new `INV-` row with an empty `Enforced by` cell 
 ## 7. Report and confess
 
 Report: dial verdict, contexts (with the recommendation to keep it at one if that's the call),
-`INV-n` list with each enforcer, terms added to `CONTEXT.md`, ADRs offered,
+`INV-n` list with each enforcer, terms added to `GLOSSARY.md`, ADRs offered,
 and every open question. Then `/confess`: each `[review-only]` invariant, each context boundary
 not yet in the boundary gate, and anything the Owner deferred.
 

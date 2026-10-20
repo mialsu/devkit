@@ -72,7 +72,7 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
                   ▼
 0b. CRUNCH   /crunch-domain (dk)      → only if the DOMAIN DIAL is on (below), and BEFORE the first
    (dial on only)                       spec: walk the domain's timeline with the Owner, harvest the
-                                        words into CONTEXT.md and the rules into INVARIANTS.md, give
+                                        words into GLOSSARY.md and the rules into INVARIANTS.md, give
                                         every invariant the test that fails when it is violated.
                   │  gate: can the Owner recite the contexts and top 3 invariants, files closed?
                   ▼
@@ -118,7 +118,7 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
                                   → its platform reality picks the profile, and its MVP cut is
                                     already the DOMAIN DIAL's evidence (money? scheduling?
                                     permissions? a state machine? then the dial is on)
-2. /new-project                   once. Profile, CLAUDE.md, CONTEXT.md, CODING_STANDARDS.md,
+2. /new-project                   once. Profile, CLAUDE.md, GLOSSARY.md, CODING_STANDARDS.md,
                                   REVIEW-DEBT.md, scripts/drift-check.sh, specs/. Delegates to
                                   /harness, which PROVES each gate by breaking it. Step 3a sets
                                   the domain dial. You author the domain guard-rails. Then it stops.
@@ -173,7 +173,7 @@ Twelve supporting skills sit outside the loop:
   gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
   retrofit a project whose rules currently live only in prose.
 - **`/crunch-domain` (dk)** — for a project whose **domain dial** is on (below): walk the domain's
-  timeline with the Owner, harvest the words into `CONTEXT.md` and the rules into `INVARIANTS.md`,
+  timeline with the Owner, harvest the words into `GLOSSARY.md` and the rules into `INVARIANTS.md`,
   and give every invariant the test that fails when it's violated. Its first act is to check the
   dial and try to talk you out of it. Not per-task: run it once early, re-run when the domain moves.
 - **`/design-brief` (dk)** — for a project with a **surface**: the inventory reconciled against the
@@ -205,7 +205,7 @@ Twelve supporting skills sit outside the loop:
   handoffs* below for where they live and why not `/tmp`.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
-profile, lays down the workspace, `CLAUDE.md`, `CONTEXT.md`, and `REVIEW-DEBT.md`, and wires the
+profile, lays down the workspace, `CLAUDE.md`, `GLOSSARY.md`, and `REVIEW-DEBT.md`, and wires the
 gate commands via **`/harness`**. Publishing is **`/ship` (dk)** — the per-profile,
 explicit-keystroke publish checklist.
 
@@ -218,10 +218,10 @@ map, so no session has to guess which shape is canonical:
 
 | Artifact | Format owned by | devkit's additions |
 |---|---|---|
-| `CONTEXT.md` (ubiquitous language) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
+| `GLOSSARY.md` (ubiquitous language) | `domain-modeling` (mp) — `GLOSSARY-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
 | `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7) |
 | `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file by default; a tracker issue instead when the **cadence dial** is on (below); adds Tracer slices (#4) and Open questions (#7) |
-| `CONTEXT-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `CONTEXT-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
+| `GLOSSARY-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `GLOSSARY-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |
 | the boundary gate | `setup-ts-deep-modules` (mp) — ships a working dependency-cruiser config | fills its deliberately-empty layering stub; per-profile equivalents for non-TS |
 | design tokens, type scale, wireframes, UI copy, the signature element | `ui-ux-pro-max` (installed skill) — `search.py "<product> <industry>" --design-system`: 192 product palettes with reasoning profiles, 74 font pairings, 79 styles, and the `--variance`/`--motion`/`--density` dials | devkit adds one constraint: the token **values live in code**, and `DESIGN.md` points at that file rather than copying them. Two things the dataset does **not** carry — **copy voice** and **ASCII wireframes** — have no skill owner and fall to the Owner, with `/code-review` as the backstop; `REVIEW-DEBT.md` carries that as an open entry |
@@ -232,7 +232,7 @@ map, so no session has to guess which shape is canonical:
 | "could this work here at all" (feasibility, in a codebase that exists) | devkit — `/spike`; neither source asks it. `/prototype` (mp) answers *design* questions, `/verify-claim` (dk) answers *does it work today* | the whole skill, plus the artifact neither source has: a spike report outside the repo, carrying the verdict, its evidence, and what the spike faked |
 | "is there anything here worth building" (before a brief exists) | devkit — `/sketch`; `/product-brief` demands a cheapest falsifying test and ships no tool that builds a whole app in a day | the whole skill. It feeds the brief, is reachable from it, and its code is never promoted |
 | `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `ui-ux-pro-max` returns an aesthetic recommendation, not a scope-reconciled contract, and neither source enforces accessibility at all |
-| `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `CONTEXT.md` a glossary and *nothing else*, so domain **rules** had no home |
+| `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `GLOSSARY.md` a glossary and *nothing else*, so domain **rules** had no home |
 | `PRODUCT-BRIEF.md` (product altitude, before a repo exists) | devkit — neither source covers this stage | the whole file. Note the name clash: **"PRD" is already taken** — `to-prd` and `to-spec` (mp) are one template under two names, and both refuse to interview. This is the earlier, *interviewed* document, and it deliberately holds no `US-n` list so the spec keeps that id scheme to itself |
 | the authorization rules a security pass attacks | `INVARIANTS.md` (devkit) — *who may see or change a row and why* | `/audit` attacks them and files what it finds as `INV-n` rows with enforcers; it never invents the rules |
 | "what should this module's interface be", "is this refactor worth doing" | `codebase-design` + `improve-codebase-architecture` (mp) — module/interface/depth/**seam**, the deletion test | `/prune` adds the two things neither has: proof-before-deletion, and the three tests that say *don't* merge |
@@ -295,9 +295,9 @@ The bar for **on** is at least **two** of these:
 
 | Setting | What exists | When |
 |---|---|---|
-| **off** (the floor — cli-tools, library) | `CONTEXT.md` only — the glossary is *always* on, because vocabulary drift is free to prevent and expensive to fix | scripts, CRUD, thin wrappers, most CLIs |
+| **off** (the floor — cli-tools, library) | `GLOSSARY.md` only — the glossary is *always* on, because vocabulary drift is free to prevent and expensive to fix | scripts, CRUD, thin wrappers, most CLIs |
 | **on** (web, mobile-fullstack; game's rules only) | + `INVARIANTS.md`, each invariant naming the enforcer that fails when it's violated; `/crunch-domain` before the first spec | ≥2 triggers above |
-| **mapped** (rare, and never by default) | + `CONTEXT-MAP.md`, one `CONTEXT.md` + `INVARIANTS.md` per context, **and each context folder wired as a layering rule in the boundary gate** | a word genuinely collides between actors — nothing else justifies a split |
+| **mapped** (rare, and never by default) | + `GLOSSARY-MAP.md`, one `GLOSSARY.md` + `INVARIANTS.md` per context, **and each context folder wired as a layering rule in the boundary gate** | a word genuinely collides between actors — nothing else justifies a split |
 
 Two rules keep the dial honest:
 
@@ -403,7 +403,7 @@ argument ANTI-PATTERNS makes about the pseudo-artifact, at session scale.
   becomes `/verify-live`, which delegates the *meaning* of "exercise it" to the domain profile.
 - **DDD** enters through the same door as everything else — reuse. Pocock's `domain-modeling`
   already owns the ubiquitous language, the ADRs, and the context map, so devkit adds only the piece
-  it deliberately excludes (`CONTEXT.md` is "a glossary and nothing else", which leaves domain
+  it deliberately excludes (`GLOSSARY.md` is "a glossary and nothing else", which leaves domain
   *rules* homeless): `INVARIANTS.md`, plus the dial that decides when any of it is worth doing. The
   discipline it borrows from Three Dots Labs' *DDD and AI coding* is the warning, not the ceremony —
   the model's value is the understanding, an agent-generated model nobody read is a pseudo-artifact,

@@ -63,13 +63,13 @@ fi
 # a long time it did not: banned terms were stored whole while identifiers were compared segment
 # by segment, so every multi-word entry in every project glossary was inert and the check printed
 # clean forever. A gate that silently passes is worse than no gate, and only an assertion on real
-# input catches it. Built as a throwaway repo because the gate reads CONTEXT.md via git ls-files.
+# input catches it. Built as a throwaway repo because the gate reads GLOSSARY.md via git ls-files.
 group "3b. vocabulary check behaviour (fires on what it must, ignores what it must not)"
 vt="$(mktemp -d)"
 (
   cd "$vt" || exit 2
   git init -q . && git config user.email t@t && git config user.name t
-  printf '%s\n' '_Avoid_: run, step, flag, purchase, end customer, write_off, orderRow' > CONTEXT.md
+  printf '%s\n' '_Avoid_: run, step, flag, purchase, end customer, write_off, orderRow' > GLOSSARY.md
   : > seed.txt && git add -A && git commit -qm seed
   # MUST fire: one-segment, its plural, a two-segment term in all four spellings, a run inside a
   # longer identifier, and a snake_case / space-separated term written camelCase in the code.
@@ -148,7 +148,7 @@ done < <(git ls-files 'skills/*/SKILL.md')
 # directories. `scripts/...` and `docs/...` are deliberately excluded: in this repo's prose they
 # usually name a path inside a GENERATED project or another repo entirely
 # (`scripts/drift-check.sh --cached` is what a project runs, not what devkit contains) — the same
-# cross-repo ambiguity that makes `CONTEXT.md` mean two different files depending on who reads it.
+# cross-repo ambiguity that makes `GLOSSARY.md` mean two different files depending on who reads it.
 # Placeholders (<domain>, NNNN, globs) are patterns, not paths, so they are skipped too.
 group "6. cross-references resolve"
 refs=0; dead=0

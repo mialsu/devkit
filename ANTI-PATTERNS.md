@@ -70,7 +70,7 @@ failure *shapes* that recur regardless of domain.
 
 - **Two words for one thing.** A second name for a concept that already has one forks the
   project's language: the agent starts writing a parallel vocabulary, and two half-implementations
-  follow it. The word goes in `CONTEXT.md` — with its rejected synonyms under `_Avoid_` — before
+  follow it. The word goes in `GLOSSARY.md` — with its rejected synonyms under `_Avoid_` — before
   the code uses it. (→ the drift gate checks this on every diff)
 
 - **Two formats for one artifact.** The same document (a glossary, an ADR, a spec) written two ways

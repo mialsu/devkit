@@ -19,7 +19,7 @@
 # client_ref and clientRefId but not `ref`), so it catches `createPurchase` without
 # flagging `runtime`, `overrun`, or `setWindowFlags`. It
 # still errs toward catching: a missed synonym silently forks the project's language (expensive),
-# a false positive costs one `drift-ok` (cheap). If it is noisy, suspect CONTEXT.md first — an
+# a false positive costs one `drift-ok` (cheap). If it is noisy, suspect GLOSSARY.md first — an
 # `_Avoid_` list should hold domain synonyms, not general programming words.
 #
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
@@ -70,7 +70,7 @@ if ! git rev-parse --verify -q HEAD >/dev/null 2>&1; then
 fi
 
 # Files whose CONTENT this gate does not police (prose, locks, generated, vendored, snapshots).
-SKIP_CONTENT='(^|/)(CHANGELOG|README|REVIEW-DEBT|CODING_STANDARDS|CONTEXT|CONTEXT-MAP)\.md$|\.(md|txt|snap|svg|png|jpg|lock)$|(^|/)(vendor|node_modules|dist|build|\.venv)/|-lock\.(json|yaml)$|(^|/)(go\.sum|yarn\.lock|bun\.lockb)$|\.min\.|\.gen\.[a-z]+$|(^|/)drizzle/|(^|/)openapi\.json$|(^|/)schema\.d\.ts$'
+SKIP_CONTENT='(^|/)(CHANGELOG|README|REVIEW-DEBT|CODING_STANDARDS|GLOSSARY|GLOSSARY-MAP|CONTEXT|CONTEXT-MAP)\.md$|\.(md|txt|snap|svg|png|jpg|lock)$|(^|/)(vendor|node_modules|dist|build|\.venv)/|-lock\.(json|yaml)$|(^|/)(go\.sum|yarn\.lock|bun\.lockb)$|\.min\.|\.gen\.[a-z]+$|(^|/)drizzle/|(^|/)openapi\.json$|(^|/)schema\.d\.ts$'
 # Files that are not yours to edit by hand (only through their generator), and that never change
 # as a byproduct of normal work: vendored code, build output, an applied migration.
 GENERATED='(^|/)(vendor|node_modules|dist|build)/|\.generated\.|(^|/)(migrations|drizzle)/|_pb2?\.py$|\.pb\.go$|\.g\.dart$|\.freezed\.dart$'
@@ -139,7 +139,9 @@ while IFS= read -r ctx; do
   [ -f "$ctx" ] || continue
   terms+="$(sed -n 's/^_Avoid_:[[:space:]]*//p' "$ctx" | tr ',' '\n' \
             | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | grep -Ev '^(<.*>)?$')"$'\n'
-done < <(git ls-files | grep -E '(^|/)CONTEXT\.md$')
+# GLOSSARY.md since mattpocock-skills 1.3.1 renamed it; GLOSSARY.md is still read for projects
+# bootstrapped before that, so the gate never silently goes blind on an older repo.
+done < <(git ls-files | grep -E '(^|/)(GLOSSARY|CONTEXT)\.md$')
 terms="$(printf '%s' "$terms" | awk -v m="$MIN_TERM_LEN" 'length($0)>=m' | sort -fu)"
 
 if [ -n "$terms" ] && [ -n "$LINES" ]; then
@@ -208,7 +210,7 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
       if (kb == 0) continue;
       key = B[1];
       for (j=2;j<=kb;j++) key = key SEP B[j];
-      BAN[key]=1; BANDISP[key]=t;                       # BANDISP reports the CONTEXT.md spelling
+      BAN[key]=1; BANDISP[key]=t;                       # BANDISP reports the GLOSSARY.md spelling
       if (kb > MAXSEG) MAXSEG = kb;
       delete B;
     }
@@ -238,13 +240,13 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
   }')"
   if [ -n "$hits" ]; then
     count="$(printf '%s\n' "$hits" | wc -l | tr -d ' ')"
-    report "vocabulary — a word CONTEXT.md says to avoid is entering the code ($count)" \
+    report "vocabulary — a word GLOSSARY.md says to avoid is entering the code ($count)" \
             "two words for one thing: the project's language forks silently" \
-            "use the canonical CONTEXT.md term, or add \`drift-ok\` if this word genuinely means something else here"
+            "use the canonical GLOSSARY.md term, or add \`drift-ok\` if this word genuinely means something else here"
     printf '%s\n' "$hits" | head -15 | sed 's/^/     /'
     if [ "$count" -gt 15 ]; then
       say "     … and $((count - 15)) more of the same kind. The cap is display-only — all $count are violations."
-      say "     If most look like general programming words, the fix is CONTEXT.md: a domain glossary's"
+      say "     If most look like general programming words, the fix is GLOSSARY.md: a domain glossary's"
       say "     _Avoid_ list should hold DOMAIN synonyms, not words like run/item/length/script."
     fi
   fi

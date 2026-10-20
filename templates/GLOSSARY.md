@@ -7,7 +7,7 @@ conversation, and the code all use. It is a glossary and **nothing else**: no im
 detail, no file paths, no decisions (those are ADRs), no scope (that's the spec).
 
 Format and rules: devkit adopts the format of the installed `domain-modeling` skill verbatim
-(`~/.claude/skills/domain-modeling/CONTEXT-FORMAT.md`) so the skill that maintains this file and
+(`~/.claude/skills/domain-modeling/GLOSSARY-FORMAT.md`) so the skill that maintains this file and
 the template that seeds it can never drift apart. Two devkit additions are noted below.
 
 ## Language
@@ -35,6 +35,6 @@ _Unresolved_: <optional — the part of this term still fuzzy. Resolve before it
 ## Multiple contexts
 
 Most projects have one. When this one grows a second — the same word meaning genuinely different
-things to different actors — the convention is a `CONTEXT-MAP.md` at the repo root listing each
-context, where it lives, and how they relate; each context then owns its own `CONTEXT.md` beside
+things to different actors — the convention is a `GLOSSARY-MAP.md` at the repo root listing each
+context, where it lives, and how they relate; each context then owns its own `GLOSSARY.md` beside
 its code. Don't pre-split: one context until a word actually collides.

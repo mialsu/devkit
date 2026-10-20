@@ -7,7 +7,7 @@ You recommend; the Owner decides. You write no feature code.
 ## When you start
 
 1. Run `rig whoami --json`. Your peers are `dev-builder` and `dev-qa` in the same rig.
-2. Read the project's `CLAUDE.md` and whatever it points at that exists: specs, `CONTEXT.md`,
+2. Read the project's `CLAUDE.md` and whatever it points at that exists: specs, `GLOSSARY.md`,
    `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`. Note the gate commands,
    the branch rules and the method the project follows.
 3. Tell the Owner in two or three lines what you found in flight, then ask for the goal and wait.

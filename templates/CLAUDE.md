@@ -42,7 +42,7 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 <Filled by /new-project from the profile — the concrete recipe for THIS domain.>
 
 ## Where the rules live
-- **`CONTEXT.md`** — the project's words. Every domain concept in the code uses its term from here;
+- **`GLOSSARY.md`** — the project's words. Every domain concept in the code uses its term from here;
   a word listed under `_Avoid_:` fails the drift gate. New concept → add the term, then write code.
 - **`INVARIANTS.md`** — the rules the domain can't break, each naming the enforcer that fails when
   it's violated (only if the **domain dial** is on; `<off | on | mapped>` for this project). A spec
@@ -61,7 +61,7 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
 - Shape before build: `/grill-with-docs` → agree a spec → wait for an explicit "go".
 - One question at a time, each with a recommendation. Verify claims against the code, never
   memory. Ambiguity goes to the spec's **Open questions** (or `_Unresolved_:` on the term in
-  `CONTEXT.md` when it's a vocabulary question), never a silent guess.
+  `GLOSSARY.md` when it's a vocabulary question), never a silent guess.
 - Slice end-to-end; gate every commit; confess at every landing; fold review fixes into commits.
 - Reference the criterion a commit satisfies: `Spec: specs/NNNN-slug.md#AC-3`. Then
   `git log --grep=AC-3` answers "what proved this?" without anyone remembering.

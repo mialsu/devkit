@@ -55,7 +55,7 @@ contradicts one of these, the principle wins.
 
 7. **Write it down at the moment of decision.** Load-bearing or hard-to-reverse decisions get
    an ADR *with the rejected alternatives* when decided — not reconstructed later. Vocabulary
-   goes in `CONTEXT.md`; deferrals go in the spec's non-goals; open product questions go in a
+   goes in `GLOSSARY.md`; deferrals go in the spec's non-goals; open product questions go in a
    questions file, never into a silent assumption.
 
 8. **You decide; the agent recommends.** You are the Owner. Claude is the Foreman: it grounds

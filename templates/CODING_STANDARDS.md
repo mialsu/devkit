@@ -27,7 +27,7 @@ Two rules about the rules:
 
 ## Language
 
-- Every domain concept is named with its `CONTEXT.md` term. New concept → add the term first,
+- Every domain concept is named with its `GLOSSARY.md` term. New concept → add the term first,
   then write the code. `[script]` (`_Avoid_` words), `[review-only]` (missing terms)
 - Names reveal intent; a name you can't defend means the design is still murky. `[review-only]`
 
@@ -35,7 +35,7 @@ Two rules about the rules:
 
 - Import a module only through its public surface, never its internals. `[boundary]`
 - No dependency cycles. `[boundary]`
-- <Layering: which areas may depend on which — one rule per context in `CONTEXT-MAP.md`.> `[boundary]`
+- <Layering: which areas may depend on which — one rule per context in `GLOSSARY-MAP.md`.> `[boundary]`
 - Nothing crosses a context boundary except through a seam the context map names. `[boundary]`
 - A domain invariant (`INV-n`) is enforced in **one** place, and that place is named in
   `INVARIANTS.md`. Everywhere else calls it — three enforcement sites is three chances to drift.

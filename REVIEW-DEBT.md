@@ -530,14 +530,14 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   Effect on that repo: **198 → 70** hits over history, and the surviving hits reduced to four
   nameable classes instead of a wall.
 - **Where:** `templates/scripts/drift-check.sh` (`SKIP_CONTENT`, `GENERATED`, `REGENERATED`,
-  check 1, check 5); `skills/harness/SKILL.md` (retrofit section); `templates/CONTEXT.md`.
+  check 1, check 5); `skills/harness/SKILL.md` (retrofit section); `templates/GLOSSARY.md`.
 - **What green tests do NOT prove here:** that the gate is now quiet on a *different* stack. Three
   language-agnostic runs (devkit, a Python repo, a TS monorepo) have each found new blind spots, so
   the honest prior is that the fourth will too.
 - **Disposition:** fixed. **The earlier prediction was confirmed and sharpened**: the prerequisite
   isn't just "prune general programming words" from `_Avoid_`, it's "prune words the *platform*, a
   *dependency*, or your own *enum values and labels* already own" — now written into
-  `templates/CONTEXT.md`.
+  `templates/GLOSSARY.md`.
 
 - **What:** **`/harness` step 3's delegation had an undocumented precondition.** It delegates TS
   boundary work to `/setup-ts-deep-modules`, which enforces depth — root files public, subfolders

@@ -20,7 +20,7 @@ Two meta-rules, from the template devkit ships:
 
 ## Documents
 
-- **Never invent a format an installed skill already maintains.** `CONTEXT.md`, `CONTEXT-MAP.md`
+- **Never invent a format an installed skill already maintains.** `GLOSSARY.md`, `GLOSSARY-MAP.md`
   and ADRs follow `domain-modeling`; specs follow `to-spec`; the standards file is named
   `CODING_STANDARDS.md` because that is what `code-review` opens. The reuse map in `METHOD.md` is
   the register — add a row before adding an artifact. `[review-only]`

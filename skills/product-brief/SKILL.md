@@ -70,7 +70,7 @@ against it, hard:
    defer the reversible ones (usually all the tech).
 
 5. **Write `PRODUCT-BRIEF.md`** from the template. Keep it lean — cut any section that's
-   speculation dressed as fact. Seed `CONTEXT.md` vocabulary from it; record any genuinely
+   speculation dressed as fact. Seed `GLOSSARY.md` vocabulary from it; record any genuinely
    one-way decision as an ADR.
 
 6. **Gate, then hand off.** State plainly: is there a lovable MVP, and can the #1 assumption be

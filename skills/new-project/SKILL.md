@@ -19,7 +19,7 @@ Create the project directory (or use the current one if it's empty). Drop in, fr
 `templates/`:
 - `CLAUDE.md` — fill the **domain guard-rails** section WITH the user (see step 4). Everything
   else is adopt-verbatim.
-- `CONTEXT.md` — the ubiquitous-language starter, in the format the installed `domain-modeling`
+- `GLOSSARY.md` — the ubiquitous-language starter, in the format the installed `domain-modeling`
   skill maintains. One line on what this context is; terms get added as they're resolved, not now.
 - `CODING_STANDARDS.md` — seeded from the profile in step 3. The filename is load-bearing.
 - `REVIEW-DEBT.md` — empty ledger.
@@ -40,10 +40,10 @@ prove this, so do it here.
 ## 3a. Set the domain dial
 The profile has a default (`off` / `on` / `on for the rules domain only`). Confirm it against the
 project in front of you using METHOD.md's four triggers, and state the verdict in `CLAUDE.md`.
-- **off** — `CONTEXT.md` only. Nothing else to do; the glossary is always on.
+- **off** — `GLOSSARY.md` only. Nothing else to do; the glossary is always on.
 - **on** — copy `templates/INVARIANTS.md` and run **`/crunch-domain`** *before the first spec*, not
   after. Invariants discovered after the schema exists cost a migration.
-- Don't create `CONTEXT-MAP.md`. One context until a word actually collides (PRINCIPLES #4).
+- Don't create `GLOSSARY-MAP.md`. One context until a word actually collides (PRINCIPLES #4).
 
 Recommend the profile default unless the project clearly clears or misses the bar, and say which
 way you're arguing. An empty repo cannot answer "does this have a domain?" for you — the Owner can.

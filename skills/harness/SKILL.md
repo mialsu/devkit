@@ -44,7 +44,7 @@ it deliberately leaves empty: its **`// Layering (optional, off by default)` stu
 where *which area may depend on which* belongs. Use `/codebase-design` vocabulary (module,
 interface, seam, depth) when discussing shape.
 
-**Where the layering rules come from:** if `CONTEXT-MAP.md` exists, its contexts *are* the rules —
+**Where the layering rules come from:** if `GLOSSARY-MAP.md` exists, its contexts *are* the rules —
 one rule per context folder, forbidding everything except the seams the map names. Copy them; don't
 invent a parallel set of areas (that would be two shapes for one architecture). A context that
 isn't in the import graph's rules is a suggestion, and the first agent in a hurry reaches straight
@@ -52,7 +52,7 @@ through it. No context map → the layering rules are the Owner's call; ask, don
 
 ## 4. Install the drift gate
 Copy `templates/scripts/drift-check.sh` to `scripts/`. Tune `MAX_NEW_FILE_LINES`, `LEDGER`,
-`ADR_DIR` if the project's layout differs. It reads `CONTEXT.md`'s `_Avoid_:` lines, so the
+`ADR_DIR` if the project's layout differs. It reads `GLOSSARY.md`'s `_Avoid_:` lines, so the
 project's ubiquitous language becomes machine-checked the moment a term is written down.
 
 If the **domain dial** is on, it also polices `INVARIANTS.md`: a new `INV-` row whose `Enforced by`
@@ -91,7 +91,7 @@ it into three piles before changing anything:
 1. **The gate's own blind spots** — generated files it doesn't know about, a codegen convention it
    hasn't met. Fix the gate; these are not the project's problem.
 2. **Glossary bugs** — a banned word whose every hit is a value, a UI label, or a word the platform
-   or a dependency owns. Fix `CONTEXT.md`; the code is fine.
+   or a dependency owns. Fix `GLOSSARY.md`; the code is fine.
 3. **Real drift** — the same concept under two names. This is the only pile that touches code.
 
 Expect pile 3 to be the smallest, and don't be disappointed: a run that finds two missing *terms*

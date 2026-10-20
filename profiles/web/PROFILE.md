@@ -69,7 +69,7 @@ disciplines transfer most directly.
   purpose — its `// Layering (optional, off by default)` stub — with which area may depend on
   which. Script it as `lint:boundaries` (`depcruise src`) and fold it into the umbrella check.
   `eslint-plugin-boundaries` is the alternative if the repo is already ESLint-centric.
-- **Drift gate:** `scripts/drift-check.sh` — vocabulary from `CONTEXT.md`, suppressions without a
+- **Drift gate:** `scripts/drift-check.sh` — vocabulary from `GLOSSARY.md`, suppressions without a
   confession, undeclared dependencies, stray lockfile moves, oversized new files.
 - **What no harness here catches:** whether the seam is in the *right place*, runtime coupling
   through a store/context/DI container, and prop-drilled state that no import graph can see.

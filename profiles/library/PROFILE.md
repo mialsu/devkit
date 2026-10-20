@@ -22,7 +22,7 @@ as an installer would, and the docs are part of the deliverable, not an aftertho
 
 ## Domain dial (default: **off** — the public API *is* the language)
 - **Why off:** for a library, the exported names are the ubiquitous language, and the surface gate
-  already enforces them. `CONTEXT.md` plus the API report covers what a separate model would say.
+  already enforces them. `GLOSSARY.md` plus the API report covers what a separate model would say.
 - **Turn it on when the library *is* a domain** — money, tax, dates/timezones, units, permissions.
   Then invariants are the library's actual contract, and they are the best-enforced invariants in
   any profile: **property tests** (`test:prop_*`) hold them across inputs no example test would try.
@@ -54,7 +54,7 @@ Two exceptions, both narrow:
 - **Public-surface gate:** a surface-diff tool so an accidental breaking change fails the build
   rather than a user's install (`api-extractor` / `@arethetypeswrong/cli` for TS,
   `cargo-public-api` for Rust, an apidiff for Go). Verify the tool fits before wiring it.
-- **Drift gate:** `scripts/drift-check.sh` — with `CONTEXT.md` terms mattering more here than
+- **Drift gate:** `scripts/drift-check.sh` — with `GLOSSARY.md` terms mattering more here than
   anywhere else, because your vocabulary *is* your API and renaming it later is a breaking change.
 - **What no harness here catches:** whether the documented examples still run. That's the live
   exercise, and it's the one that catches README drift.

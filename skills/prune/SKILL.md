@@ -28,7 +28,7 @@ from inside this repo at all.
 **Where "shared utils" goes wrong.** The obvious cure for duplication — hoist it into `utils/` — is
 the one shape `/codebase-design` marks *avoid*: a large interface over a thin implementation is a
 **shallow module**, and a utils folder is shallow modules by construction. Merged logic goes behind
-a **seam**, as a deep module with a name from `CONTEXT.md`, or it stays duplicated.
+a **seam**, as a deep module with a name from `GLOSSARY.md`, or it stays duplicated.
 
 ---
 

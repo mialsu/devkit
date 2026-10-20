@@ -12,7 +12,7 @@ directly and `/code-review`'s **Spec axis** can read it. Two deliberate devkit d
 - **Tracer slices and Open questions are added sections** — PRINCIPLES #4 (slice end-to-end)
   and #7 (ambiguity goes to a human, never into a silent assumption) both need a home.
 
-Use `CONTEXT.md` vocabulary throughout, and respect the ADRs covering the area you're touching.
+Use `GLOSSARY.md` vocabulary throughout, and respect the ADRs covering the area you're touching.
 
 ## Problem statement
 The problem, from the user's perspective. One paragraph.

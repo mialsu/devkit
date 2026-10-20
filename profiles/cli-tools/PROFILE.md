@@ -22,7 +22,7 @@ command line*: the right output, the right exit code, and a tool a stranger can 
 - **Why off:** a CLI's rules usually belong to the thing it wraps, and that thing already owns
   them. Re-stating someone else's rules here creates a second source of truth that silently goes
   stale — the pseudo-artifact in its purest form.
-- **Still always on:** `CONTEXT.md`. Flag names, subcommand names and output nouns are the tool's
+- **Still always on:** `GLOSSARY.md`. Flag names, subcommand names and output nouns are the tool's
   ubiquitous language, and they are the part users actually type. One name per concept, and a
   renamed flag is a breaking change.
 - **Turn it on when** the tool encodes its own rules rather than relaying them — a scheduler, a

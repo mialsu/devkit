@@ -66,7 +66,7 @@ automated enforcers, which makes labelling them the whole job.
   out of a scene, no system reaching directly into another system's nodes, signals across seams.
 - **Boundary gate, Bevy/Rust:** crate boundaries plus `pub(crate)` visibility do the work the
   compiler already understands; `cargo-deny` for dependencies.
-- **Drift gate:** `scripts/drift-check.sh`. Point `CONTEXT.md` at the **rules** — damage, economy,
+- **Drift gate:** `scripts/drift-check.sh`. Point `GLOSSARY.md` at the **rules** — damage, economy,
   state machines, save versions — which is the part of a game with a real domain worth a glossary.
   Presentation naming doesn't need one.
 - **What no harness here catches:** feel. Nothing static tells you the slice is fun; only playing

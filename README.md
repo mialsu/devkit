@@ -38,7 +38,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
 /spike                          # (devkit) could this work here at all? timeboxed, throwaway, a verdict with evidence
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
-/crunch-domain                  # (devkit) crunch the domain with the Owner → CONTEXT.md + INVARIANTS.md
+/crunch-domain                  # (devkit) crunch the domain with the Owner → GLOSSARY.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
 /audit                          # (devkit) security findings with verdicts, not a ranked list of guesses
@@ -66,7 +66,7 @@ House rules are in [CODING_STANDARDS.md](CODING_STANDARDS.md); what the gates do
 | `ANTI-PATTERNS.md` | The recurring failure shapes; stop if you catch one. |
 | `skills/` | devkit's own skills (the new ones the sources didn't have as composable units). |
 | `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, and its **domain dial** default. |
-| `templates/` | Drop-in `CLAUDE.md`, `CONTEXT.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
+| `templates/` | Drop-in `CLAUDE.md`, `GLOSSARY.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
 | `CODING_STANDARDS.md`, `scripts/check.sh` | devkit's own standards and gate set — it runs its own method on itself. |
 | `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |
@@ -79,8 +79,8 @@ per-domain profiles) plus the method that ties everything together. `METHOD.md` 
 **(mp)** his or **(dk)** mine.
 
 The same rule governs the *documents*: where one of his skills already maintains an artifact,
-devkit adopts that skill's format rather than a prettier one of its own — `CONTEXT.md`,
-`CONTEXT-MAP.md` and ADRs follow `domain-modeling`, specs follow `to-spec`, and the standards file is named
+devkit adopts that skill's format rather than a prettier one of its own — `GLOSSARY.md`,
+`GLOSSARY-MAP.md` and ADRs follow `domain-modeling`, specs follow `to-spec`, and the standards file is named
 `CODING_STANDARDS.md` because that is the filename `code-review` looks for. See the reuse map in
 `METHOD.md`. Two formats for one artifact is the same defect as two implementations of one
 behavior.

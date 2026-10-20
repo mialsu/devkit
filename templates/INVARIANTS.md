@@ -1,6 +1,6 @@
 # Invariants — <PROJECT or CONTEXT NAME>
 
-The rules this domain is not allowed to break, written in the words of `CONTEXT.md`. Each one
+The rules this domain is not allowed to break, written in the words of `GLOSSARY.md`. Each one
 names the **enforcer that fails the moment it is violated**. An invariant that names no enforcer
 is prose pretending to be a guarantee — see *the pseudo-artifact* in `ANTI-PATTERNS.md`, which is
 the failure mode this file exists to prevent.
@@ -31,8 +31,8 @@ They look alike and are not:
    entry the same day.
 4. **One owner in code.** The same rule enforced in three places is three chances to drift. Name
    the single place that owns it; everywhere else calls that.
-5. **Glossary words only.** If stating an invariant needs a word `CONTEXT.md` doesn't define, the
-   word goes in `CONTEXT.md` first — then write the invariant.
+5. **Glossary words only.** If stating an invariant needs a word `GLOSSARY.md` doesn't define, the
+   word goes in `GLOSSARY.md` first — then write the invariant.
 6. **The Owner supplies these.** The agent may draft candidates from the code, ask, and challenge;
    but an invariant the Owner cannot state with this file closed is not theirs yet
    (PRINCIPLES #11). A list nobody can recite is the pseudo-artifact, not the model.
