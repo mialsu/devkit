@@ -85,7 +85,8 @@ plan_flag=()
 if [ "$plan" -eq 1 ]; then plan_flag=(--plan); fi
 status=0
 
-if listed; then
+# `rig ps --json` lists stopped rigs too (its text view hides them), so ask for running ones.
+if listed --filter status=running; then
   echo "$name is already running for $root."
   rig ps --nodes --rig "$name" || true
   next_steps

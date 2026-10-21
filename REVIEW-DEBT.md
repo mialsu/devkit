@@ -33,7 +33,26 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     passes the project root.
   - OpenRig 0.6.6 shows healthy Claude seats as `attention_required` on Linux (its pane identity
     check cannot parse the `--settings` JSON). Seen on the kernel and the starter; expected on crew.
-- **Disposition:** open. The first real launch is the test; record what it shows here.
+- **First launch, 2026-10-21** (OpenRig 0.6.11, prep-planner, ticket 1):
+  - Seen working: the seats booted and acted to their roles; work moved architect → builder →
+    architect (review) → qa → architect as queue rows with `handedOffFrom` chains. qa re-derived each
+    criterion itself, broke each new gate on purpose, and reported PASS with evidence. Commits were
+    the Owner's, on a topic branch, with no Claude trailer. One seat once showed lifecycle `att`
+    (reason `window_activity_motion`) while the Owner was typing in it; not investigated.
+  - Every seat stopped at permission prompts under the default floor (claim, `git checkout`,
+    `docker compose`); the Owner answers each in the seat's pane.
+  - Ctrl-C twice in a seat's pane quits its Claude and leaves a shell; all three seats ended this
+    way, and commands typed afterwards ran in the seat's shell (nested `tmux attach`). `rig ps`
+    still showed them `run`/`idle`. Detach is `Ctrl-b d`; the README and crew-up's next steps do
+    not say so.
+  - `crew-up` called a stopped crew "already running": `rig ps --json` lists stopped rigs, so the
+    unfiltered check matched. Fixed to `--filter status=running` (`bash -n` clean; shellcheck is
+    not installed here); the fixed branch has not run end to end through `crew-up`.
+  - Resume observed, run by hand as `rig up crew-prep-planner --existing` after `rig down`: each
+    seat came back as `claude --resume <its session> --permission-mode acceptEdits`, so a resumed
+    seat's mode is set by flag, not only by the settings file (closes the inference above).
+- **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch, and a detach hint
+  in its next steps, are the next things to see.
 
 ## 2026-09-25 — /design-brief sent the session hunting for seven rules its own template ships
 
