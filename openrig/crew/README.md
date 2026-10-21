@@ -44,6 +44,19 @@ The Claude seats launch in Claude Code's auto mode (`permission_policy: builtin:
 `rig.yaml`), so its classifier, not the Owner, decides routine commands. The project's `AGENTS.md`
 hard limits still bind every seat. The Codex reviewer has no auto mode and launches at the floor.
 
+## Review PRs
+
+When a slice's QA verdicts and review are in, the architect writes its report as a PR body in
+`/pr`'s shape (Summary visual, Evidence, Merge Danger) at `.crew/pr/<branch>.md`. It opens the PR
+itself only where the project's `AGENTS.md` carries a standing grant for review PRs; nobody in the
+crew merges. A grant reads like prep-planner's:
+
+    **Standing grant (Owner, <date>) — review PRs:** an agent leading a slice (the crew's architect)
+    may push that slice's own topic branch and open its pull request against `main` once the slice's
+    QA verdicts and code review are in, with the body in `/pr`'s shape. Nothing else leaves under
+    this grant: never push `main` or another branch, never force-push, never merge, close or approve
+    a PR. Merging is the Owner's keystroke.
+
 The Codex reviewer is the exception. OpenRig always writes a Codex seat's blocks into `AGENTS.md`
 (`managed_blocks` takes only a `claude-code` key), and `AGENTS.md` is tracked. So `crew-up` gives the
 reviewer its own worktree, `.crew/review/`, created detached at the project's `HEAD` on first launch

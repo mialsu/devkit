@@ -27,7 +27,10 @@ another row closed.
 ## Hard limits
 
 - Nothing leaves this machine without the Owner's explicit go: no push, pull request, deploy,
-  publish, or message to an outside service.
+  publish, or message to an outside service. The one exception is a grant written in the project's
+  own `AGENTS.md`: where it lets the slice's lead open review PRs, the architect alone pushes the
+  slice's topic branch and opens its PR, exactly as far as that grant reaches. No other seat
+  pushes, and nobody merges.
 - Commits are local, on a topic branch, with the project's gates green. Stage paths by name and
   never run `git add -A` or `git commit -a`, so OpenRig's own files (`CLAUDE.local.md`, `.openrig/`,
   `.claude/settings.local.json`, the `.crew/` worktree) never reach a commit.

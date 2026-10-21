@@ -88,6 +88,11 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     sets `permission_policy: builtin:auto`. Seen only in `crew-up --plan` (`launch_posture=auto` on
     all four seats); not yet seen on a launched seat's command line, or whether the Codex seat
     really falls back to the floor as OpenRig's docs say.
+  - **Review PRs, 2026-10-21.** The architect writes its report in `/pr`'s shape and, where the
+    project's `AGENTS.md` grants it (prep-planner does), pushes the topic branch and opens the PR.
+    The scope (own topic branch, no force, no merge) holds by the role's words alone: nothing
+    stops a seat running `git push origin main`. Auto mode's classifier may still ask before the
+    push. Never run yet. Upgrade: a pre-push hook refusing `main` and force-pushes from crew seats.
 - **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch is the next thing to
   see.
 
