@@ -14,8 +14,9 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   README.md and CADENCE.md now point at `AGENTS.md` where they mean the project's rules.
 - **Where:** `templates/AGENTS.md`, `templates/CLAUDE.md`, and the mentions in `skills/*/SKILL.md`
 - **What green gates do NOT prove:**
-  - That Claude Code resolves `@AGENTS.md` from a project's `CLAUDE.md` is documented behaviour, not
-    yet observed on a project laid down from this template.
+  - The `@AGENTS.md` import was observed once, on prep-planner (2026-10-21): a headless
+    `claude -p` with file tools disallowed quoted AGENTS.md's non-goal and named the file. Not yet
+    seen on a project laid down fresh by `/new-project`.
   - A Codex session reads `AGENTS.md` but not the projects-root `CLAUDE.md` from `claude-config`
     that imports METHOD.md, so it gets the project's rules without the method's.
   - Codex sees devkit's own skills (`install.sh` links them into `~/.agents/skills`) but not
