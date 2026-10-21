@@ -105,11 +105,28 @@ openrig="$(dirname "$(dirname "$(readlink -f "$(command -v rig)")")")"
 shared="$openrig/daemon/specs/agents/shared"
 [ -f "$shared/agent.yaml" ] || { echo "crew-up: OpenRig's shared agents are not at $shared" >&2; exit 1; }
 
+# The Codex reviewer gets its own worktree: OpenRig writes a Codex seat's blocks into AGENTS.md,
+# which the project tracks, and only a copy nobody commits from can take them.
+git -C "$root" rev-parse --git-dir >/dev/null 2>&1 \
+  || { echo "crew-up: $root is not a git repository; the reviewer needs a worktree of one" >&2; exit 1; }
+review="$root/.crew/review"
+exclude="$(git -C "$root" rev-parse --path-format=absolute --git-path info/exclude)"
+if [ ! -e "$review" ]; then
+  if [ "$plan" -eq 1 ]; then
+    echo "crew-up: would create the reviewer's worktree at $review (detached at HEAD)"
+  else
+    grep -qxF '.crew/' "$exclude" 2>/dev/null || printf '%s\n' '.crew/' >> "$exclude"
+    git -C "$root" worktree add --quiet --detach "$review" HEAD
+  fi
+fi
+
 rm -rf -- "$instance"
 mkdir -p -- "$instance"
 cp -R -- "$template/rig.yaml" "$template/CULTURE.md" "$template/agents" "$instance/"
 printf '%s\n' "$root" > "$marker"
 sed -i -E "s/^name: crew\$/name: $name/" "$instance/rig.yaml"
+# Absolute cwds instead of `rig up --cwd`, which would move the reviewer into the shared tree too.
+sed -i -E "s#^( *cwd: )\"\\.\"\$#\\1\"$root\"#; s#^( *cwd: )\"\\.crew/review\"\$#\\1\"$review\"#" "$instance/rig.yaml"
 find "$instance/agents" -name agent.yaml -exec \
   sed -i -E "s#ref: path:[^[:space:]]*/@openrig/cli/daemon/specs/agents/shared\$#ref: path:$shared#" {} +
 if ! out="$(rig spec validate "$instance/rig.yaml" 2>&1)"; then
@@ -118,6 +135,6 @@ if ! out="$(rig spec validate "$instance/rig.yaml" 2>&1)"; then
 fi
 
 echo "$name for $root"
-rig up "$instance/rig.yaml" --cwd "$root" "${plan_flag[@]}" || status=$?
+rig up "$instance/rig.yaml" "${plan_flag[@]}" || status=$?
 if [ "$plan" -eq 0 ]; then rig ps --nodes --rig "$name" || true; next_steps; fi
 exit "$status"

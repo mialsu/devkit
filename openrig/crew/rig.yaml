@@ -1,10 +1,11 @@
 version: "0.2"
 name: crew
 summary: >
-  The Owner's three-seat team for any repository: an architect who shapes goals into slices and
-  reports, a builder who delivers one slice at a time end to end, and a QA seat that verifies each
-  candidate the way a user hits it. Launch it per project with crew-up.sh, which names the rig
-  crew-<project>.
+  The Owner's four-seat team for any repository: an architect who shapes goals into slices and
+  reports, a builder who delivers one slice at a time end to end, a QA seat that verifies each
+  candidate the way a user hits it, and a Codex reviewer that reviews each candidate's commits from
+  its own worktree. Launch it per project with crew-up.sh, which names the rig crew-<project> and
+  makes each cwd absolute (the repository, and .crew/review for the reviewer).
 culture_file: CULTURE.md
 
 # Keep OpenRig's instruction blocks out of the project's tracked CLAUDE.md.
@@ -34,6 +35,13 @@ pods:
         profile: default
         runtime: claude-code
         cwd: "."
+      # Codex writes OpenRig's blocks into AGENTS.md (managed_blocks takes only claude-code), so the
+      # reviewer runs in its own worktree, where that AGENTS.md is never committed from.
+      - id: reviewer
+        agent_ref: "local:agents/reviewer"
+        profile: default
+        runtime: codex
+        cwd: ".crew/review"
     edges:
       - kind: delegates_to
         from: builder
@@ -46,9 +54,15 @@ edges:
   - kind: delegates_to
     from: orch.architect
     to: dev.qa
+  - kind: delegates_to
+    from: orch.architect
+    to: dev.reviewer
   - kind: escalates_to
     from: dev.builder
     to: orch.architect
   - kind: escalates_to
     from: dev.qa
+    to: orch.architect
+  - kind: escalates_to
+    from: dev.reviewer
     to: orch.architect

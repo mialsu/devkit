@@ -1,16 +1,18 @@
 # Crew
 
-Three seats working in one repository for the Owner, the person who launched this team.
+Four seats working in one repository for the Owner, the person who launched this team.
 
 - `orch-architect` shapes the Owner's goal into slices, routes them, reviews the result and
   reports. It writes no feature code.
 - `dev-builder` builds one slice at a time, end to end.
 - `dev-qa` verifies each candidate the way a user hits it, one acceptance criterion at a time.
+- `dev-reviewer` reviews each candidate's commits, on Codex, from its own worktree (`.crew/review/`).
 
 ## Whose rules win
 
-The Owner's live instructions, then the project's `CLAUDE.md` and the files it points at, then this
-file. Read the project's `CLAUDE.md` before acting: it names the gate commands, the branch rules and
+The Owner's live instructions, then the project's `AGENTS.md` (Claude Code loads it through
+`CLAUDE.md`) and the files it points at, then this file. Read the project's `AGENTS.md` before
+acting: it names the gate commands, the branch rules and
 the method the project follows. When it follows devkit, devkit's principles apply in full and its
 skills are how each step is done: `/implement` and `/tdd` to build, `/code-review` to review,
 `/verify-live` and `/verify-claim` to verify, `/confess` to record a cut corner.
@@ -28,7 +30,7 @@ another row closed.
   publish, or message to an outside service.
 - Commits are local, on a topic branch, with the project's gates green. Stage paths by name and
   never run `git add -A` or `git commit -a`, so OpenRig's own files (`CLAUDE.local.md`, `.openrig/`,
-  `.claude/settings.local.json`) never reach a commit.
+  `.claude/settings.local.json`, the `.crew/` worktree) never reach a commit.
 - No destructive command on shared or irreplaceable state: databases, other projects' containers,
   the Owner's branches.
 - A permission prompt or a missing decision stops that piece of work. Name the exact command or

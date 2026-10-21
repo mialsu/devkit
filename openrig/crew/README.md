@@ -1,6 +1,6 @@
 # crew
 
-The Owner's three-seat OpenRig team, for any repository. Each project gets its own rig, named
+The Owner's four-seat OpenRig team, for any repository. Each project gets its own rig, named
 `crew-<project>` after the repository folder, so two projects can run at once and their queues
 never mix.
 
@@ -9,9 +9,10 @@ never mix.
 | architect | `orch-architect@crew-<project>` | shapes the goal into slices, routes them, reviews and reports; writes no feature code |
 | builder | `dev-builder@crew-<project>` | builds one slice at a time, end to end |
 | qa | `dev-qa@crew-<project>` | verifies each candidate the way a user hits it, per acceptance criterion |
+| reviewer | `dev-reviewer@crew-<project>` | Codex: reviews each candidate's commits against the spec and the standards, alongside qa |
 
 Each seat's role is in `agents/<seat>/guidance/role.md`, and the team rules are in `CULTURE.md`.
-Both defer to the project's own `CLAUDE.md`, and they name the devkit skill for each step instead
+Both defer to the project's own `AGENTS.md`, and they name the devkit skill for each step instead
 of restating the method.
 
 ## Use it
@@ -23,6 +24,7 @@ in this folder.
     crew-up            # launch, or resume this project's stopped crew
     crew-up --fresh    # new seats, replacing a stopped crew
     env -u TMUX tmux attach-session -t '=orch-architect@crew-<project>'   # talk to the architect
+    # leave a seat with Ctrl-b d; Ctrl-c twice quits its agent and leaves a bare shell
     rig down crew-<project>                                               # stop it
 
 Every new launch copies this folder to `<workspace.root>/crew/<project>/` (by default under
@@ -34,9 +36,16 @@ with the same folder name would share a rig name, so `crew-up` refuses the secon
 
 OpenRig writes its runtime files into the repository: `.openrig/`, `.claude/settings.local.json`,
 `.claude/skills/`, `.claude/plugins/`, and possibly `.agents/` and `.codex/`. Its instruction blocks
-go into `CLAUDE.local.md`. Your own Claude Code sessions in that repository read these files too,
-and the settings file makes `acceptEdits` their default mode. List the paths in the project's
-`.git/info/exclude`. Unlike the shipped teams, crew selects no MCP servers.
+for the Claude seats go into `CLAUDE.local.md`. Your own Claude Code sessions in that repository
+read these files too, and the settings file makes `acceptEdits` their default mode. List the paths
+in the project's `.git/info/exclude`. Unlike the shipped teams, crew selects no MCP servers.
+
+The Codex reviewer is the exception. OpenRig always writes a Codex seat's blocks into `AGENTS.md`
+(`managed_blocks` takes only a `claude-code` key), and `AGENTS.md` is tracked. So `crew-up` gives the
+reviewer its own worktree, `.crew/review/`, created detached at the project's `HEAD` on first launch
+and listed in `.git/info/exclude` by `crew-up` itself; the blocks land in that copy, which nobody
+commits from. `crew-up` also writes every seat's `cwd` as an absolute path into its copy of
+`rig.yaml`, because `rig up --cwd` would override the reviewer's along with the rest.
 
 ## Change it
 

@@ -6,7 +6,7 @@ You hand each candidate to `dev-qa` and fix what comes back.
 ## Before code
 
 - Claim the architect's queue row first (`rig queue list --owned`).
-- Read the slice's spec and acceptance criteria, the project's `CLAUDE.md`, and the code the slice
+- Read the slice's spec and acceptance criteria, the project's `AGENTS.md`, and the code the slice
   touches. Trace the real flow before choosing where to change it.
 - Reuse what the project, the standard library or an installed dependency already provides.
 - If the spec is ambiguous or wrong, ask the architect. Never fill the gap with your own assumption.

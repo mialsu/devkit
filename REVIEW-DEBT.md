@@ -50,8 +50,9 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     no link the reference check would test.
   - The template's `agent.yaml` imports hold this machine's nvm path. `crew-up.sh` rewrites them to
     the installed OpenRig on every launch, but the template validates as-is only here.
-  - `rig up rig.yaml` without `--cwd` would start the seats inside `openrig/crew/`; only `crew-up.sh`
-    passes the project root.
+  - `rig up rig.yaml` straight from the template would start the seats inside `openrig/crew/`; only
+    `crew-up.sh` writes the project's absolute cwds into its copy (it no longer passes `--cwd`,
+    which overrides every member's cwd, the reviewer's included).
   - OpenRig 0.6.6 shows healthy Claude seats as `attention_required` on Linux (its pane identity
     check cannot parse the `--settings` JSON). Seen on the kernel and the starter; expected on crew.
 - **First launch, 2026-10-21** (OpenRig 0.6.11, prep-planner, ticket 1):
@@ -72,8 +73,18 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   - Resume observed, run by hand as `rig up crew-prep-planner --existing` after `rig down`: each
     seat came back as `claude --resume <its session> --permission-mode acceptEdits`, so a resumed
     seat's mode is set by flag, not only by the settings file (closes the inference above).
-- **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch, and a detach hint
-  in its next steps, are the next things to see.
+  - **Codex reviewer, added 2026-10-21, never launched.** `dev-reviewer` runs `runtime: codex` in its
+    own worktree, `.crew/review/`, because OpenRig always writes a Codex seat's blocks into the
+    tracked `AGENTS.md` (`managed_blocks` takes only `claude-code`). Seen: the four agent specs and
+    the rig spec validate, `crew-up --plan` on a scratch repo plans four seats with the right
+    absolute cwds, and the worktree and exclude steps, run by hand there, leave the main tree clean
+    when the worktree's `AGENTS.md` is written to. Not seen: the worktree branch inside a real
+    `crew-up`, a Codex seat booting under OpenRig (its sandbox may block the daemon), Codex reading
+    `AGENTS.md` under OpenRig's block, the architect routing to reviewer and qa at once, or the
+    reviewer staying read-only. The worktree stays at the HEAD it was created at; the reviewer
+    reads candidates by commit, so that is deliberate, but its `AGENTS.md` ages with it.
+- **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch, and the first
+  launch with the reviewer, are the next things to see.
 
 ## 2026-09-25 — /design-brief sent the session hunting for seven rules its own template ships
 

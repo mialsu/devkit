@@ -1,0 +1,28 @@
+name: crew-reviewer
+version: "1.0"
+description: Reviews each candidate's commits independently, on Codex, from its own worktree.
+
+defaults:
+  runtime: codex
+
+imports:
+  # crew-up.sh points this at the installed OpenRig on every launch.
+  - ref: path:/home/msulander/.nvm/versions/node/v24.18.0/lib/node_modules/@openrig/cli/daemon/specs/agents/shared
+
+profiles:
+  default:
+    uses:
+      # No shared:codex-default-config: it adds MCP servers, and the crew selects none.
+      skills: [review-team, systematic-debugging, verification-before-completion]
+      plugins: [shared:openrig-core]
+
+resources:
+  guidance:
+    - id: role
+      path: guidance/role.md
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
