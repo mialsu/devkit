@@ -83,8 +83,13 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     `AGENTS.md` under OpenRig's block, the architect routing to reviewer and qa at once, or the
     reviewer staying read-only. The worktree stays at the HEAD it was created at; the reviewer
     reads candidates by commit, so that is deliberate, but its `AGENTS.md` ages with it.
-- **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch, and the first
-  launch with the reviewer, are the next things to see.
+  - **Auto mode, 2026-10-21.** At the floor every seat stopped for routine commands (claims, reads,
+    `git`, `docker compose`) and the Owner switched each new session to auto by hand, so the rig now
+    sets `permission_policy: builtin:auto`. Seen only in `crew-up --plan` (`launch_posture=auto` on
+    all four seats); not yet seen on a launched seat's command line, or whether the Codex seat
+    really falls back to the floor as OpenRig's docs say.
+- **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch is the next thing to
+  see.
 
 ## 2026-09-25 — /design-brief sent the session hunting for seven rules its own template ships
 

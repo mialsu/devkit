@@ -40,6 +40,10 @@ for the Claude seats go into `CLAUDE.local.md`. Your own Claude Code sessions in
 read these files too, and the settings file makes `acceptEdits` their default mode. List the paths
 in the project's `.git/info/exclude`. Unlike the shipped teams, crew selects no MCP servers.
 
+The Claude seats launch in Claude Code's auto mode (`permission_policy: builtin:auto` in
+`rig.yaml`), so its classifier, not the Owner, decides routine commands. The project's `AGENTS.md`
+hard limits still bind every seat. The Codex reviewer has no auto mode and launches at the floor.
+
 The Codex reviewer is the exception. OpenRig always writes a Codex seat's blocks into `AGENTS.md`
 (`managed_blocks` takes only a `claude-code` key), and `AGENTS.md` is tracked. So `crew-up` gives the
 reviewer its own worktree, `.crew/review/`, created detached at the project's `HEAD` on first launch

@@ -8,6 +8,10 @@ summary: >
   makes each cwd absolute (the repository, and .crew/review for the reviewer).
 culture_file: CULTURE.md
 
+# Claude seats launch with --permission-mode auto, so the Owner is not answering a prompt per command;
+# Codex has no auto mode and stays at the floor. Hard limits still come from the project's AGENTS.md.
+permission_policy: builtin:auto
+
 # Keep OpenRig's instruction blocks out of the project's tracked CLAUDE.md.
 managed_blocks:
   claude-code: CLAUDE.local.md
