@@ -101,8 +101,8 @@ with real enforcers. That is this skill, and it is deliberately small.
 
    **Then write it where it will still be read.** This skill stops before the UI exists, so an
    "invoke `ui-ux-pro-max` at build time" note left *here* is out of context at the moment it
-   applies. Confirm the project's `CLAUDE.md` carries the **Surface work** section
-   (`templates/CLAUDE.md` ships it) — that file loads every session, which is the only reason the
+   applies. Confirm the project's `AGENTS.md` carries the **Surface work** section
+   (`templates/AGENTS.md` ships it) — that file loads every session, which is the only reason the
    delegation survives this skill's own STOP. If the project predates that section, add it now.
 
 7. **The acid test is the Owner's, not yours.** Ask them to recite the main flow, and name the four

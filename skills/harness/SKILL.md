@@ -77,7 +77,7 @@ that command somewhere it runs without anyone remembering to: a pre-commit hook
 settings — ask before wiring it**, and say which files you'd touch.
 
 ## 7. Record it
-Write the literal commands into `CLAUDE.md`'s **Build gates** section, and add a one-line pointer
+Write the literal commands into `AGENTS.md`'s **Build gates** section, and add a one-line pointer
 to `CODING_STANDARDS.md` so a cold session finds the rules. Then report: what was installed, the
 pass→fail→pass evidence per gate, which rules ended up `[review-only]`, and anything you couldn't
 enforce.

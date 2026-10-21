@@ -111,7 +111,7 @@ for the Owner to apply.
 | set the readiness rung | touch items outside **Scope** above |
 | create stubs in `<the named projects>` | edit an item's body that the Owner authored |
 
-**If the project's own rules are stricter, they win.** A repo whose `CLAUDE.md` forbids agents
+**If the project's own rules are stricter, they win.** A repo whose `AGENTS.md` forbids agents
 creating issues overrides this table until that rule is changed — inherited docs lose to a repo's
 own. Check before granting anything here, and record the date the Owner granted it.
 

@@ -6,6 +6,26 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-10-21 — Project rules move to AGENTS.md; Codex sees only part of the method
+
+- **What:** `templates/AGENTS.md` now carries every project rule for every agent; `templates/CLAUDE.md`
+  is `@AGENTS.md` plus the Claude Code–only lines (its attribution trailers, the `/handoff` path).
+  The attribution rule is generalised from "as Claude" to "as an agent". The skills, METHOD.md,
+  README.md and CADENCE.md now point at `AGENTS.md` where they mean the project's rules.
+- **Where:** `templates/AGENTS.md`, `templates/CLAUDE.md`, and the mentions in `skills/*/SKILL.md`
+- **What green gates do NOT prove:**
+  - That Claude Code resolves `@AGENTS.md` from a project's `CLAUDE.md` is documented behaviour, not
+    yet observed on a project laid down from this template.
+  - A Codex session reads `AGENTS.md` but not the projects-root `CLAUDE.md` from `claude-config`
+    that imports METHOD.md, so it gets the project's rules without the method's.
+  - Codex sees devkit's own skills (`install.sh` links them into `~/.agents/skills`) but not
+    Pocock's plugin skills or `ui-ux-pro-max`, both of which `AGENTS.md` names (`/grill-with-docs`,
+    `/prototype`, the **Surface work** section).
+  - Existing projects keep their single `CLAUDE.md` until each is split by hand; prep-planner is
+    first. `skills/sketch` and `openrig/crew/` still say `CLAUDE.md`: sketch on purpose, the crew
+    until its Codex reviewer lands.
+- **Disposition:** open.
+
 ## 2026-10-09 — crew: an OpenRig team for any project, validated and planned but never launched
 
 - **What:** `openrig/crew/` is a three-seat OpenRig team (architect, builder, qa) whose roles defer

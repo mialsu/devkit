@@ -17,8 +17,9 @@ meaning, and definition of done**. Everything below is parameterised by it.
 ## 2. Lay down the workspace
 Create the project directory (or use the current one if it's empty). Drop in, from devkit's
 `templates/`:
-- `CLAUDE.md` — fill the **domain guard-rails** section WITH the user (see step 4). Everything
-  else is adopt-verbatim.
+- `AGENTS.md` — the project's rules for every agent. Fill the **domain guard-rails** section WITH
+  the user (see step 4). Everything else is adopt-verbatim.
+- `CLAUDE.md` — `@AGENTS.md` plus the Claude Code–only lines. Adopt verbatim.
 - `GLOSSARY.md` — the ubiquitous-language starter, in the format the installed `domain-modeling`
   skill maintains. One line on what this context is; terms get added as they're resolved, not now.
 - `CODING_STANDARDS.md` — seeded from the profile in step 3. The filename is load-bearing.
@@ -32,14 +33,14 @@ From the profile, install/verify the actual gate commands: the typecheck, the li
 runner, the build, and the live-exercise recipe. Then run **`/harness`** for the rest of the gate
 set — `CODING_STANDARDS.md`, the boundary gate, the drift gate — and let it do the proving.
 
-Write every command into `CLAUDE.md`'s **Build gates** section, literally. Then, for each one:
+Write every command into `AGENTS.md`'s **Build gates** section, literally. Then, for each one:
 run it green, break it on purpose, watch it go red, revert. **A gate you haven't watched fail is
 not a gate** (PRINCIPLES #2) — an empty project is the easiest place in the project's life to
 prove this, so do it here.
 
 ## 3a. Set the domain dial
 The profile has a default (`off` / `on` / `on for the rules domain only`). Confirm it against the
-project in front of you using METHOD.md's four triggers, and state the verdict in `CLAUDE.md`.
+project in front of you using METHOD.md's four triggers, and state the verdict in `AGENTS.md`.
 - **off** — `GLOSSARY.md` only. Nothing else to do; the glossary is always on.
 - **on** — copy `templates/INVARIANTS.md` and run **`/crunch-domain`** *before the first spec*, not
   after. Invariants discovered after the schema exists cost a migration.

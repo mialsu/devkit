@@ -6,7 +6,7 @@ description: Prove a change works the way a user hits it — the step that turns
 Green tests gate; they do not prove. This skill produces the *proof*: the thing exercised the
 way a real user reaches it, with evidence you could show someone. What "exercise it" means is
 set by the project's domain profile — read `profiles/<domain>/PROFILE.md` (or the
-`## Verify like a user` section the project copied into `CLAUDE.md`) and follow its recipe.
+`## Verify like a user` section the project copied into `AGENTS.md`) and follow its recipe.
 
 ## The contract, every domain
 1. **Reach it the way a user does**, not through a test harness or a unit call. The profile

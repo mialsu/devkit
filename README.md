@@ -29,7 +29,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 ```
 /sketch                         # (devkit) before the brief: a whole app in a day, to find out if there's anything here
 /product-brief                  # (devkit) Stage 0: turn a raw idea into a lean, validated brief
-/new-project                    # scaffold: pick a domain profile, lay down CLAUDE.md + gates
+/new-project                    # scaffold: pick a domain profile, lay down AGENTS.md + CLAUDE.md + gates
 /grill-with-docs                # (Pocock) shape one question at a time → /to-spec
 /implement                      # (Pocock) build the slice, drives /tdd, then /code-review
 /verify-live                    # (devkit) prove it works the way a user hits it
@@ -66,7 +66,7 @@ House rules are in [CODING_STANDARDS.md](CODING_STANDARDS.md); what the gates do
 | `ANTI-PATTERNS.md` | The recurring failure shapes; stop if you catch one. |
 | `skills/` | devkit's own skills (the new ones the sources didn't have as composable units). |
 | `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, and its **domain dial** default. |
-| `templates/` | Drop-in `CLAUDE.md`, `GLOSSARY.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
+| `templates/` | Drop-in `AGENTS.md` (every agent's rules), `CLAUDE.md` (imports it, plus Claude-only lines), `GLOSSARY.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
 | `CODING_STANDARDS.md`, `scripts/check.sh` | devkit's own standards and gate set — it runs its own method on itself. |
 | `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |

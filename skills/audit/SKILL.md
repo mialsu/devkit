@@ -108,7 +108,7 @@ report says how many leads it could not run down.
 
 Demonstration is **static plus local execution**: trace, scan, and write failing tests against a
 local instance. Nothing deployed is touched — no live traffic, no third-party service, and no
-sending this repo's code or secrets to any external scanner (that is a hard limit in `CLAUDE.md`,
+sending this repo's code or secrets to any external scanner (that is a hard limit in `AGENTS.md`,
 not a preference). If a finding can only be proven against the deployed app, it stays `reachable`
 and says why.
 

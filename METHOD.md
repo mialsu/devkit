@@ -118,7 +118,7 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
                                   → its platform reality picks the profile, and its MVP cut is
                                     already the DOMAIN DIAL's evidence (money? scheduling?
                                     permissions? a state machine? then the dial is on)
-2. /new-project                   once. Profile, CLAUDE.md, GLOSSARY.md, CODING_STANDARDS.md,
+2. /new-project                   once. Profile, AGENTS.md + CLAUDE.md, GLOSSARY.md, CODING_STANDARDS.md,
                                   REVIEW-DEBT.md, scripts/drift-check.sh, specs/. Delegates to
                                   /harness, which PROVES each gate by breaking it. Step 3a sets
                                   the domain dial. You author the domain guard-rails. Then it stops.
@@ -205,7 +205,8 @@ Twelve supporting skills sit outside the loop:
   handoffs* below for where they live and why not `/tmp`.
 
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
-profile, lays down the workspace, `CLAUDE.md`, `GLOSSARY.md`, and `REVIEW-DEBT.md`, and wires the
+profile, lays down the workspace, `AGENTS.md` (the rules for every agent) with a thin `CLAUDE.md` that
+imports it, `GLOSSARY.md`, and `REVIEW-DEBT.md`, and wires the
 gate commands via **`/harness`**. Publishing is **`/ship` (dk)** — the per-profile,
 explicit-keystroke publish checklist.
 
@@ -408,7 +409,7 @@ argument ANTI-PATTERNS makes about the pseudo-artifact, at session scale.
 - The framework's **`/new-task`** shaping skill ≈ Pocock's `/grill-with-docs` + `/to-spec`
   chained. devkit uses the Pocock pair (more composable) and keeps the framework's extra
   demands — ground-in-both-repos, verify-claims-during-shaping, wait-for-go — as rules in the
-  skill prompts and in `CLAUDE.md`.
+  skill prompts and in `AGENTS.md`.
 - The framework's **"verify like a user with the real persona, screenshots as evidence"**
   becomes `/verify-live`, which delegates the *meaning* of "exercise it" to the domain profile.
 - **DDD** enters through the same door as everything else — reuse. Pocock's `domain-modeling`
