@@ -44,6 +44,43 @@ The Claude seats launch in Claude Code's auto mode (`permission_policy: builtin:
 `rig.yaml`), so its classifier, not the Owner, decides routine commands. The project's `AGENTS.md`
 hard limits still bind every seat. The Codex reviewer has no auto mode and launches at the floor.
 
+## Codex's sandbox on Ubuntu 24.04 and later
+
+At the floor the reviewer runs every command inside Codex's bubblewrap sandbox. Ubuntu 24.04 sets
+`kernel.apparmor_restrict_unprivileged_userns = 1`, and with no AppArmor profile for bubblewrap the
+sandbox can't start: every command fails inside it, Codex asks to run it outside, and the reviewer
+stops at a prompt for each `cat`, `git show` and `rig whoami` (prep-planner, 2026-10-22). Check for
+it from the reviewer's worktree. `codex sandbox` refuses `-C` and `-c` unless a
+`--permission-profile` is named, so `cd` into the worktree first:
+
+    cd .crew/review && codex sandbox -- head -1 README.md; cd -
+
+On the broken host this prints `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`.
+
+The fix is a profile that lets bubblewrap create user namespaces. Codex runs its own bundled
+`bwrap`, not `/usr/bin/bwrap`, so the profile names both; the globs keep it matching across Node
+and Codex upgrades under nvm:
+
+    sudo tee /etc/apparmor.d/codex-bwrap >/dev/null <<'EOF'
+    abi <abi/4.0>,
+    include <tunables/global>
+
+    profile codex-bwrap /{usr/bin/bwrap,home/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/*/codex-resources/bwrap} flags=(unconfined) {
+      userns,
+    }
+    EOF
+    sudo apparmor_parser -r /etc/apparmor.d/codex-bwrap
+
+It survives a reboot. A Codex installed outside nvm keeps its `bwrap` under another path; find it
+with `find "$(npm root -g)/@openai" -name bwrap` and add it to the profile. A reviewer launched
+before the fix keeps asking until it is relaunched, which is also the proof that the fix took:
+
+    rig seat launch dev-reviewer@crew-<project> --fresh --stop --reason "Codex sandbox fixed"
+
+The alternative is no sandbox: `rig seat set-permissions dev-reviewer@crew-<project> --mode
+full_bypass --reason "<why>"` (plus `--operator` from a human shell) launches it with
+`danger-full-access`, and then only `AGENTS.md`'s prose limits it. Prefer the profile.
+
 ## Review PRs
 
 When a slice's QA verdicts and review are in, the architect writes its report as a PR body in
