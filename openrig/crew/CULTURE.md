@@ -24,6 +24,20 @@ conversation. A handoff names the repository path, the branch and commit, the ac
 covers, the checks run with their results, and anything left undone. Nobody closes a row because
 another row closed.
 
+## Local model
+
+Some machines run a local model and some do not. `local-llm --check` says which: exit 0 prints the
+model, anything else means there is none here and the job stays with you. Where there is one, hand
+it bulky text you would otherwise read in full only to find a little in it: a long test or build log
+(`npm test 2>&1 | tail -n 3000 | local-llm "List each failing test with its error and file:line"`),
+a large diff to orient in before you read the parts that matter, a first draft of a commit message or
+a PR body's prose. It never sees the command's exit status, which still decides pass or fail. Exit 4
+means the input is too large; cut it down and ask again. Any other failure: do the job yourself.
+
+Its answers are leads, not evidence: it is a small model and it can be wrong. Check what it found
+against the source before acting on it or citing it in a handoff, verdict or report, and never hand
+it the decision itself: a QA verdict, a review finding, a design call.
+
 ## Hard limits
 
 - Nothing leaves this machine without the Owner's explicit go: no push, pull request, deploy,
