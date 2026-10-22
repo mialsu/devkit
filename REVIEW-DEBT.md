@@ -93,6 +93,13 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     The scope (own topic branch, no force, no merge) holds by the role's words alone: nothing
     stops a seat running `git push origin main`. Auto mode's classifier may still ask before the
     push. Never run yet. Upgrade: a pre-push hook refusing `main` and force-pushes from crew seats.
+  - **Local model, 2026-10-22.** `bin/local-llm` hands bulky text jobs to a local Ollama model where
+    `~/.config/crew/local-model` names one (gemma4:12b on the GPU desktop). Seen working from a
+    shell: a test log digested to its failures in 0.8s, a 17k-token diff summarised per file in 16s.
+    Never yet called by a seat, so whether seats reach for it, and whether auto mode allows the
+    pipe, is unseen; so is whether the Codex reviewer's sandbox lets it reach localhost. The
+    too-large guard estimates three characters a token and can let an input through that Ollama
+    then truncates silently. `crew-up`'s local-model line prints only on a real launch, never run.
 - **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch is the next thing to
   see.
 

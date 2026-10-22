@@ -1,0 +1,136 @@
+#!/usr/bin/env node
+// local-llm: hand a bulky, low-stakes text job to this machine's local Ollama model, so a crew seat
+// reads a short answer instead of the whole input.
+//
+//   local-llm "<instruction>" < input    print the model's answer to the instruction about stdin
+//   local-llm --check                    print the model and exit 0 when one is usable here
+//
+// The model comes from $CREW_LOCAL_MODEL, else the first line of ~/.config/crew/local-model. A
+// machine with neither, or whose Ollama is down or lacks the model, exits 3: the seat does the job
+// itself. Exit 4 means the input is too large for the context window ($CREW_LOCAL_CTX tokens,
+// default 32768), exit 2 a usage error.
+"use strict";
+
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+const NONE = 3;
+const TOO_LARGE = 4;
+const ctx = Number(process.env.CREW_LOCAL_CTX) || 32768;
+// Room left in the window for the instruction and the answer.
+const RESERVE = 2048;
+
+function fail(code, message) {
+  process.stderr.write(`local-llm: ${message}\n`);
+  process.exit(code);
+}
+
+function configuredModel() {
+  if (process.env.CREW_LOCAL_MODEL) return process.env.CREW_LOCAL_MODEL.trim();
+  const file = path.join(os.homedir(), ".config", "crew", "local-model");
+  try {
+    return fs.readFileSync(file, "utf8").split("\n")[0].trim();
+  } catch {
+    return "";
+  }
+}
+
+function host() {
+  const h = process.env.OLLAMA_HOST || "127.0.0.1:11434";
+  const url = /^https?:\/\//.test(h) ? h : `http://${h}`;
+  // `ollama serve` reads 0.0.0.0 as "listen everywhere"; a client has to name a real address.
+  return url.replace("//0.0.0.0", "//127.0.0.1").replace(/\/+$/, "");
+}
+
+// Exit 3 unless the configured model is pulled into a running Ollama; return its full name.
+async function usableModel() {
+  const want = configuredModel();
+  if (!want) fail(NONE, "no local model on this machine; do the job yourself");
+  let tags;
+  try {
+    const res = await fetch(`${host()}/api/tags`, { signal: AbortSignal.timeout(5000) });
+    tags = await res.json();
+  } catch {
+    fail(NONE, `Ollama is not answering at ${host()}; do the job yourself`);
+  }
+  const names = (tags.models || []).map((m) => m.name);
+  const full = want.includes(":") ? want : `${want}:latest`;
+  if (!names.includes(full)) fail(NONE, `${want} is not pulled into Ollama; do the job yourself`);
+  return full;
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  if (args[0] === "-h" || args[0] === "--help") {
+    const head = fs.readFileSync(__filename, "utf8").split("\n").slice(1, 12);
+    process.stdout.write(head.map((l) => l.replace(/^\/\/ ?/, "")).join("\n") + "\n");
+    return;
+  }
+  if (args[0] === "--check") {
+    process.stdout.write(`${await usableModel()}\n`);
+    return;
+  }
+  if (args.length !== 1 || !args[0].trim()) fail(2, 'usage: local-llm "<instruction>" < input');
+  if (process.stdin.isTTY) fail(2, "pipe the input in on stdin");
+
+  // Read stdin asynchronously: readFileSync(0) throws EAGAIN on a large pipe.
+  let input = "";
+  process.stdin.setEncoding("utf8");
+  for await (const chunk of process.stdin) input += chunk;
+  if (!input.trim()) fail(2, "stdin is empty");
+  // About three characters a token for logs and code; Ollama would silently drop the overflow.
+  const estimate = Math.ceil(input.length / 3);
+  if (estimate > ctx - RESERVE) {
+    fail(TOO_LARGE, `input is about ${estimate} tokens and the window is ${ctx}; cut it down (tail, grep) and ask again`);
+  }
+
+  const model = await usableModel();
+  const started = Date.now();
+  const res = await fetch(`${host()}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      stream: true,
+      // Thinking costs hundreds of tokens on a two-line answer; Ollama ignores it for models without.
+      think: false,
+      // Loading takes most of a minute, so keep the model warm between a seat's calls.
+      keep_alive: "30m",
+      options: { num_ctx: ctx },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You process text for a software agent. Follow the instruction about the input. " +
+            "Answer only from the input, and say so when it does not contain the answer. " +
+            "Be brief and start with the answer, no preamble.",
+        },
+        { role: "user", content: `${input}\n\n---\n${args[0]}` },
+      ],
+    }),
+  });
+  if (!res.ok) fail(1, `Ollama answered ${res.status}: ${await res.text()}`);
+
+  // Streamed, so a long answer never trips fetch's five-minute wait for response headers.
+  let buffer = "";
+  let last = {};
+  const decoder = new TextDecoder();
+  for await (const chunk of res.body) {
+    buffer += decoder.decode(chunk, { stream: true });
+    let nl;
+    while ((nl = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, nl).trim();
+      buffer = buffer.slice(nl + 1);
+      if (!line) continue;
+      last = JSON.parse(line);
+      if (last.error) fail(1, last.error);
+      if (last.message && last.message.content) process.stdout.write(last.message.content);
+    }
+  }
+  process.stdout.write("\n");
+  const secs = ((Date.now() - started) / 1000).toFixed(1);
+  process.stderr.write(`local-llm: ${model}, ${last.prompt_eval_count ?? "?"} tokens in, ${last.eval_count ?? "?"} out, ${secs}s\n`);
+}
+
+main().catch((err) => fail(1, err.message));

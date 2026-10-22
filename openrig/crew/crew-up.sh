@@ -73,6 +73,12 @@ listed() {
 
 next_steps() {
   echo
+  if model="$(local-llm --check 2>/dev/null)"; then
+    echo "Local model for bulky text jobs: $model"
+  else
+    echo "No local model on this machine; the seats do every job themselves."
+  fi
+  echo
   echo "Talk to the architect, in a new terminal:"
   echo "  env -u TMUX tmux attach-session -t '=orch-architect@$name'"
   echo "Send it a goal from here:"

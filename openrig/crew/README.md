@@ -101,6 +101,23 @@ and listed in `.git/info/exclude` by `crew-up` itself; the blocks land in that c
 commits from. `crew-up` also writes every seat's `cwd` as an absolute path into its copy of
 `rig.yaml`, because `rig up --cwd` would override the reviewer's along with the rest.
 
+## Local model
+
+On a machine with a GPU, the seats hand bulky text jobs (long logs, large diffs, first drafts) to a
+local Ollama model through `bin/local-llm`, and read its short answer instead of the whole input.
+`CULTURE.md` says when. The crew is the same everywhere; only the machine decides. On every machine:
+
+    ln -s ~/personal/devkit/openrig/crew/bin/local-llm ~/.local/bin/local-llm
+
+and only on one with a local model:
+
+    mkdir -p ~/.config/crew && echo gemma4:12b > ~/.config/crew/local-model
+    ollama pull gemma4:12b    # needs Ollama 0.40 or later; 0.32 segfaults loading it
+
+Without that file, `local-llm --check` exits 3 and the seats do every job themselves; `crew-up`
+says which case it found. The context window is 32768 tokens, sent with each request, so Ollama's
+own default needs no change; set `CREW_LOCAL_CTX` higher if the GPU has room.
+
 ## Change it
 
 Edit a role, the culture or an agent's skills here, then check before the next launch:
