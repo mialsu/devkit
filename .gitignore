@@ -1,6 +1,6 @@
 .DS_Store
 node_modules/
 # OpenRig's per-machine files: written by the rig on each machine, never committed.
-.claude/
-.openrig/
-CLAUDE.local.md
+/.claude/
+/.openrig/
+/CLAUDE.local.md
