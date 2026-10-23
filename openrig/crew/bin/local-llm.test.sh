@@ -3,9 +3,11 @@
 # themselves: 0 ran, 2 usage, 3 no usable model here, 4 input too large.
 #
 # Needs node, and nothing else: no Ollama, no model, no GPU. Every case runs with an empty HOME,
-# CREW_LOCAL_MODEL unset and OLLAMA_HOST pointed at a closed port, so no case can reach a real
-# Ollama on this machine. The too-large case runs with no model configured on purpose: the size
-# guard has to fire before the model lookup, and if it ever moved after it this case would get 3.
+# CREW_LOCAL_MODEL and CREW_LOCAL_CTX unset and OLLAMA_HOST pointed at a closed port, so no case
+# can reach a real Ollama on this machine and none depends on the caller's environment. The
+# too-large case sets its own small CREW_LOCAL_CTX and runs with no model configured on purpose:
+# the size guard has to fire before the model lookup, and if it ever moved after it this case
+# would get 3.
 #
 # Usage: openrig/crew/bin/local-llm.test.sh    exits 1 when any case fails
 
@@ -14,7 +16,7 @@ llm="$(cd "$(dirname "$0")" && pwd)/local-llm"
 
 home="$(mktemp -d)"
 trap 'rm -rf "$home"' EXIT
-run() { env -u CREW_LOCAL_MODEL HOME="$home" OLLAMA_HOST=127.0.0.1:1 "$@"; }
+run() { env -u CREW_LOCAL_MODEL -u CREW_LOCAL_CTX HOME="$home" OLLAMA_HOST=127.0.0.1:1 "$@"; }
 
 fails=0
 # expect <code> <name> — compares against the exit status of the command just run.
