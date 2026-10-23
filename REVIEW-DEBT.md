@@ -96,10 +96,15 @@ cut (`/confess`), read first by any architecture or review session, dispositione
   - **Local model, 2026-10-22.** `bin/local-llm` hands bulky text jobs to a local Ollama model where
     `~/.config/crew/local-model` names one (gemma4:12b on the GPU desktop). Seen working from a
     shell: a test log digested to its failures in 0.8s, a 17k-token diff summarised per file in 16s.
-    Never yet called by a seat, so whether seats reach for it, and whether auto mode allows the
-    pipe, is unseen; so is whether the Codex reviewer's sandbox lets it reach localhost. The
-    too-large guard estimates three characters a token and can let an input through that Ollama
-    then truncates silently. `crew-up`'s local-model line prints only on a real launch, never run.
+    The too-large guard estimates three characters a token and can let an input through that
+    Ollama then truncates silently. First crew run, 2026-10-23 (slice `local-llm-version`, PR #2):
+    `crew-up` printed the local-model line, and auto mode let a Claude seat's pipe through without
+    a prompt. No seat reached for it on its own: builder, QA and architect read every diff and
+    `check.sh` output themselves, and QA's one call (24.6s, model cold) tested the feature, not a
+    job. The slice made no bulky text, so "seats don't reach for it" is unproven either way. The
+    Codex reviewer never called it, so its sandbox reaching localhost is still unseen. Upgrade:
+    run a slice with a log or diff of thousands of lines; if the seats still read it in full,
+    name the trigger in the QA and reviewer roles.
 - **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch is the next thing to
   see.
 
