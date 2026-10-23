@@ -4,6 +4,7 @@
 //
 //   local-llm "<instruction>" < input    print the model's answer to the instruction about stdin
 //   local-llm --check                    print the model and exit 0 when one is usable here
+//   local-llm --version                  print the version
 //
 // The model comes from $CREW_LOCAL_MODEL, else the first line of ~/.config/crew/local-model. A
 // machine with neither, or whose Ollama is down or lacks the model, exits 3: the seat does the job
@@ -15,6 +16,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
+const VERSION = "0.1.0";
 const NONE = 3;
 const TOO_LARGE = 4;
 const ctx = Number(process.env.CREW_LOCAL_CTX) || 32768;
@@ -63,8 +65,14 @@ async function usableModel() {
 async function main() {
   const args = process.argv.slice(2);
   if (args[0] === "-h" || args[0] === "--help") {
-    const head = fs.readFileSync(__filename, "utf8").split("\n").slice(1, 12);
+    // The header is every comment line after the shebang, so it can grow without truncating here.
+    const lines = fs.readFileSync(__filename, "utf8").split("\n").slice(1);
+    const head = lines.slice(0, lines.findIndex((l) => !l.startsWith("//")));
     process.stdout.write(head.map((l) => l.replace(/^\/\/ ?/, "")).join("\n") + "\n");
+    return;
+  }
+  if (args[0] === "--version") {
+    process.stdout.write(`local-llm ${VERSION}\n`);
     return;
   }
   if (args[0] === "--check") {
