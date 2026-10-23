@@ -178,6 +178,18 @@ done < <(
 )
 [ "$dead" -eq 0 ] && ok "$refs references, all resolve"
 
+# --- 7. local-llm exit codes ------------------------------------------------
+# Seats branch on local-llm's exit codes to decide whether to do a job themselves, so a changed
+# code silently changes who does the work. The test needs node but no Ollama, model or GPU.
+group "7. local-llm exit codes"
+if command -v node >/dev/null 2>&1; then
+  if lout="$(bash openrig/crew/bin/local-llm.test.sh 2>&1)"; then ok "openrig/crew/bin/local-llm.test.sh"
+  else bad "openrig/crew/bin/local-llm.test.sh"; fi
+  printf '%s\n' "$lout" | sed 's/^/      /'
+else
+  skipped "node is NOT installed — local-llm's exit codes are not being tested"
+fi
+
 # --- verdict ----------------------------------------------------------------
 printf '\n'
 if [ "$fails" -gt 0 ]; then
