@@ -113,6 +113,7 @@ local Ollama model through `bin/local-llm`, and read its short answer instead of
 `CULTURE.md` says when. The crew is the same everywhere; only the machine decides. On every machine:
 
     ln -s ~/personal/devkit/openrig/crew/bin/local-llm ~/.local/bin/local-llm
+    ln -s ~/personal/devkit/openrig/crew/bin/junior-sync ~/.local/bin/junior-sync
 
 and only on one with a local model:
 
@@ -149,7 +150,9 @@ Junior). `crew-up` picks its form:
 
 Both work in their own worktree, `.crew/junior/`, which `crew-up` creates beside the reviewer's. A
 junior without a shell cannot use the queue, so a seat sends it a job with `rig send` and reads the
-answer with `rig capture`.
+answer with `rig capture`. OpenRig writes the junior's startup instructions into that worktree's
+`AGENTS.md` as uncommitted managed blocks, so seats move and clean it with `bin/junior-sync`, which
+keeps them, never with plain git (`bin/junior-sync.test.sh`, `scripts/check.sh` group 9).
 
 ## Change it
 

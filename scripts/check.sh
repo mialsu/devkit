@@ -203,6 +203,14 @@ else
   skipped "node is NOT installed — the junior's worktree gate is not being tested"
 fi
 
+# --- 9. junior-sync ----------------------------------------------------------
+# Seats move and clean the junior's worktree with it; a version that drops OpenRig's AGENTS.md
+# blocks leaves the junior without its instructions and no error. Needs git only.
+group "9. junior-sync"
+if jout="$(bash openrig/crew/bin/junior-sync.test.sh 2>&1)"; then ok "openrig/crew/bin/junior-sync.test.sh"
+else bad "openrig/crew/bin/junior-sync.test.sh"; fi
+printf '%s\n' "$jout" | tail -n 1 | sed 's/^/      /'
+
 # --- verdict ----------------------------------------------------------------
 printf '\n'
 if [ "$fails" -gt 0 ]; then

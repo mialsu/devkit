@@ -78,6 +78,9 @@ next_steps() {
   else
     echo "No local model on this machine; the seats do every job themselves."
   fi
+  if ! command -v junior-sync >/dev/null 2>&1; then
+    echo "junior-sync is not on PATH, so the seats cannot reset the junior's worktree; see README.md."
+  fi
   echo
   echo "Talk to the architect, in a new terminal:"
   echo "  env -u TMUX tmux attach-session -t '=orch-architect@$name'"
