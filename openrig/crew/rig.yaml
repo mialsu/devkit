@@ -12,6 +12,9 @@ culture_file: CULTURE.md
 # Codex has no auto mode and stays at the floor. Hard limits still come from the project's AGENTS.md.
 permission_policy: builtin:auto
 
+# The Claude seats pin their model per member (model: under runtime), so a fresh crew doesn't take
+# whatever the runtime defaults to. The Codex reviewer keeps Codex's own default.
+
 # Keep OpenRig's instruction blocks out of the project's tracked CLAUDE.md.
 managed_blocks:
   claude-code: CLAUDE.local.md
@@ -24,6 +27,7 @@ pods:
         agent_ref: "local:agents/architect"
         profile: default
         runtime: claude-code
+        model: claude-opus-5-5
         cwd: "."
 
   - id: dev
@@ -33,11 +37,13 @@ pods:
         agent_ref: "local:agents/builder"
         profile: default
         runtime: claude-code
+        model: claude-opus-5-5
         cwd: "."
       - id: qa
         agent_ref: "local:agents/qa"
         profile: default
         runtime: claude-code
+        model: claude-opus-5-5
         cwd: "."
       # Codex writes OpenRig's blocks into AGENTS.md (managed_blocks takes only claude-code), so the
       # reviewer runs in its own worktree, where that AGENTS.md is never committed from.

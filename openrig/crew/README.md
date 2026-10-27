@@ -44,6 +44,10 @@ The Claude seats launch in Claude Code's auto mode (`permission_policy: builtin:
 `rig.yaml`), so its classifier, not the Owner, decides routine commands. The project's `AGENTS.md`
 hard limits still bind every seat. The Codex reviewer has no auto mode and launches at the floor.
 
+The three Claude seats run `claude-opus-5-5`, pinned by `model:` on each member in `rig.yaml`. To
+change it, edit the template, not the copy under `<workspace.root>/crew/<project>/`: `crew-up --fresh`
+replaces that copy with this folder.
+
 ## Codex's sandbox on Ubuntu 24.04 and later
 
 At the floor the reviewer runs every command inside Codex's bubblewrap sandbox. Ubuntu 24.04 sets
