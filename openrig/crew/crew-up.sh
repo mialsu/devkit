@@ -116,15 +116,19 @@ shared="$openrig/daemon/specs/agents/shared"
 git -C "$root" rev-parse --git-dir >/dev/null 2>&1 \
   || { echo "crew-up: $root is not a git repository; the reviewer needs a worktree of one" >&2; exit 1; }
 review="$root/.crew/review"
+# The junior gets one too, so a small model's writes land where only the seat that sent the job
+# reads them, and never in the tree another seat is building in.
+junior="$root/.crew/junior"
 exclude="$(git -C "$root" rev-parse --path-format=absolute --git-path info/exclude)"
-if [ ! -e "$review" ]; then
+for tree in "$review" "$junior"; do
+  [ -e "$tree" ] && continue
   if [ "$plan" -eq 1 ]; then
-    echo "crew-up: would create the reviewer's worktree at $review (detached at HEAD)"
+    echo "crew-up: would create the worktree $tree (detached at HEAD)"
   else
     grep -qxF '.crew/' "$exclude" 2>/dev/null || printf '%s\n' '.crew/' >> "$exclude"
-    git -C "$root" worktree add --quiet --detach "$review" HEAD
+    git -C "$root" worktree add --quiet --detach "$tree" HEAD
   fi
-fi
+done
 
 rm -rf -- "$instance"
 mkdir -p -- "$instance"
@@ -132,9 +136,31 @@ cp -R -- "$template/rig.yaml" "$template/CULTURE.md" "$template/agents" "$instan
 printf '%s\n' "$root" > "$marker"
 sed -i -E "s/^name: crew\$/name: $name/" "$instance/rig.yaml"
 # Absolute cwds instead of `rig up --cwd`, which would move the reviewer into the shared tree too.
-sed -i -E "s#^( *cwd: )\"\\.\"\$#\\1\"$root\"#; s#^( *cwd: )\"\\.crew/review\"\$#\\1\"$review\"#" "$instance/rig.yaml"
+sed -i -E "s#^( *cwd: )\"\\.\"\$#\\1\"$root\"#; s#^( *cwd: )\"\\.crew/review\"\$#\\1\"$review\"#; s#^( *cwd: )\"\\.crew/junior\"\$#\\1\"$junior\"#" "$instance/rig.yaml"
 find "$instance/agents" -name agent.yaml -exec \
   sed -i -E "s#ref: path:[^[:space:]]*/@openrig/cli/daemon/specs/agents/shared\$#ref: path:$shared#" {} +
+
+# The junior runs on Pi with the local model where this machine has one and Pi is installed, and on
+# Claude Code with Haiku everywhere else. Both forms have file tools only and no shell: Pi through
+# the settings and worktree gate written into its agent directory here (OpenRig writes none),
+# Haiku through its Claude settings fragment.
+if local_model="$(local-llm --check 2>/dev/null)" && command -v pi >/dev/null 2>&1; then
+  junior_form="Pi on $local_model"
+  sed -i -E "s#^( *model: )ollama/local\$#\\1ollama/$local_model#" "$instance/rig.yaml"
+  pi_agent="${OPENRIG_HOME:-$HOME/.openrig}/state/pi/dev-junior@$name/agent"
+  if [ "$plan" -eq 0 ]; then
+    mkdir -p -- "$pi_agent/extensions"
+    for f in settings.json models.json; do
+      sed "s#__CREW_LOCAL_MODEL__#$local_model#g" "$template/agents/junior/pi/$f" > "$pi_agent/$f"
+    done
+    sed "s#__CREW_JUNIOR_ROOT__#$junior#" "$template/agents/junior/pi/extensions/worktree-only.ts" \
+      > "$pi_agent/extensions/worktree-only.ts"
+  fi
+else
+  junior_form="Claude Code on claude-haiku-5-5 (no local model or no pi here)"
+  sed -i -E "s#^( *runtime: )pi\$#\\1claude-code#; s#^( *model: )ollama/local\$#\\1claude-haiku-5-5#" "$instance/rig.yaml"
+fi
+echo "Junior: $junior_form"
 if ! out="$(rig spec validate "$instance/rig.yaml" 2>&1)"; then
   printf '%s\n' "$out" >&2
   exit 1

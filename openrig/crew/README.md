@@ -1,6 +1,6 @@
 # crew
 
-The Owner's four-seat OpenRig team, for any repository. Each project gets its own rig, named
+The Owner's five-seat OpenRig team, for any repository. Each project gets its own rig, named
 `crew-<project>` after the repository folder, so two projects can run at once and their queues
 never mix.
 
@@ -10,6 +10,7 @@ never mix.
 | builder | `dev-builder@crew-<project>` | builds one slice at a time, end to end |
 | qa | `dev-qa@crew-<project>` | verifies each candidate the way a user hits it, per acceptance criterion |
 | reviewer | `dev-reviewer@crew-<project>` | Codex: reviews each candidate's commits against the spec and the standards, alongside qa |
+| junior | `dev-junior@crew-<project>` | narrow jobs from the other seats: searches, summaries, docs drafts, one small function and its test; file tools only |
 
 Each seat's role is in `agents/<seat>/guidance/role.md`, and the team rules are in `CULTURE.md`.
 Both defer to the project's own `AGENTS.md`, and they name the devkit skill for each step instead
@@ -115,12 +116,40 @@ local Ollama model through `bin/local-llm`, and read its short answer instead of
 
 and only on one with a local model:
 
-    mkdir -p ~/.config/crew && echo gemma4:12b > ~/.config/crew/local-model
     ollama pull gemma4:12b    # needs Ollama 0.40 or later; 0.32 segfaults loading it
+    printf 'FROM gemma4:12b\nPARAMETER num_ctx 32768\n' > /tmp/Modelfile
+    ollama create gemma4:12b-32k -f /tmp/Modelfile
+    mkdir -p ~/.config/crew && echo gemma4:12b-32k > ~/.config/crew/local-model
 
 Without that file, `local-llm --check` exits 3 and the seats do every job themselves; `crew-up`
-says which case it found. The context window is 32768 tokens, sent with each request, so Ollama's
-own default needs no change; set `CREW_LOCAL_CTX` higher if the GPU has room.
+says which case it found. `local-llm` sends its 32768-token window with each request, but the
+junior's Pi reaches Ollama through its OpenAI-style endpoint, which ignores a client's window and
+uses Ollama's default of 4096: Pi's own instructions overflow that and the model loses the job. The
+`-32k` name carries the window inside the model, and `local-llm` uses the same name so both share
+one loaded copy on the GPU instead of swapping two.
+
+## Junior
+
+`dev-junior` takes narrow jobs from the other seats so they spend less context and time (`CULTURE.md`,
+Junior). `crew-up` picks its form:
+
+- **Pi on the local model**, where `local-llm --check` passes and `pi` is installed
+  (`npm i -g @earendil-works/pi-coding-agent`). Pi has no permission prompts and no sandbox, so
+  `crew-up` writes the seat's own `settings.json`, `models.json` and a worktree gate into
+  `~/.openrig/state/pi/dev-junior@<rig>/agent/` (from `agents/junior/pi/`) before launch:
+  - tools `read`, `write`, `grep`, `find` and `ls`: no shell, and no `edit`, whose old/new-text
+    pairs a 12B model reasons about at length and then never sends;
+  - project settings never trusted, and Pi's built-in extensions off;
+  - `extensions/worktree-only.ts`, which refuses any file tool call outside `.crew/junior/` or into
+    `.git`, hooks and agent configuration. `worktree-only.check.mts` beside it proves each escape
+    stays shut (`scripts/check.sh`, group 8).
+- **Claude Code on `claude-haiku-5-5`** everywhere else, with Bash, the web and subagents denied in
+  `agents/junior/runtime/claude-settings.fragment.json`. Auto mode still governs file writes outside
+  its worktree; there is no gate like Pi's.
+
+Both work in their own worktree, `.crew/junior/`, which `crew-up` creates beside the reviewer's. A
+junior without a shell cannot use the queue, so a seat sends it a job with `rig send` and reads the
+answer with `rig capture`.
 
 ## Change it
 
@@ -130,5 +159,5 @@ Edit a role, the culture or an agent's skills here, then check before the next l
     rig spec validate rig.yaml
     crew-up --plan
 
-A new seat is a new folder under `agents/` plus a member in `rig.yaml`. Every running seat is a
-Claude session, so one crew is three sessions on top of the kernel's three.
+A new seat is a new folder under `agents/` plus a member in `rig.yaml`. The architect, builder and
+qa are Claude sessions, the reviewer a Codex one, and the junior a Pi or Haiku one.

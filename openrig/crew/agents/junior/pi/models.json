@@ -1,0 +1,17 @@
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://localhost:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "models": [
+        {
+          "id": "__CREW_LOCAL_MODEL__",
+          "contextWindow": 32768,
+          "reasoning": true,
+          "thinkingLevelMap": { "off": "none", "minimal": "low", "low": "low", "medium": "medium", "high": "high" }
+        }
+      ]
+    }
+  }
+}
