@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# junior-sync: put the junior's worktree at a commit, clean, keeping OpenRig's blocks in AGENTS.md.
+#
+#   junior-sync [<commit>]    move .crew/junior to <commit> (default: the main tree's HEAD) and
+#                             drop every change and untracked file there
+#
+# Run it from the repository root, before a job (so the junior reads what you are building) and
+# after you have taken what you want from its diff. OpenRig writes the junior's startup
+# instructions into its worktree's AGENTS.md as uncommitted managed blocks; a plain checkout or
+# reset deletes them, and a merge conflicts when the commit changes AGENTS.md too. This lifts the
+# blocks out, forces the worktree to the commit, and appends them again.
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+junior="$root/.crew/junior"
+[ -d "$junior" ] || { echo "junior-sync: no junior worktree at $junior" >&2; exit 2; }
+# Resolve in the main tree, so a branch name means the branch you are building.
+commit="$(git -C "$root" rev-parse --verify "${1:-HEAD}^{commit}")"
+
+blocks="$(mktemp)"
+trap 'rm -f "$blocks"' EXIT
+if [ -f "$junior/AGENTS.md" ]; then
+  awk '/^<!-- BEGIN OpenRig MANAGED BLOCK/ { keep = 1 }
+       keep { print }
+       /^<!-- END OpenRig MANAGED BLOCK/ { keep = 0; print "" }' "$junior/AGENTS.md" > "$blocks"
+fi
+
+git -C "$junior" checkout --quiet --force --detach "$commit"
+git -C "$junior" clean --quiet -fd
+
+if [ -s "$blocks" ]; then
+  { printf '\n'; cat "$blocks"; } >> "$junior/AGENTS.md"
+fi
+echo "junior-sync: .crew/junior at $(git -C "$junior" rev-parse --short HEAD), clean apart from OpenRig's AGENTS.md blocks"

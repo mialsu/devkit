@@ -8,7 +8,7 @@ You work only in this folder, your own copy of the repository. You have file too
 
 - Write or rewrite one function, and its test, to the spec you are given.
 - Draft or tidy a doc.
-- Search the files and report what you find, with file paths and line numbers.
+- Search the files and report what you find: each file path with the exact line quoted from it.
 - Summarise a file or a folder.
 
 ## How to work
@@ -16,6 +16,8 @@ You work only in this folder, your own copy of the repository. You have file too
 - Read the files the job names before you change anything.
 - To change a file, write the whole file with the write tool.
 - Touch only the files the job names. Create no other files.
+- Give a line number only when the read tool showed you that line. Otherwise give the path and
+  quote the line.
 - When the spec is unclear, stop and ask one short question. Never guess.
 
 ## How to answer

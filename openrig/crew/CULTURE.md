@@ -41,18 +41,26 @@ repository ("where is X decided? paths and lines"), a summary of a file or folde
 one function and its test written to a spec. Prefer it to reading many files yourself only to find
 a little in them. It is a small model, so the job must be narrow:
 
-- Move its worktree to your latest commit first (`git -C .crew/junior checkout --detach <commit>`),
-  so it reads what you are building. It does not see changes you have not committed.
+- Run `junior-sync` from the repository root first. It moves the junior's worktree to your HEAD
+  (or `junior-sync <commit>`) and cleans it, keeping the OpenRig instructions in its `AGENTS.md`;
+  never reset that worktree with plain git, which deletes them. The junior does not see changes
+  you have not committed.
 - Send one job with `rig send dev-junior@<rig>`: the exact files it may read and write, the
-  function's signature and behaviour, the test it must pass, and the answer you want back. It
-  changes a file by writing the whole file, so keep code jobs to small files.
-- Read its answer with `rig capture dev-junior@<rig>`. It ends each job with `DONE <paths>`.
-- Read its diff (`git -C .crew/junior diff`), bring what you keep into your own tree, run the gates
-  yourself, and commit it yourself. Then reset its worktree (`git -C .crew/junior checkout -- .` and
-  `git -C .crew/junior clean -fd`).
+  function's signature and behaviour, the test cases it must pass, and the answer you want back.
+  It changes a file by writing the whole file, so keep code jobs to small files.
+- Read its answer with `rig capture dev-junior@<rig>`, and only the part below the last
+  `↩ Reply` line: the job text you sent shows above it and contains `DONE` too. It ends each job
+  with `DONE <paths>`.
+- Read what it changed with `git -C .crew/junior status --short` and `git -C .crew/junior diff --
+  . ':!AGENTS.md'`. Run a test it wrote from the repository root with the root's install, pointed at
+  that folder so the project's own config does not start its services:
+  `node_modules/.bin/vitest run --root .crew/junior/<folder>` (or the project's equivalent).
+- Bring what you keep into your own tree, run the gates yourself, and commit it yourself. Then run
+  `junior-sync` again.
 
 Its answers are leads and its code is a draft, as with the local model below: you own what you take
-from it. Never hand it a decision, a verdict or a review finding.
+from it. Its line numbers in particular are often invented: open the file before you cite one, and
+ask it to quote the line with each path. Never hand it a decision, a verdict or a review finding.
 
 ## Local model
 
