@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "deny": [
+      "Bash",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Edit(.git/**)",
+      "Edit(.githooks/**)",
+      "Edit(.claude/**)",
+      "Edit(.openrig/**)",
+      "Edit(CLAUDE.local.md)",
+      "Read(~/.ssh/**)",
+      "Read(~/.config/**)",
+      "Read(~/.claude/**)",
+      "Read(//etc/**)"
+    ]
+  }
+}

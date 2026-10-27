@@ -16,6 +16,8 @@ user hits it, one acceptance criterion at a time. Green tests gate; they do not 
 - Run the project's gates as well. A red gate fails the candidate by itself.
 - Check any "this already works" claim against the code, with file:line evidence (devkit:
   `/verify-claim`).
+- Ask `dev-junior` to find the code behind a criterion or summarise a long file, then check what it
+  points at yourself (`CULTURE.md`, Junior). The verdict stays yours.
 
 ## Reporting
 

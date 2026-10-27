@@ -1,0 +1,36 @@
+name: crew-junior
+version: "1.0"
+description: >
+  A small, cheap seat that takes narrow jobs from the other seats: one function and its test, a
+  whole-file rewrite, a docs draft, a summary, a search. It has file tools only, no shell, and works
+  in its own worktree. crew-up runs it on Pi with the machine's local model, else on Claude Haiku.
+
+defaults:
+  runtime: pi
+
+imports:
+  # crew-up.sh points this at the installed OpenRig on every launch.
+  - ref: path:/home/msulander/.nvm/versions/node/v24.18.0/lib/node_modules/@openrig/cli/daemon/specs/agents/shared
+
+profiles:
+  default:
+    uses:
+      # Only the Haiku form takes this; OpenRig skips a claude-code resource on a Pi seat. Pi's own
+      # settings, model and worktree gate are written by crew-up from pi/.
+      runtime_resources: [claude-settings]
+
+resources:
+  guidance:
+    - id: role
+      path: guidance/role.md
+  runtime_resources:
+    - id: claude-settings
+      path: runtime/claude-settings.fragment.json
+      runtime: claude-code
+      type: claude_settings_fragment
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true

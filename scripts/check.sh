@@ -190,6 +190,19 @@ else
   skipped "node is NOT installed — local-llm's exit codes are not being tested"
 fi
 
+# --- 8. the junior's worktree gate -------------------------------------------
+# Pi has no sandbox, so worktree-only.ts is all that keeps the junior's file tools out of the
+# Owner's home folder and the repository's hooks. Its check needs node 22.6+ for type stripping.
+group "8. junior worktree gate"
+if command -v node >/dev/null 2>&1; then
+  gate=openrig/crew/agents/junior/pi/extensions/worktree-only.check.mts
+  if gout="$(node --experimental-strip-types --no-warnings "$gate" 2>&1)"; then ok "$gate"
+  else bad "$gate"; fi
+  printf '%s\n' "$gout" | tail -n 1 | sed 's/^/      /'
+else
+  skipped "node is NOT installed — the junior's worktree gate is not being tested"
+fi
+
 # --- verdict ----------------------------------------------------------------
 printf '\n'
 if [ "$fails" -gt 0 ]; then

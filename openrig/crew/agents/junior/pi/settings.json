@@ -1,0 +1,8 @@
+{
+  "defaultProvider": "ollama",
+  "defaultModel": "__CREW_LOCAL_MODEL__",
+  "defaultThinkingLevel": "medium",
+  "defaultTools": ["read", "write", "grep", "find", "ls"],
+  "defaultProjectTrust": "never",
+  "extensions": ["-builtin:mcp", "-builtin:codemode", "-builtin:tool-search", "-builtin:llama.cpp"]
+}

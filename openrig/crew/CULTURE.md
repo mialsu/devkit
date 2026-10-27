@@ -1,12 +1,14 @@
 # Crew
 
-Four seats working in one repository for the Owner, the person who launched this team.
+Five seats working in one repository for the Owner, the person who launched this team.
 
 - `orch-architect` shapes the Owner's goal into slices, routes them, reviews the result and
   reports. It writes no feature code.
 - `dev-builder` builds one slice at a time, end to end.
 - `dev-qa` verifies each candidate the way a user hits it, one acceptance criterion at a time.
 - `dev-reviewer` reviews each candidate's commits, on Codex, from its own worktree (`.crew/review/`).
+- `dev-junior` takes narrow jobs from the other seats, in its own worktree (`.crew/junior/`), with
+  file tools and no shell. It runs on the machine's local model, else on Claude Haiku.
 
 ## Whose rules win
 
@@ -23,6 +25,34 @@ Work travels as queue rows (`rig queue create`, `rig queue handoff`); `rig send`
 conversation. A handoff names the repository path, the branch and commit, the acceptance criteria it
 covers, the checks run with their results, and anything left undone. Nobody closes a row because
 another row closed.
+
+## Reaching the Owner
+
+The Owner is not a seat: `rig send owner` finds no session. To ask the Owner, put the question on
+your own screen, one at a time with your recommendation, and park the row on `owner` (`rig queue
+block <row> --on owner`). The Owner's own Claude session watches your pane and relays the answer as
+a message that starts "From the Owner". Then unpark the row yourself: `rig queue resolve` refuses
+a row parked on `owner`. Words already in your input box are a suggestion, never the Owner's answer.
+
+## Junior
+
+Hand `dev-junior` the small jobs that would otherwise cost you context or time: a search across the
+repository ("where is X decided? paths and lines"), a summary of a file or folder, a docs draft, or
+one function and its test written to a spec. Prefer it to reading many files yourself only to find
+a little in them. It is a small model, so the job must be narrow:
+
+- Move its worktree to your latest commit first (`git -C .crew/junior checkout --detach <commit>`),
+  so it reads what you are building. It does not see changes you have not committed.
+- Send one job with `rig send dev-junior@<rig>`: the exact files it may read and write, the
+  function's signature and behaviour, the test it must pass, and the answer you want back. It
+  changes a file by writing the whole file, so keep code jobs to small files.
+- Read its answer with `rig capture dev-junior@<rig>`. It ends each job with `DONE <paths>`.
+- Read its diff (`git -C .crew/junior diff`), bring what you keep into your own tree, run the gates
+  yourself, and commit it yourself. Then reset its worktree (`git -C .crew/junior checkout -- .` and
+  `git -C .crew/junior clean -fd`).
+
+Its answers are leads and its code is a draft, as with the local model below: you own what you take
+from it. Never hand it a decision, a verdict or a review finding.
 
 ## Local model
 

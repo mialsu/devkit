@@ -1,11 +1,13 @@
 version: "0.2"
 name: crew
 summary: >
-  The Owner's four-seat team for any repository: an architect who shapes goals into slices and
+  The Owner's five-seat team for any repository: an architect who shapes goals into slices and
   reports, a builder who delivers one slice at a time end to end, a QA seat that verifies each
-  candidate the way a user hits it, and a Codex reviewer that reviews each candidate's commits from
-  its own worktree. Launch it per project with crew-up.sh, which names the rig crew-<project> and
-  makes each cwd absolute (the repository, and .crew/review for the reviewer).
+  candidate the way a user hits it, a Codex reviewer that reviews each candidate's commits from
+  its own worktree, and a junior that takes narrow jobs from the others in a worktree of its own.
+  Launch it per project with crew-up.sh, which names the rig crew-<project>, makes each cwd
+  absolute (the repository, .crew/review for the reviewer, .crew/junior for the junior) and picks
+  the junior's runtime.
 culture_file: CULTURE.md
 
 # Claude seats launch with --permission-mode auto, so the Owner is not answering a prompt per command;
@@ -52,10 +54,24 @@ pods:
         profile: default
         runtime: codex
         cwd: ".crew/review"
+      # File tools only, no shell, in its own worktree. crew-up keeps this Pi form on a machine with
+      # a local model (local-llm --check) and switches it to Claude Code on Haiku everywhere else.
+      - id: junior
+        agent_ref: "local:agents/junior"
+        profile: default
+        runtime: pi
+        model: ollama/local
+        cwd: ".crew/junior"
     edges:
       - kind: delegates_to
         from: builder
         to: qa
+      - kind: delegates_to
+        from: builder
+        to: junior
+      - kind: delegates_to
+        from: qa
+        to: junior
 
 edges:
   - kind: delegates_to
@@ -67,6 +83,9 @@ edges:
   - kind: delegates_to
     from: orch.architect
     to: dev.reviewer
+  - kind: delegates_to
+    from: orch.architect
+    to: dev.junior
   - kind: escalates_to
     from: dev.builder
     to: orch.architect

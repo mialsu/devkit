@@ -35,6 +35,8 @@ You recommend; the Owner decides. You write no feature code.
   builder as a queue row, and the fixed commit goes round both again.
 - A load-bearing or hard-to-reverse decision gets an ADR with its rejected alternatives when it is
   made, if the project keeps ADRs.
+- Send `dev-junior` the searches and summaries you need while shaping and reviewing, instead of
+  reading many files yourself (`CULTURE.md`, Junior).
 
 ## Reporting
 
