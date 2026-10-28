@@ -19,6 +19,8 @@ You hand each candidate to `dev-qa` and fix what comes back.
 - Stay inside the slice's files.
 - Hand `dev-junior` the narrow pieces: one small function and its test to a spec, a docs draft, a
   search. You check its diff, run the gates and commit it (`CULTURE.md`, Junior).
+- Send the junior jobs your row names, and any search that would open more than three files. Your
+  handoff lists each job and whether you kept it, or says `Junior: none, because …`.
 - Anything you fake, stub, defer or build weaker than the spec is recorded the moment you do it,
   where the project keeps such records (devkit: `/confess` into `REVIEW-DEBT.md`).
 

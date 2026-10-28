@@ -37,6 +37,8 @@ You recommend; the Owner decides. You write no feature code.
   made, if the project keeps ADRs.
 - Send `dev-junior` the searches and summaries you need while shaping and reviewing, instead of
   reading many files yourself (`CULTURE.md`, Junior).
+- Name the junior jobs in every build row you route: at least one search, summary or draft for the
+  builder to send, or `Junior: none, because …`. Your report to the Owner counts the jobs sent.
 
 ## Reporting
 

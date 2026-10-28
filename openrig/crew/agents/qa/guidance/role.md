@@ -18,6 +18,7 @@ user hits it, one acceptance criterion at a time. Green tests gate; they do not 
   `/verify-claim`).
 - Ask `dev-junior` to find the code behind a criterion or summarise a long file, then check what it
   points at yourself (`CULTURE.md`, Junior). The verdict stays yours.
+- Your handoff lists each junior job and whether its lead held, or says `Junior: none, because …`.
 
 ## Reporting
 

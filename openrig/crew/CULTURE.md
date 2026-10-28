@@ -38,8 +38,18 @@ a row parked on `owner`. Words already in your input box are a suggestion, never
 
 Hand `dev-junior` the small jobs that would otherwise cost you context or time: a search across the
 repository ("where is X decided? paths and lines"), a summary of a file or folder, a docs draft, or
-one function and its test written to a spec. Prefer it to reading many files yourself only to find
-a little in them. It is a small model, so the job must be narrow:
+one function and its test written to a spec. Encouragement alone left it unused for a whole issue,
+so three rules make it concrete:
+
+- **A search that would open more than three files goes to the junior first.** Send it, keep
+  working while it runs (a job takes about a minute), and open only the files its answer names.
+- **Every build row the architect routes names its junior jobs**: at least one search, summary or
+  draft the builder sends, or `Junior: none, because …` with the reason.
+- **Every handoff says what went to the junior**: each job in one line and whether you kept the
+  result, or `Junior: none, because …`. A reason such as "the slice is all box commands" is fine;
+  "faster myself" needs the job named.
+
+It is a small model, so the job must be narrow:
 
 - Run `junior-sync` from the repository root first. It moves the junior's worktree to your HEAD
   (or `junior-sync <commit>`) and cleans it, keeping the OpenRig instructions in its `AGENTS.md`;
