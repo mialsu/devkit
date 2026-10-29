@@ -28,9 +28,12 @@ Domain profile: **<PROFILE>**.
 - Tests: `<cmd>`
 - Build: `<cmd>`
 - Boundaries: `<cmd>`  (the import/architecture gate)
-- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files, diagrams)
-- Diagrams: `<regenerate cmd>` rewrites the generated ERD. Drift check 12 fails a schema change
-  staged without it; omit this line in a project that stores nothing.
+- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files, diagrams).
+  The script is devkit's, byte-identical; this project's settings and checks are in
+  `scripts/drift-check.local.sh`, and `/harness sync` updates the script.
+- Diagrams: `<regenerate cmd>` rewrites the generated ERD from `<what declares the schema>`. The
+  snapshot test fails a stale copy and drift check 12 a regenerated copy left unstaged; omit this
+  line in a project that stores nothing.
 - Live exercise: see **Verify like a user** below.
 
 Green tests gate; they do not prove. And **a gate you haven't watched fail is not a gate** — each
@@ -60,9 +63,10 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   that crosses components (only if the project has more than one). It holds no rule another file
   owns; when it and `DESIGN.md`, `INVARIANTS.md` or an ADR disagree, the other one is right and this
   one is stale. Every diagram carries its caption (METHOD.md, *Diagrams*).
-- **`docs/schema.gen.md`** — the tables, **generated** from a database migrated from empty (only if
-  the project stores data). Never edited by hand: the snapshot test fails when it and the schema
-  disagree, and drift check 12 fails a migration staged without it.
+- **`docs/schema.gen.md`** — the stored data, **generated** from whatever declares the schema:
+  migrations applied to an empty database, an ORM's schema, or a document store's collection config
+  (only if the project stores data, and only if something declares it). Never edited by hand: the
+  snapshot test fails when it and the schema disagree, and drift check 12 fails it left unstaged.
 - **`CODING_STANDARDS.md`** — how code here is written, every rule tagged with its enforcer. A rule
   tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
 - **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate

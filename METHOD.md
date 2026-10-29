@@ -241,9 +241,9 @@ map, so no session has to guess which shape is canonical:
 | `CADENCE.md` (tracker bindings, rungs, fenced classes, write envelope) | devkit — `/cycle-plan` bootstraps it; neither source has this | the whole file: both sources assume either no tracker or a team behind it, so a **solo** cadence had no bindings and every skill would have hardcoded one tracker |
 | "what did this cycle actually deliver" | devkit — `/cycle-close`; a tracker reports its current contents, which is a different question | the cycle **record**: the commitment snapshotted at planning, because a tracker forgets it and drifts in the flattering direction |
 | a diagram of anything — system, sequence, state, ER | devkit — **Mermaid**, in the Markdown that already owns the subject; neither source draws anything | the whole convention, below: one format, a stated direction of generation, a caption contract, and the two gates that keep it from rotting |
-| `docs/schema.gen.md` (the tables, drawn) | devkit — **generated**, never written by hand | the direction of generation (migrations applied to an empty database), plus the snapshot test and drift check 12 that fail when it and the schema disagree |
+| `docs/schema.gen.md` (the stored data, drawn) | devkit — **generated**, never written by hand | the direction of generation (from whatever declares the schema: migrations, an ORM's schema, a document store's collection config), plus the snapshot test and drift check 12 that fail when it and the schema disagree |
 | `docs/architecture.md` (what runs where, and a flow a surface doc cannot hold) | devkit — neither source has this. `DESIGN.md` owns the *surface*, an ADR owns the *decision*, this owns the *current shape* | the whole file, and the caption contract whose `**Code:**` line drift check 13 makes machine-checked |
-| `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
+| `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — the gate is copied **byte-identical** into each project and never edited there; the project's own settings and checks live in `scripts/drift-check.local.sh`, whose `DEVKIT_GATE` names the commit it came from, and `/harness sync` carries fixes both ways |
 | reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
@@ -264,8 +264,23 @@ runs where, and the one or two flows that cross components) and `docs/schema.gen
 
 **Every fact has one direction of generation, and the document says which way it points.** A diagram
 of something another source already defines is generated *from* that source, never maintained beside
-it: the tables come from the migrations applied to an empty database, not from a hand-drawn copy of
-them. This is the rest of the reuse table, aimed at pictures.
+it. This is the rest of the reuse table, aimed at pictures.
+
+For the stored data, the source is **whatever declares the schema**, and the project names it:
+
+- **SQL migrations** — the migrations applied to an empty database, then introspected. Not the
+  migration files parsed, which would be a second reading of them.
+- **An ORM or schema DSL that owns the schema** (Prisma, Drizzle, an Ecto schema) — its own
+  declaration or its own introspection.
+- **A document store** (MongoDB, Firestore, DynamoDB) keeps no schema to read back, so the source is
+  the code that declares what is stored: a CMS's collection config, Mongoose schemas, a validator's
+  JSON Schema. Draw collections, embedded objects as boxes of their own joined as *embedded*, and
+  references as lines. Never sample a live or test database: it answers with what happens to be
+  stored, not what may be.
+- **Nothing declares it** (a schemaless store written to ad hoc) — there is no source, so there is
+  **no ERD**. A hand-drawn one would be the stale diagram this section exists to prevent. Say so in
+  one line of `docs/architecture.md` and confess it in `REVIEW-DEBT.md`; declaring a schema is the
+  upgrade.
 
 **Every diagram carries a caption**, because the drawing cannot carry the rule:
 
@@ -277,12 +292,14 @@ them. This is the rest of the reuse table, aimed at pictures.
 
 **The enforcers**, since a diagram with none is the pseudo-artifact with a picture on it:
 
-- **drift check 12** — a migration staged with the ERD unregenerated. The project's snapshot test
-  reads the working tree, so this is the half it structurally cannot see.
-- **drift check 13** — a `**Code:**` caption citing a path that is not in the repo. A renamed folder
-  is the first thing to rot, and the only part of a hand-drawn diagram a script can falsify.
-- **the project's own snapshot test** — the generated diagram against the real schema, in the test
-  run that already needs a database. No new gate to wire, and it fails with a diff.
+- **drift check 12** — a regenerated ERD left unstaged at a commit. The project's snapshot test
+  reads the working tree, so this is the half it structurally cannot see. It watches the ERD, not
+  the schema's source, so it holds for any source and never fires on an edit that changes no schema.
+- **drift check 13** — a `**Code:**` caption citing a path that is not in the repo, read across
+  every caption on every run. A renamed folder is the first thing to rot, and the only part of a
+  hand-drawn diagram a script can falsify.
+- **the project's own snapshot test** — the generated diagram against the schema's source, in the
+  test run. No new gate to wire, and it fails with a diff.
 
 Mermaid *syntax* is deliberately not gated: rendering proves syntax and not truth, and a headless
 browser is a poor trade for it. Look at the rendered file after changing a diagram; a project that
@@ -293,8 +310,7 @@ wants more writes the `REVIEW-DEBT.md` entry first and the ADR second.
 - **Structurizr, or C4 as a toolchain** — one model feeding many views pays when keeping several
   diagrams consistent is a recurring problem. Revisit at a third deployable or a second bounded
   context. C4 as a way to *choose* which views to draw costs nothing and needs no tool.
-- **DBML, or any second schema dialect** — the migrations (or the declarative schema the tooling
-  owns) are the authority. A second dialect is *two formats for one artifact*, at the database.
+- **DBML, or any second schema dialect** — whatever declares the schema is the authority. A second dialect is *two formats for one artifact*, at the database.
 - **Committed SVG or PNG exports** — a binary nobody diffs, stale the day after it is generated.
   Export at publish time from the source in the repo, or not at all.
 

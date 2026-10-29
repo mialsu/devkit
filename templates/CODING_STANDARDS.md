@@ -49,7 +49,8 @@ Two rules about the rules:
 - Mermaid, in the Markdown that owns the subject. Not an image, not an external canvas: the host
   renders it and a diff shows what changed. `[review-only]`
 - A diagram of something another source defines is **generated from that source**, never drawn
-  beside it — the tables come from the schema, not from a hand-drawn copy of it.
+  beside it — the stored data comes from whatever declares the schema, not from a hand-drawn copy
+  of it, and a store nothing declares gets no ERD.
   `[test]` (the snapshot test), `[script]` (drift 12)
 - Every diagram carries a caption: **Scope:** (current, proposed or historical, dated), **Code:**
   (the paths it describes, in backticks), **Arrows:** (what a line means), and the constraints a
