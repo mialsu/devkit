@@ -153,6 +153,53 @@ else
 fi
 rm -rf "$dt"
 
+# --- 3e. a project's own settings live beside the gate, not in it -------------
+# Every project carries the gate byte-identical; what is its own goes in drift-check.local.sh. This
+# proves the file is read and each of its hooks takes effect, from a copy inside a monorepo package,
+# and asserts the two rules projects had patched into their copies before they came back here.
+group "3e. drift-check.local.sh behaviour (settings, checks, package root, test cap, ADR names)"
+lt="$(mktemp -d)"
+(
+  cd "$lt" || exit 2
+  git init -q . && git config user.email t@t && git config user.name t
+  mkdir -p pkg/scripts pkg/fixtures pkg/tests pkg/docs/adr
+  cp "$OLDPWD/templates/scripts/drift-check.sh" pkg/scripts/
+  cat > pkg/scripts/drift-check.local.sh <<'LOCAL'
+DEVKIT_GATE=test
+DRIFT_ROOT=package
+MAX_NEW_TEST_FILE_LINES=600
+local_settings() { SKIP_CONTENT="(^|/)fixtures/|$SKIP_CONTENT"; }
+local_checks() { report "local — the project's own check ran" "none" "none"; }
+LOCAL
+  printf '{ "name": "pkg" }\n' > pkg/package.json
+  : > pkg/docs/adr/0001-seed.md
+  git add -A && git commit -qm seed
+  seq 1 450 > pkg/fixtures/big.csv          # skipped by local_settings
+  seq 1 450 > outside.ts                    # outside the package: not policed
+  seq 1 500 > pkg/tests/store.test.ts       # under the test cap
+  seq 1 450 > pkg/store.ts                  # over the cap: must fire
+  printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0"\n  }\n}\n' > pkg/package.json
+  printf 'An unrelated decision.\n' > pkg/docs/adr/0002-other.md
+  git add -A
+) >/dev/null 2>&1
+if [ ! -f "$lt/pkg/scripts/drift-check.local.sh" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  lfail=0
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q "DRIFT · local — the project's own check ran" <<<"$out" || { lfail=1; bad "local_checks did NOT run"; }
+  grep -qxF '     store.ts' <<<"$out" || { lfail=1; bad "a 450-line file inside the package was NOT flagged"; }
+  grep -q 'big.csv' <<<"$out" && { lfail=1; bad "local_settings' SKIP_CONTENT extension was ignored"; }
+  grep -q 'outside.ts' <<<"$out" && { lfail=1; bad "DRIFT_ROOT=package policed a file outside the package"; }
+  grep -q 'store.test.ts' <<<"$out" && { lfail=1; bad "a 500-line test file was flagged under a 600 test cap"; }
+  grep -q 'gained a dependency no ADR names' <<<"$out" || { lfail=1; bad "an unrelated ADR waved a new dependency through"; }
+  printf 'Uses `left-pad`.\n' > "$lt/pkg/docs/adr/0002-other.md"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q 'gained a dependency' <<<"$out" && { lfail=1; bad "a dependency an ADR names was still flagged"; }
+  [ "$lfail" = 0 ] && ok "local settings and checks apply; package root, test cap and ADR names hold"
+fi
+rm -rf "$lt"
+
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter
 # `name:`. A mismatch means the skill installs and then cannot be invoked — silently.

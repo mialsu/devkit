@@ -1,6 +1,6 @@
 ---
 name: harness
-description: Install and PROVE the coding-standard harness for a project — CODING_STANDARDS.md, the import/architecture boundary gate, and the drift gate — then wire them where they can't be skipped. Use when setting up a project's standards, when the user says "harness", "wire the gates", "add architecture tests", "enforce the standards", or when an existing project's rules live only in prose.
+description: Install and PROVE the coding-standard harness for a project — CODING_STANDARDS.md, the import/architecture boundary gate, and the drift gate — then wire them where they can't be skipped. Use when setting up a project's standards, when the user says "harness", "wire the gates", "add architecture tests", "enforce the standards", or when an existing project's rules live only in prose. `/harness sync` brings an installed drift gate back to devkit's template, when the user says "sync the gate" or a project's copy has drifted.
 disable-model-invocation: true
 ---
 
@@ -51,9 +51,17 @@ isn't in the import graph's rules is a suggestion, and the first agent in a hurr
 through it. No context map → the layering rules are the Owner's call; ask, don't guess.
 
 ## 4. Install the drift gate
-Copy `templates/scripts/drift-check.sh` to `scripts/`. Tune `MAX_NEW_FILE_LINES`, `LEDGER`,
-`ADR_DIR` if the project's layout differs. It reads `GLOSSARY.md`'s `_Avoid_:` lines, so the
-project's ubiquitous language becomes machine-checked the moment a term is written down.
+Copy `templates/scripts/drift-check.sh` to `scripts/` **byte-for-byte, and never edit the copy.**
+Everything that is the project's own goes beside it in `scripts/drift-check.local.sh`, which the
+gate sources: `DEVKIT_GATE=<devkit commit the copy came from>` (always, so `/harness sync` knows
+its base), the tunables when the layout differs (`MAX_NEW_FILE_LINES`, `MAX_NEW_TEST_FILE_LINES`,
+`LEDGER`, `ADR_DIR`, `ERD_CMD`), `DRIFT_ROOT=package` for a copy per monorepo package, a
+`local_settings` function to extend the patterns, and a `local_checks` function for a check only
+this project needs. A gate edited in place is how four projects came to differ from devkit by 64 to
+299 lines, and from each other, with fixes stranded in each (2026-10-29).
+
+The gate reads `GLOSSARY.md`'s `_Avoid_:` lines, so the project's ubiquitous language becomes
+machine-checked the moment a term is written down.
 
 If the **domain dial** is on, it also polices `INVARIANTS.md`: a new `INV-` row whose `Enforced by`
 cell is empty fails the diff. Check the existing rows too — an invariant already sitting there with
@@ -90,6 +98,37 @@ Write the literal commands into `AGENTS.md`'s **Build gates** section, and add a
 to `CODING_STANDARDS.md` so a cold session finds the rules. Then report: what was installed, the
 pass→fail→pass evidence per gate, which rules ended up `[review-only]`, and anything you couldn't
 enforce.
+
+## `/harness sync` — bring an installed gate back to the template
+For a project whose gate was installed earlier. The gate is the only file this mode touches, with
+its `drift-check.local.sh`; the rest of the harness is the project's and stays as it is.
+
+1. **Find the three versions.** *Base* is the template at `DEVKIT_GATE` (`git -C <devkit> show
+   <sha>:templates/scripts/drift-check.sh`); *ours* is the project's copy; *theirs* is the template
+   at devkit's `HEAD`. A copy with no `DEVKIT_GATE` predates the stamp: diff it against `HEAD` and
+   sort every hunk by hand, as step 2 says.
+2. **Sort every line where ours differs from base**, before copying anything. Each is one of:
+   - **the project's setting** (a cap, a path, an extra skipped pattern) — moves to
+     `drift-check.local.sh`;
+   - **a check only this project needs** — moves to `local_checks`, or stays in a separate script
+     the project already runs;
+   - **a fix every project needs** (a false pass, a missed match) — goes to **devkit first**: the
+     template change and a `scripts/check.sh` assertion that fails without it, as its own devkit
+     commit. Only then is it in *theirs*.
+   - **already in theirs**, because another project sent it back — nothing to move.
+   Say which pile each hunk went to; a hunk nobody can place is a question for the Owner, not a
+   line to drop.
+3. **Copy theirs over ours, byte-for-byte**, and set `DEVKIT_GATE` to devkit's `HEAD`. Then
+   `cmp` the two files: anything but identical means step 2 missed a hunk.
+4. **Prove it, as step 5 does.** The clean tree passes; each setting and local check that moved
+   fails on its planted violation and passes once reverted; and the project's full gate run is
+   green. *Theirs* may carry checks the project never had, so expect new findings and sort them as
+   *Retrofitting* below does.
+5. **Commit in the project** with the base and target commits, the pile of each hunk, and the
+   pass → fail → pass output. Pushing either repo is the Owner's call.
+
+A multi-package repo with a copy per package syncs each copy, and sets `DRIFT_ROOT=package` in each
+local file rather than editing the `cd`.
 
 ## Retrofitting an existing project
 **Measure before you install.** Run the drift gate over the whole history first — the range

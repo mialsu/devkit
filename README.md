@@ -38,6 +38,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
 /spike                          # (devkit) could this work here at all? timeboxed, throwaway, a verdict with evidence
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)
+/harness sync                   # (devkit) bring a project's drift gate back to the template
 /crunch-domain                  # (devkit) crunch the domain with the Owner → GLOSSARY.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication

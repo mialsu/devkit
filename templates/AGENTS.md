@@ -28,7 +28,9 @@ Domain profile: **<PROFILE>**.
 - Tests: `<cmd>`
 - Build: `<cmd>`
 - Boundaries: `<cmd>`  (the import/architecture gate)
-- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files, diagrams)
+- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files, diagrams).
+  The script is devkit's, byte-identical; this project's settings and checks are in
+  `scripts/drift-check.local.sh`, and `/harness sync` updates the script.
 - Diagrams: `<regenerate cmd>` rewrites the generated ERD from `<what declares the schema>`. The
   snapshot test fails a stale copy and drift check 12 a regenerated copy left unstaged; omit this
   line in a project that stores nothing.

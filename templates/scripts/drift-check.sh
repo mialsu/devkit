@@ -28,22 +28,43 @@
 # upgrade path or arrive with no confession, token VALUES living in a markdown file, a regenerated
 # ERD left out of the commit, and a diagram caption citing code that is not there.
 #
-# Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
-#                 MIN_COMMENTED_BLOCK.
+# Tunables (env, or drift-check.local.sh): MAX_NEW_FILE_LINES, MAX_NEW_TEST_FILE_LINES, LEDGER,
+#                 ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS, MIN_COMMENTED_BLOCK, DRIFT_ROOT, ERD_CMD.
+#
+# THIS FILE IS NOT EDITED IN A PROJECT. Every project carries it byte-identical to devkit's
+# template; what is the project's own lives beside it in `drift-check.local.sh`, which this file
+# sources when it exists: the tunables above, `DEVKIT_GATE` (the devkit commit this copy came
+# from), a `local_settings` function to extend the patterns, and a `local_checks` function for the
+# checks only this project needs. A fix found in a project goes back to devkit's template and
+# comes out again through `/harness sync`; edited in place, the copies drift from the template and
+# from each other, which is how four projects came to differ by 64 to 299 lines (2026-10-29).
 
 set -uo pipefail
 
 # The gate's own file, as an absolute path taken BEFORE the cd below changes what a relative $0
 # points at. Check 6 waives its size cap for this one file.
 case "$0" in /*) SELF="$0" ;; *) SELF="$PWD/$0" ;; esac
-cd "$(git rev-parse --show-toplevel)" || exit 2
-# Every `git diff` below carries `--relative`. With the cd above it is a NO-OP — cwd is already the
-# git root. It matters when a project vendors this script into a package subdirectory and changes
-# that cd, which a monorepo of several packages will: `git ls-files` reports paths relative to the
-# cwd while `git diff` reports them from the GIT ROOT, so every check that took a path from a diff
-# and handed it back to git matched nothing and printed clean. Found the hard way on 2026-09-04.
+LOCAL="${SELF%/*}/drift-check.local.sh"
+# shellcheck source=/dev/null
+[ -f "$LOCAL" ] && . "$LOCAL"
+
+# DRIFT_ROOT=package polices only the package this copy sits in (`<pkg>/scripts/drift-check.sh`
+# polices `<pkg>/`), for a monorepo whose packages each carry their own gate; the default is the
+# whole repo. Every `git diff` below carries `--relative`, a NO-OP at the git root. In a package it
+# is what keeps the gate working: `git ls-files` reports paths relative to the cwd while `git diff`
+# reports them from the GIT ROOT, so every check that took a path from a diff and handed it back to
+# git matched nothing and printed clean. Found the hard way on 2026-09-04.
+if [ "${DRIFT_ROOT:-repo}" = "package" ]; then
+  cd "${SELF%/*}/.." || exit 2
+else
+  cd "$(git rev-parse --show-toplevel)" || exit 2
+fi
 
 MAX_NEW_FILE_LINES="${MAX_NEW_FILE_LINES:-400}"
+# A test file's length tracks the surface it covers, not muddled responsibilities, so a project may
+# give tests a looser cap. Not an exemption: the default is the same cap. Found in the attendance
+# tracker, whose convention is one test file per service.
+MAX_NEW_TEST_FILE_LINES="${MAX_NEW_TEST_FILE_LINES:-$MAX_NEW_FILE_LINES}"
 LEDGER="${LEDGER:-REVIEW-DEBT.md}"
 ADR_DIR="${ADR_DIR:-docs/adr}"
 MIN_TERM_LEN="${MIN_TERM_LEN:-3}"
@@ -92,6 +113,9 @@ REGENERATED='\.gen\.[a-z]+$|(^|/)openapi\.json$|(^|/)schema\.d\.ts$|(^|/)drizzle
 MANIFESTS='(^|/)(package\.json|pyproject\.toml|requirements[^/]*\.txt|go\.mod|Cargo\.toml|Gemfile|composer\.json|pubspec\.yaml|[^/]+\.csproj|build\.gradle(\.kts)?)$'
 # Suppressions and silenced tests.
 HATCHES='TODO|FIXME|HACK|XXX|@ts-ignore|@ts-expect-error|eslint-disable|type:[[:space:]]*ignore|#[[:space:]]*noqa|#nosec|nolint|pytest\.mark\.skip|(it|test|describe|context)\.(skip|only)\(|^[[:space:]]*(xit|xdescribe|fit|fdescribe)\(|t\.Skip\(|#\[ignore\]'  # drift-ok: this line IS the pattern definition
+
+# The project's own extensions to the patterns above (`SKIP_CONTENT="<its fixtures>|$SKIP_CONTENT"`).
+declare -F local_settings >/dev/null && local_settings
 
 violations=0
 say() { printf '%s\n' "$*"; }
@@ -294,15 +318,28 @@ dep_names() {                   # dep_names <manifest> <+|->
     | grep -Eiv '^(version|name|description|license|author|authors|readme|repository|keywords|main|types|type|private|files|exports|scripts|engines|node|npm|packageManager|requires-python|python|edition|go|rust-version|module|require|tool|project|package|lib|bin|workspace|features|profile|target|(dev-|build-|optional|peer|dev|Dev|Peer|Optional|Build)?[dD]ependenc(y|ies)|dependency-groups|build-system|plugins|resolutions|overrides)$' \
     | sort -u
 }
-adr_added="$(added_files | grep -E "^$ADR_DIR/")"
+# Each new name must appear IN BACKTICKS in some file under $ADR_DIR (`postgres` in ADR-0003), so a
+# prose mention ("PostgreSQL holds the data") never counts. Until 2026-10-21 this check passed every
+# new dependency as long as ANY file was added under $ADR_DIR in the same diff, so one unrelated ADR
+# waved through all of them, and an amendment to an existing ADR (a modification) satisfied nothing.
+# Found at prep-planner's ticket 1, when `postgres`, already decided in ADR-0003, failed the gate.
+# --cached reads the staged ADRs, so an unstaged edit cannot vouch for a staged dependency.
+adr_names() {                   # adr_names <dep>: true when `<dep>` appears in an ADR
+  if [ "${RANGE[0]}" = "--cached" ]; then
+    git grep -qF --cached -e "\`$1\`" -- "$ADR_DIR"
+  else
+    grep -rqF -e "\`$1\`" "$ADR_DIR" 2>/dev/null
+  fi
+}
 while IFS= read -r m; do
   [ -n "$m" ] || continue
   new="$(comm -23 <(dep_names "$m" '+') <(dep_names "$m" '-'))"
-  if [ -n "$new" ] && [ -z "$adr_added" ]; then
-    report "dependency — $m gained a dependency with no ADR" \
+  undocumented="$(while IFS= read -r d; do [ -n "$d" ] && ! adr_names "$d" && printf '%s\n' "$d"; done <<<"$new")"
+  if [ -n "$undocumented" ]; then
+    report "dependency — $m gained a dependency no ADR names" \
             "rebuilding/absorbing what you already have, undocumented" \
-            "add an ADR in $ADR_DIR saying what it replaces and what you rejected (PRINCIPLES #3, #7)"
-    say "     $m  →  $(printf '%s' "$new" | paste -sd' ' -)"
+            "name it in backticks in an ADR in $ADR_DIR, saying what it replaces and what you rejected (PRINCIPLES #3, #7)"
+    say "     $m  →  $(printf '%s' "$undocumented" | paste -sd' ' -)"
   fi
 done < <(changed | grep -E "$MANIFESTS")
 
@@ -345,10 +382,14 @@ while IFS=$'\t' read -r add path; do
   [ -n "${path:-}" ] || continue
   printf '%s\n' "$path" | grep -Eq "$SKIP_CONTENT" && continue
   [ "$path" -ef "$SELF" ] && continue
-  if [ "$add" -gt "$MAX_NEW_FILE_LINES" ]; then
-    report "size — new file is $add lines (cap $MAX_NEW_FILE_LINES)" \
+  cap="$MAX_NEW_FILE_LINES"; knob=MAX_NEW_FILE_LINES
+  if grep -Eq '(^|/)(tests?|__tests__)/|[._-](test|spec)\.[a-z]+$|(^|/)test_[^/]+\.py$' <<<"$path"; then
+    cap="$MAX_NEW_TEST_FILE_LINES"; knob=MAX_NEW_TEST_FILE_LINES
+  fi
+  if [ "$add" -gt "$cap" ]; then
+    report "size — new file is $add lines (cap $cap)" \
             "backend/layer-only progress: a file this big is usually several modules in a trench coat" \
-            "split it at a real seam, or raise MAX_NEW_FILE_LINES with a reason in CODING_STANDARDS.md"
+            "split it at a real seam, or raise $knob with a reason in CODING_STANDARDS.md"
     say "     $path"
   fi
 done < <(added_sizes)
@@ -522,7 +563,7 @@ if [ "${RANGE[*]}" = "--cached" ]; then
     [ -n "$erd" ] || continue
     report "schema — $erd was regenerated but the change is not staged" \
             "trusting status over code: the snapshot test passed on a file this commit leaves out" \
-            "stage it, or run the project's ERD command first if the schema changed"
+            "stage it, or run ${ERD_CMD:-the ERD command} first if the schema changed"
   done < <({ git diff --relative --name-only; git ls-files --others --exclude-standard; } | grep -E "$ERD_DOC" | sort -u)
 fi
 
@@ -562,6 +603,11 @@ while IFS= read -r rec; do
             "fix the path, or redraw the diagram for where the code actually is"
   done < <(cut -d: -f3- <<<"$rec" | grep -oE '`[^`]+`' | tr -d '`')
 done < <(captions | grep -v 'drift-ok')
+
+# --- the project's own checks ----------------------------------------------
+# `local_checks` in drift-check.local.sh, with `report`, `changed`, `added_lines` and the rest of
+# the helpers above in reach. A check that would serve every project belongs in this file instead.
+declare -F local_checks >/dev/null && local_checks
 
 # --- verdict ---------------------------------------------------------------
 say ""
