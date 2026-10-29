@@ -74,6 +74,20 @@ disciplines transfer most directly.
 - **What no harness here catches:** whether the seam is in the *right place*, runtime coupling
   through a store/context/DI container, and prop-drilled state that no import graph can see.
 
+## Diagrams (METHOD.md, *Diagrams*)
+- **`docs/architecture.md`** — yes, from the first slice that has more than one process: the app,
+  the API, the store, and each external dependency, with the caption's constraints carrying the
+  authorization and transaction boundaries no arrow can.
+- **`docs/schema.gen.md`** — generated, never drawn. With an ORM that owns the schema, use its own
+  introspection; with plain SQL migrations, introspect a database migrated **from empty** and emit
+  `erDiagram` — `information_schema`/`pg_catalog` plus ~80 lines beats adding a tool, and reuses
+  the test suite's fresh-database helper. `mermerd` is the alternative when a binary is acceptable.
+- **The gate is the test run that already needs a database:** assert the generated diagram against
+  the committed file (Vitest's `toMatchFileSnapshot`, Jest's `toMatchFile`), so regeneration is
+  `test -u` and staleness fails with a diff. Drift check 12 covers the staged-but-not-regenerated
+  half; drift check 13 checks every caption's `**Code:**` paths.
+- The surface's flows and states stay in `DESIGN.md`. Do not redraw them here.
+
 ## Dead code & duplication (`/prune`)
 - **Two altitudes, and only one belongs in the gate set.** Unused imports and locals are a
   *lint*: `@typescript-eslint/no-unused-vars`, plus `noUnusedLocals` / `noUnusedParameters` in

@@ -72,6 +72,17 @@ automated enforcers, which makes labelling them the whole job.
 - **What no harness here catches:** feel. Nothing static tells you the slice is fun; only playing
   it does (see **Verify like a user**).
 
+## Diagrams (METHOD.md, *Diagrams*)
+- **`docs/architecture.md`** — yes, but about **systems and their update order**, not about
+  servers: what ticks what, which system owns which component, where input enters and where the
+  save file is written. The caption's constraints carry frame-order dependencies, which no arrow
+  shows.
+- **A state diagram beats prose for the rules domain** — the entity's lifecycle, the match's
+  phases — and lives next to the rule it draws in `INVARIANTS.md`, not in a file of its own.
+- **`docs/schema.gen.md`** — usually nothing to generate. A save-file *format* is not a schema;
+  if it has a version and a migration path, generate the diagram from the serialiser's types.
+- Scenes, assets and the engine's own node trees are the engine's; do not mirror them in Markdown.
+
 ## Dead code & duplication (`/prune`)
 - **The engine is a caller no analyzer can see.** Unity's message methods (`Awake`, `Start`,
   `OnTriggerEnter`) and every `[SerializeField]` private field are invoked by the runtime, not from

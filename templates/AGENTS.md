@@ -28,7 +28,9 @@ Domain profile: **<PROFILE>**.
 - Tests: `<cmd>`
 - Build: `<cmd>`
 - Boundaries: `<cmd>`  (the import/architecture gate)
-- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files)
+- Drift: `scripts/drift-check.sh --cached`  (vocabulary, suppressions, deps, generated files, diagrams)
+- Diagrams: `<regenerate cmd>` rewrites the generated ERD. Drift check 12 fails a schema change
+  staged without it; omit this line in a project that stores nothing.
 - Live exercise: see **Verify like a user** below.
 
 Green tests gate; they do not prove. And **a gate you haven't watched fail is not a gate** — each
@@ -54,6 +56,13 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   reconciled against scope, the flows, the four states of each surface, and the `A11Y-n` rows that
   each name an enforcer. It records *where* the design tokens live in code; it never copies their
   values. See **Surface work** below for who owns the parts this file deliberately does not.
+- **`docs/architecture.md`** — what runs where and how the pieces reach each other, plus any flow
+  that crosses components (only if the project has more than one). It holds no rule another file
+  owns; when it and `DESIGN.md`, `INVARIANTS.md` or an ADR disagree, the other one is right and this
+  one is stale. Every diagram carries its caption (METHOD.md, *Diagrams*).
+- **`docs/schema.gen.md`** — the tables, **generated** from a database migrated from empty (only if
+  the project stores data). Never edited by hand: the snapshot test fails when it and the schema
+  disagree, and drift check 12 fails a migration staged without it.
 - **`CODING_STANDARDS.md`** — how code here is written, every rule tagged with its enforcer. A rule
   tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
 - **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate

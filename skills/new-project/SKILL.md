@@ -27,6 +27,10 @@ Create the project directory (or use the current one if it's empty). Drop in, fr
 - `scripts/drift-check.sh` — the drift gate (step 3).
 - `specs/` for shaped specs. Do **not** pre-create `docs/adr/`: ADRs are created lazily, by the
   first decision that earns one. Same for `INVARIANTS.md` — it arrives with step 3a, or not at all.
+  Same for `docs/architecture.md` and the generated `docs/schema.gen.md` (METHOD.md, *Diagrams*):
+  an empty repo has no system to draw and no schema to generate, and a diagram of a system that
+  does not exist yet is the pseudo-artifact at its cheapest. They arrive with the first slice that
+  has more than one process, or that stores data — the profile says what each is worth here.
 
 ## 3. Wire the gates
 From the profile, install/verify the actual gate commands: the typecheck, the lint, the test

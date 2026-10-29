@@ -240,12 +240,63 @@ map, so no session has to guess which shape is canonical:
 | the stance code is written in — build less, reuse first, bound what you simplify | absorbed from an external "lazy senior developer" skill, and **not installed as one**. `/simplify` (installed) is the *after* pass over a diff; this is the stance the diff is written in | no second document: the **ladder** goes into PRINCIPLES #3, since a rival home for the reuse rule is the exact defect this table prevents. devkit adds what the source lacks — a precedence line against #4 (shortest is measured *inside* a slice, never against one), the root-cause rule as an anti-pattern, and an enforcer: a `CEILING:` marker gated against `REVIEW-DEBT.md` by drift check 10 |
 | `CADENCE.md` (tracker bindings, rungs, fenced classes, write envelope) | devkit — `/cycle-plan` bootstraps it; neither source has this | the whole file: both sources assume either no tracker or a team behind it, so a **solo** cadence had no bindings and every skill would have hardcoded one tracker |
 | "what did this cycle actually deliver" | devkit — `/cycle-close`; a tracker reports its current contents, which is a different question | the cycle **record**: the commitment snapshotted at planning, because a tracker forgets it and drifts in the flattering direction |
+| a diagram of anything — system, sequence, state, ER | devkit — **Mermaid**, in the Markdown that already owns the subject; neither source draws anything | the whole convention, below: one format, a stated direction of generation, a caption contract, and the two gates that keep it from rotting |
+| `docs/schema.gen.md` (the tables, drawn) | devkit — **generated**, never written by hand | the direction of generation (migrations applied to an empty database), plus the snapshot test and drift check 12 that fail when it and the schema disagree |
+| `docs/architecture.md` (what runs where, and a flow a surface doc cannot hold) | devkit — neither source has this. `DESIGN.md` owns the *surface*, an ADR owns the *decision*, this owns the *current shape* | the whole file, and the caption contract whose `**Code:**` line drift check 13 makes machine-checked |
 | `scripts/drift-check.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — |
 | reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
 adopt its format even when yours is prettier.** Two formats for one artifact is the same defect as
 two implementations of one behavior — they drift, and then both are suspect.
+
+## Diagrams
+
+Neither source draws pictures, and an agent reads a stale diagram exactly as confidently as a fresh
+one. So the rules here are about **ownership and freshness**, not about drawing.
+
+**One format: Mermaid, inside the Markdown that already owns the subject.** GitHub renders it, it
+diffs as text, and an agent reads the source instead of guessing at an image. A diagram does not get
+a file of its own when a file already owns its subject — the surface's flows and states stay in
+`DESIGN.md`, the domain's rules in `INVARIANTS.md`, the decision in its ADR, the words in
+`GLOSSARY.md`. Two things had no owner, and only those two are new: `docs/architecture.md` (what
+runs where, and the one or two flows that cross components) and `docs/schema.gen.md`.
+
+**Every fact has one direction of generation, and the document says which way it points.** A diagram
+of something another source already defines is generated *from* that source, never maintained beside
+it: the tables come from the migrations applied to an empty database, not from a hand-drawn copy of
+them. This is the rest of the reuse table, aimed at pictures.
+
+**Every diagram carries a caption**, because the drawing cannot carry the rule:
+
+- **Scope:** current, proposed, or historical — dated. An accepted ADR is not a built system.
+- **Code:** the paths it describes, in backticks. This is the half a script can check.
+- **Arrows:** what a line means *here* — a request, an import, a call, an event.
+- **Constraints a picture cannot carry:** the authorization boundary, the transaction, the retry,
+  the idempotency key, the thing that is true only on the deployed build. One sentence each.
+
+**The enforcers**, since a diagram with none is the pseudo-artifact with a picture on it:
+
+- **drift check 12** — a migration staged with the ERD unregenerated. The project's snapshot test
+  reads the working tree, so this is the half it structurally cannot see.
+- **drift check 13** — a `**Code:**` caption citing a path that is not in the repo. A renamed folder
+  is the first thing to rot, and the only part of a hand-drawn diagram a script can falsify.
+- **the project's own snapshot test** — the generated diagram against the real schema, in the test
+  run that already needs a database. No new gate to wire, and it fails with a diff.
+
+Mermaid *syntax* is deliberately not gated: rendering proves syntax and not truth, and a headless
+browser is a poor trade for it. Look at the rendered file after changing a diagram; a project that
+wants more writes the `REVIEW-DEBT.md` entry first and the ADR second.
+
+**What devkit refuses until a named condition is met:**
+
+- **Structurizr, or C4 as a toolchain** — one model feeding many views pays when keeping several
+  diagrams consistent is a recurring problem. Revisit at a third deployable or a second bounded
+  context. C4 as a way to *choose* which views to draw costs nothing and needs no tool.
+- **DBML, or any second schema dialect** — the migrations (or the declarative schema the tooling
+  owns) are the authority. A second dialect is *two formats for one artifact*, at the database.
+- **Committed SVG or PNG exports** — a binary nobody diffs, stale the day after it is generated.
+  Export at publish time from the source in the repo, or not at all.
 
 ## The weight dial
 

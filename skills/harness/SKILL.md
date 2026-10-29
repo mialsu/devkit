@@ -60,6 +60,14 @@ cell is empty fails the diff. Check the existing rows too — an invariant alrea
 no enforcer is a `[review-only]` rule that was never labelled as one. Give it a test or the label,
 and confess the label.
 
+Checks 12 and 13 are the **diagram** gates (METHOD.md, *Diagrams*) and both are inert until the
+project has something to police: 12 fires only once a generated ERD is tracked, 13 only on a
+`**Code:**` caption line. Neither needs wiring. What does need wiring, in a project that stores
+data, is the generated ERD itself: the profile names the generator, and the gate is the test run
+that already needs a database — assert the generated diagram against the committed file, so
+regeneration is the test runner's `-u` and staleness fails with a diff. Put the regenerate command
+in `AGENTS.md`'s **Build gates** section beside the others.
+
 ## 5. Prove each gate bites — the completion criterion
 A config that doesn't fail on a violation is worthless, so for **every** gate you installed:
 1. run it — it must **pass** on the clean tree;

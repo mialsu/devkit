@@ -44,6 +44,22 @@ Two rules about the rules:
   the `/codebase-design` vocabulary (module, interface, depth, seam, adapter). `[review-only]`
 - A new file over <400> added lines needs a reason. `[script]`
 
+## Diagrams
+
+- Mermaid, in the Markdown that owns the subject. Not an image, not an external canvas: the host
+  renders it and a diff shows what changed. `[review-only]`
+- A diagram of something another source defines is **generated from that source**, never drawn
+  beside it — the tables come from the schema, not from a hand-drawn copy of it.
+  `[test]` (the snapshot test), `[script]` (drift 12)
+- Every diagram carries a caption: **Scope:** (current, proposed or historical, dated), **Code:**
+  (the paths it describes, in backticks), **Arrows:** (what a line means), and the constraints a
+  picture cannot carry. `[script]` (drift 13 fails a `**Code:**` path that is not in the repo),
+  `[review-only]` (the rest)
+- A diagram repeats no rule that `DESIGN.md`, `INVARIANTS.md`, `GLOSSARY.md` or an ADR owns. It
+  points at them, so there is one authority per fact. `[review-only]`
+- Nothing parses the Mermaid: a syntax error lands green and breaks where it renders. Look at the
+  rendered file after changing a diagram. `[live]`
+
 ## Tests
 
 - Test external behavior through the module's interface, never implementation detail. `[review-only]`
