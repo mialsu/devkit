@@ -112,6 +112,7 @@ st="$(mktemp -d)"
   printf '# Glossary\n\n_Avoid_: extension\n' > GLOSSARY.md
   git add GLOSSARY.md
   printf 'export const extension = 1;\n' > src/plug.ts
+  printf 'export const extension = "caf\351";\n' > src/latin.ts   # Latin-1, not valid UTF-8
 ) >/dev/null 2>&1
 if [ ! -f "$st/scripts/drift-check.sh" ]; then
   skipped "could not build the throwaway repo — this check is not running"
@@ -122,6 +123,7 @@ else
   printf '%s\n' "$sout" | grep -qxF '     scripts/drift-check.sh' && { sfail=1; bad "the gate flagged its own file"; }
   grep -q 'src/plug.ts:1  ->  extension' <<<"$sout" || { sfail=1; bad "a banned word in a project file was NOT flagged"; }
   grep -q 'scripts/drift-check.sh:[0-9]*  ->' <<<"$sout" && { sfail=1; bad "a project's glossary policed the gate's own prose"; }
+  grep -q 'src/latin.ts:1  ->  extension' <<<"$sout" || { sfail=1; bad "a banned word on a Latin-1 line was NOT flagged"; }
   [ "$sfail" = 0 ] && ok "flags a 450-line new file and a banned word, waives its own file for both"
 fi
 rm -rf "$st"
@@ -207,6 +209,10 @@ else
   printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0",\n    "@types/right-pad": "^1.0.0"\n  }\n}\n' > "$lt/pkg/package.json"; (cd "$lt" && git add -A)
   out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
   grep -q '@types/right-pad' <<<"$out" || { lfail=1; bad "an @types package whose package no ADR names went through"; }
+  printf -- '-r base.in\n-c constraints.txt\n' > "$lt/pkg/requirements.txt"
+  printf '[tool.mypy]\npython_version = "3.12"\n' > "$lt/pkg/pyproject.toml"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -qE -- '(^|[[:space:]])-[rc]$|python_version' <<<"$out" && { lfail=1; bad "a pip option line or mypy's python_version was read as a dependency"; }
   [ "$lfail" = 0 ] && ok "local settings and checks apply; package root, test cap and ADR names hold"
 fi
 rm -rf "$lt"

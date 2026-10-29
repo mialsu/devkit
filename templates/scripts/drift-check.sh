@@ -164,12 +164,15 @@ added_sizes() {
 # plain English in the template, and every sync would trip on it. Found by sitesmith's first sync,
 # whose glossary bans `extension`. Matched by inode, as check 6 does, so another file that happens
 # to share the name is still policed.
+# Every `grep -v 'drift-ok'` here carries -a: GNU grep reads a line that is not valid UTF-8 (a Latin-1
+# file) as binary and drops it, so that line escaped every content check. Found at prep-planner's
+# sync, 2026-10-29, on its Latin-1 Fineli fixtures.
 SELF_PATH=""
 while IFS= read -r f; do
   [ "$f" -ef "$SELF" ] && { SELF_PATH="$f"; break; }
 done < <(git ls-files --cached --others --exclude-standard -- '*drift-check.sh')
 policed_lines() {
-  added_lines | SKIP="$SKIP_CONTENT" SELFP="$SELF_PATH" awk -F'\t' '$1 !~ ENVIRON["SKIP"] && $1 != ENVIRON["SELFP"]' | grep -v 'drift-ok'
+  added_lines | SKIP="$SKIP_CONTENT" SELFP="$SELF_PATH" awk -F'\t' '$1 !~ ENVIRON["SKIP"] && $1 != ENVIRON["SELFP"]' | grep -av 'drift-ok'
 }
 loc()  { printf '%s:%s' "$(cut -f1 <<<"$1")" "$(cut -f2 <<<"$1")"; }
 body() { cut -f3- <<<"$1"; }
@@ -317,14 +320,17 @@ fi
 # no dependencies at all. `[` is in the class for the same reason one level up: extras like
 # `uvicorn[standard]>=0.24.0` otherwise survive as `uvicorn[standard]` and fail the same filter.
 # Verified by instantiating this template in a scratch repo and watching it go from clean to red.
+# A pip option line (`-r base.in`, `-c constraints.txt`) names a file, not a package, and mypy's
+# `python_version` in pyproject.toml is a setting; both read as dependencies until the attendance
+# tracker's sync, 2026-10-29.
 dep_names() {                   # dep_names <manifest> <+|->
   git diff --relative --unified=0 "${RANGE[@]}" -- "$1" \
-    | grep "^[$2]" | grep -Ev '^[-+]{3}' | grep -v 'drift-ok' \
+    | grep "^[$2]" | grep -Ev '^[-+]{3}' | grep -av 'drift-ok' \
     | { if printf '%s' "$1" | grep -q 'requirements'; then cat; \
         else grep -E '[0-9]+\.[0-9]+|"\*"|latest|\{'; fi; } \
-    | sed 's/^.//; s/^[[:space:]]*//; s/^["'"'"']//' | sed 's/["'"'"':=<>~![ ].*$//' \
+    | sed 's/^.//; s/^[[:space:]]*//; s/^["'"'"']//' | grep -v '^-' | sed 's/["'"'"':=<>~![ ].*$//' \
     | grep -E '^[A-Za-z0-9@._/-]+$' \
-    | grep -Eiv '^(version|name|description|license|author|authors|readme|repository|keywords|main|types|type|private|files|exports|scripts|engines|node|npm|packageManager|requires-python|python|edition|go|rust-version|module|require|tool|project|package|lib|bin|workspace|features|profile|target|(dev-|build-|optional|peer|dev|Dev|Peer|Optional|Build)?[dD]ependenc(y|ies)|dependency-groups|build-system|plugins|resolutions|overrides)$' \
+    | grep -Eiv '^(version|name|description|license|author|authors|readme|repository|keywords|main|types|type|private|files|exports|scripts|engines|node|npm|packageManager|requires-python|python|python_version|edition|go|rust-version|module|require|tool|project|package|lib|bin|workspace|features|profile|target|(dev-|build-|optional|peer|dev|Dev|Peer|Optional|Build)?[dD]ependenc(y|ies)|dependency-groups|build-system|plugins|resolutions|overrides)$' \
     | sort -u
 }
 # Each new name must appear IN BACKTICKS in some file under $ADR_DIR (`postgres` in ADR-0003), so a
@@ -424,7 +430,7 @@ while IFS= read -r rec; do
             "name the test/constraint that fails when it is violated, or tag it [review-only] and confess it"
     say "     ${row:0:110}"
   fi
-done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)INVARIANTS\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*INV-[0-9]/' | grep -v 'drift-ok')
+done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)INVARIANTS\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*INV-[0-9]/' | grep -av 'drift-ok')
 
 # --- 8. an accessibility rule with no enforcer ------------------------------
 # Check 7 aimed at the surface instead of the domain. DESIGN.md is prose, so an A11Y row promising
@@ -440,7 +446,7 @@ while IFS= read -r rec; do
             "tag it [lint]/[test]/[live] with the real gate, or say [review-only] honestly and confess it"
     say "     ${row:0:110}"
   fi
-done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)DESIGN\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*A11Y-[0-9]/' | grep -v 'drift-ok')
+done < <(added_lines | awk -F'\t' '$1 ~ /(^|\/)DESIGN\.md$/ && $3 ~ /^[[:space:]]*\|[[:space:]]*A11Y-[0-9]/' | grep -av 'drift-ok')
 
 # --- 9. a block of commented-out code ---------------------------------------
 # The cheapest dead code to prevent, and the one an agent produces most: the old version left
@@ -560,7 +566,7 @@ while IFS= read -r rec; do
   report "tokens — $(cut -f2 <<<"$rec") carries $(cut -f1 <<<"$rec") token/value rows" \
           "two formats for one artifact: a token table in prose drifts from the tokens in code" \
           "move the values to the token file in code, and cite its PATH here instead"
-done < <(added_lines | grep -v 'drift-ok' | DS_TOK="$ds_tok" DS_VAL="$ds_val" awk -F'\t' '
+done < <(added_lines | grep -av 'drift-ok' | DS_TOK="$ds_tok" DS_VAL="$ds_val" awk -F'\t' '
     BEGIN { t = ENVIRON["DS_TOK"]; v = ENVIRON["DS_VAL"] }
     $1 ~ /\.md$/ && $3 ~ /^[[:space:]]*\|/ && $3 ~ t && $3 ~ v { c[$1]++ }
     END { for (f in c) if (c[f] >= 3) print c[f] "\t" f }')
@@ -619,7 +625,7 @@ while IFS= read -r rec; do
             "the pseudo-artifact: a diagram whose caption points at code that moved" \
             "fix the path, or redraw the diagram for where the code actually is"
   done < <(cut -d: -f3- <<<"$rec" | grep -oE '`[^`]+`' | tr -d '`')
-done < <(captions | grep -v 'drift-ok')
+done < <(captions | grep -av 'drift-ok')
 
 # --- the project's own checks ----------------------------------------------
 # `local_checks` in drift-check.local.sh, with `report`, `changed`, `added_lines` and the rest of
