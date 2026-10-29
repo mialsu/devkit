@@ -200,6 +200,38 @@ else
 fi
 rm -rf "$lt"
 
+# --- 3f. drift-ci.sh checks the range the event brought, or fails --------------
+# Each project once resolved its CI range in its own workflow, and two of the three narrowed to the
+# last commit when the base was missing. This asserts each base resolves as the header says, that
+# an unknown base and a shallow clone fail instead, and that the range reaches the gate.
+group "3f. drift-ci.sh behaviour (range per base; unknown base and shallow clone fail)"
+ct="$(mktemp -d)"
+(
+  git init -q "$ct/repo" && cd "$ct/repo" && git config user.email t@t && git config user.name t
+  mkdir scripts && cp "$OLDPWD/templates/scripts/drift-check.sh" "$OLDPWD/templates/scripts/drift-ci.sh" scripts/
+  git add -A && git commit -qm seed
+) >/dev/null 2>&1
+if [ ! -f "$ct/repo/scripts/drift-ci.sh" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  ci() { (cd "$ct/repo" && bash scripts/drift-ci.sh "$@" 2>&1); }
+  cfail=0
+  [ "$(ci --print '')" = "$(git hash-object -t tree /dev/null)...HEAD" ] || { cfail=1; bad "a root commit did not diff against the empty tree"; }
+  (cd "$ct/repo" && echo x > a && git add a && git commit -qm second) >/dev/null 2>&1
+  seed="$(git -C "$ct/repo" rev-parse HEAD~1)"
+  [ "$(ci --print '')" = "HEAD~1...HEAD" ] || { cfail=1; bad "an empty base did not fall back to HEAD~1"; }
+  [ "$(ci --print 0000000000000000000000000000000000000000)" = "HEAD~1...HEAD" ] || { cfail=1; bad "the all-zero base did not fall back to HEAD~1"; }
+  [ "$(ci --print "$seed")" = "$seed...HEAD" ] || { cfail=1; bad "a known base was not used as the range"; }
+  ci --print deadbeefdeadbeefdeadbeefdeadbeefdeadbeef >/dev/null && { cfail=1; bad "a base not in the clone did NOT fail"; }
+  (cd "$ct/repo" && seq 1 450 > big.ts && git add big.ts && git commit -qm big) >/dev/null 2>&1
+  out="$(ci "$seed")" && { cfail=1; bad "a 450-line file in the range did NOT fail the gate"; }
+  grep -q 'big.ts' <<<"$out" || { cfail=1; bad "the gate did not name the file the range brought"; }
+  git clone -q --depth 1 "file://$ct/repo" "$ct/shallow" >/dev/null 2>&1
+  (cd "$ct/shallow" && bash scripts/drift-ci.sh >/dev/null 2>&1) && { cfail=1; bad "a shallow clone did NOT fail"; }
+  [ "$cfail" = 0 ] && ok "each base resolves as documented; unknown base and shallow clone fail; the range reaches the gate"
+fi
+rm -rf "$ct"
+
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter
 # `name:`. A mismatch means the skill installs and then cannot be invoked — silently.
