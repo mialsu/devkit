@@ -109,6 +109,10 @@ st="$(mktemp -d)"
   git init -q . && git config user.email t@t && git config user.name t
   mkdir scripts src && cp "$OLDPWD/templates/scripts/drift-check.sh" scripts/
   seq 1 450 > src/big.ts
+  printf '# Glossary\n\n_Avoid_: extension\n' > GLOSSARY.md
+  git add GLOSSARY.md
+  printf 'export const extension = 1;\n' > src/plug.ts
+  printf 'export const extension = "caf\351";\n' > src/latin.ts   # Latin-1, not valid UTF-8
 ) >/dev/null 2>&1
 if [ ! -f "$st/scripts/drift-check.sh" ]; then
   skipped "could not build the throwaway repo — this check is not running"
@@ -117,7 +121,10 @@ else
   sfail=0
   printf '%s\n' "$sout" | grep -qxF '     src/big.ts' || { sfail=1; bad "a 450-line new file was NOT flagged"; }
   printf '%s\n' "$sout" | grep -qxF '     scripts/drift-check.sh' && { sfail=1; bad "the gate flagged its own file"; }
-  [ "$sfail" = 0 ] && ok "flags a 450-line new file, waives its own"
+  grep -q 'src/plug.ts:1  ->  extension' <<<"$sout" || { sfail=1; bad "a banned word in a project file was NOT flagged"; }
+  grep -q 'scripts/drift-check.sh:[0-9]*  ->' <<<"$sout" && { sfail=1; bad "a project's glossary policed the gate's own prose"; }
+  grep -q 'src/latin.ts:1  ->  extension' <<<"$sout" || { sfail=1; bad "a banned word on a Latin-1 line was NOT flagged"; }
+  [ "$sfail" = 0 ] && ok "flags a 450-line new file and a banned word, waives its own file for both"
 fi
 rm -rf "$st"
 
@@ -196,9 +203,51 @@ else
   printf 'Uses `left-pad`.\n' > "$lt/pkg/docs/adr/0002-other.md"; (cd "$lt" && git add -A)
   out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
   grep -q 'gained a dependency' <<<"$out" && { lfail=1; bad "a dependency an ADR names was still flagged"; }
+  printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0",\n    "@types/left-pad": "^1.0.0"\n  }\n}\n' > "$lt/pkg/package.json"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q 'gained a dependency' <<<"$out" && { lfail=1; bad "@types/left-pad was flagged though an ADR names left-pad"; }
+  printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0",\n    "@types/right-pad": "^1.0.0"\n  }\n}\n' > "$lt/pkg/package.json"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q '@types/right-pad' <<<"$out" || { lfail=1; bad "an @types package whose package no ADR names went through"; }
+  printf -- '-r base.in\n-c constraints.txt\n' > "$lt/pkg/requirements.txt"
+  printf '[tool.mypy]\npython_version = "3.12"\n' > "$lt/pkg/pyproject.toml"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -qE -- '(^|[[:space:]])-[rc]$|python_version' <<<"$out" && { lfail=1; bad "a pip option line or mypy's python_version was read as a dependency"; }
   [ "$lfail" = 0 ] && ok "local settings and checks apply; package root, test cap and ADR names hold"
 fi
 rm -rf "$lt"
+
+# --- 3f. drift-ci.sh checks the range the event brought, or fails --------------
+# Each project once resolved its CI range in its own workflow, and two of the three narrowed to the
+# last commit when the base was missing. This asserts each base resolves as the header says, that
+# an unknown base and a shallow clone fail instead, and that the range reaches the gate.
+group "3f. drift-ci.sh behaviour (range per base; unknown base and shallow clone fail)"
+ct="$(mktemp -d)"
+(
+  git init -q "$ct/repo" && cd "$ct/repo" && git config user.email t@t && git config user.name t
+  mkdir scripts && cp "$OLDPWD/templates/scripts/drift-check.sh" "$OLDPWD/templates/scripts/drift-ci.sh" scripts/
+  git add -A && git commit -qm seed
+) >/dev/null 2>&1
+if [ ! -f "$ct/repo/scripts/drift-ci.sh" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  ci() { (cd "$ct/repo" && bash scripts/drift-ci.sh "$@" 2>&1); }
+  cfail=0
+  [ "$(ci --print '')" = "$(git hash-object -t tree /dev/null)...HEAD" ] || { cfail=1; bad "a root commit did not diff against the empty tree"; }
+  (cd "$ct/repo" && echo x > a && git add a && git commit -qm second) >/dev/null 2>&1
+  seed="$(git -C "$ct/repo" rev-parse HEAD~1)"
+  [ "$(ci --print '')" = "HEAD~1...HEAD" ] || { cfail=1; bad "an empty base did not fall back to HEAD~1"; }
+  [ "$(ci --print 0000000000000000000000000000000000000000)" = "HEAD~1...HEAD" ] || { cfail=1; bad "the all-zero base did not fall back to HEAD~1"; }
+  [ "$(ci --print "$seed")" = "$seed...HEAD" ] || { cfail=1; bad "a known base was not used as the range"; }
+  ci --print deadbeefdeadbeefdeadbeefdeadbeefdeadbeef >/dev/null && { cfail=1; bad "a base not in the clone did NOT fail"; }
+  (cd "$ct/repo" && seq 1 450 > big.ts && git add big.ts && git commit -qm big) >/dev/null 2>&1
+  out="$(ci "$seed")" && { cfail=1; bad "a 450-line file in the range did NOT fail the gate"; }
+  grep -q 'big.ts' <<<"$out" || { cfail=1; bad "the gate did not name the file the range brought"; }
+  git clone -q --depth 1 "file://$ct/repo" "$ct/shallow" >/dev/null 2>&1
+  (cd "$ct/shallow" && bash scripts/drift-ci.sh >/dev/null 2>&1) && { cfail=1; bad "a shallow clone did NOT fail"; }
+  [ "$cfail" = 0 ] && ok "each base resolves as documented; unknown base and shallow clone fail; the range reaches the gate"
+fi
+rm -rf "$ct"
 
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter

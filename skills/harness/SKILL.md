@@ -77,6 +77,14 @@ gate is the test run — assert the generated diagram against the committed file
 regeneration is the test runner's `-u` and staleness fails with a diff. Put the regenerate command
 in `AGENTS.md`'s **Build gates** section beside the others.
 
+**In CI, the gate runs through `scripts/drift-ci.sh`**, copied from `templates/scripts/` beside it,
+byte-for-byte like the gate. A diff gate given no range on a clean checkout compares nothing and
+says clean, so the workflow passes the event's base and the script turns it into the range, or
+fails when there is none to trust: `scripts/drift-ci.sh "${{ github.event.pull_request.base.sha ||
+github.event.before }}"`, after a checkout with `fetch-depth: 0`. A monorepo package runs its own
+copy. Range logic written into a workflow instead is how three projects came to resolve it three
+ways, two of them falling back to the last commit in silence (2026-10-29).
+
 ## 5. Prove each gate bites — the completion criterion
 A config that doesn't fail on a violation is worthless, so for **every** gate you installed:
 1. run it — it must **pass** on the clean tree;
@@ -101,7 +109,9 @@ enforce.
 
 ## `/harness sync` — bring an installed gate back to the template
 For a project whose gate was installed earlier. The gate is the only file this mode touches, with
-its `drift-check.local.sh`; the rest of the harness is the project's and stays as it is.
+its `drift-check.local.sh` and `drift-ci.sh`; the rest of the harness is the project's and stays as
+it is. `drift-ci.sh` has no settings, so it is copied over whole (or installed, if the project
+resolved its CI range in a workflow), and the workflow then calls it as step 4 says.
 
 1. **Find the three versions.** *Base* is the template at `DEVKIT_GATE` (`git -C <devkit> show
    <sha>:templates/scripts/drift-check.sh`); *ours* is the project's copy; *theirs* is the template

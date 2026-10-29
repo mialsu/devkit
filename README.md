@@ -69,6 +69,7 @@ House rules are in [CODING_STANDARDS.md](CODING_STANDARDS.md); what the gates do
 | `profiles/` | Per-domain overlays: web, mobile-fullstack, game, cli-tools, library — each with its gate set, its **standards harness**, its **domain dial** default, and what a diagram is worth there. |
 | `templates/` | Drop-in `AGENTS.md` (every agent's rules), `CLAUDE.md` (imports it, plus Claude-only lines), `GLOSSARY.md`, `INVARIANTS.md`, `DESIGN.md`, `CODING_STANDARDS.md`, `REVIEW-DEBT.md`, ADR, SPEC, PRODUCT-BRIEF. |
 | `templates/scripts/drift-check.sh` | The drift gate — `ANTI-PATTERNS.md`, made executable and run on every diff. |
+| `templates/scripts/drift-ci.sh` | Runs the drift gate in CI over the range the event brought, and fails when there is none to trust. |
 | `CODING_STANDARDS.md`, `scripts/check.sh` | devkit's own standards and gate set — it runs its own method on itself. |
 | `docs/adr/` | devkit's own load-bearing decisions, with what was rejected. |
 
