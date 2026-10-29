@@ -63,6 +63,17 @@ is the command shapes and the **state table** is the output contract:
 - **What no harness here catches:** the clean-install experience, non-TTY behavior, and
   cross-platform path assumptions. Those need the live exercise below.
 
+## Diagrams (METHOD.md, *Diagrams*)
+- **`docs/architecture.md`** — usually **no**. A tool whose architecture is "parse args, do the
+  thing, print" is better served by `--help` and the README. It earns the file when the tool talks
+  to two or more external services, or holds state between runs.
+- **A sequence diagram earns its place** for the one flow with real failure modes — a login that
+  refreshes a token, a sync that resumes, a retry with a backoff.
+- **`docs/schema.gen.md`** — only if the tool owns a database. A config file is not a schema; its
+  authority is the parser's types, and the README is where it belongs.
+- The output contract — what the tool prints, and what it prints when it fails — stays in
+  `DESIGN.md`. Do not redraw it here.
+
 ## Dead code & duplication (`/prune`)
 - **Go:** `golang.org/x/tools/cmd/deadcode` for unreachable functions, `staticcheck`'s U1000 for
   unused identifiers, and `go mod tidy` followed by `git diff --exit-code go.mod go.sum` for

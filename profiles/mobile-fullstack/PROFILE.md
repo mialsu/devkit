@@ -67,6 +67,17 @@ technology, so the enforcer is a real screen reader rather than a browser extens
 - **What no harness here catches:** permission-denied paths, offline behavior, and version skew
   between a shipped app and a moved backend. Those are `/verify-live`'s job.
 
+## Diagrams (METHOD.md, *Diagrams*)
+- **`docs/architecture.md`** — yes, and it is worth more here than anywhere: app, API, database,
+  push/notification service, and the stores. The caption's constraints carry what the picture
+  cannot — what works offline, what the client caches, and which calls are retried.
+- **`docs/schema.gen.md`** — generated from the server's schema, as in the web profile. A local
+  on-device database (SQLite / Room / Core Data) earns a second generated diagram only when its
+  shape differs from the server's; otherwise say so in one line and point at the server's.
+- **The gate:** the generated diagram asserted against the committed file in the server's test run,
+  plus drift checks 12 and 13.
+- The screens, their states and the navigation stay in `DESIGN.md`. Do not redraw them here.
+
 ## Dead code & duplication (`/prune`)
 - **TS / React Native:** `knip`, run over the app and the backend as separate roots, so a symbol
   used only across the wire is not mistaken for dead on either side.

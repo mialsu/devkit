@@ -25,7 +25,8 @@
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
 # hand-edited generated files, oversized new files, invariants with no enforcer, accessibility
 # rules with no enforcer, blocks of commented-out code, deliberate ceilings that name no
-# upgrade path or arrive with no confession, and token VALUES living in a markdown file.
+# upgrade path or arrive with no confession, token VALUES living in a markdown file, a migration
+# that lands with the ERD unregenerated, and a diagram caption citing code that is not there.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
 #                 MIN_COMMENTED_BLOCK.
@@ -494,6 +495,47 @@ done < <(added_lines | grep -v 'drift-ok' | DS_TOK="$ds_tok" DS_VAL="$ds_val" aw
     BEGIN { t = ENVIRON["DS_TOK"]; v = ENVIRON["DS_VAL"] }
     $1 ~ /\.md$/ && $3 ~ /^[[:space:]]*\|/ && $3 ~ t && $3 ~ v { c[$1]++ }
     END { for (f in c) if (c[f] >= 3) print c[f] "\t" f }')
+
+# --- 12. a schema change with no regenerated ERD ----------------------------
+# The ERD is a SNAPSHOT of the migrated schema, so the project's own test already fails when the
+# two disagree — but that test reads the WORKING TREE. It cannot see a regeneration that was never
+# staged, and the commit then carries a migration beside a diagram of the schema before it. This
+# check polices the staged set, which is the half a snapshot test structurally cannot reach.
+# Inert until the project has an ERD: the file has to be tracked for the check to fire.
+ERD_DOC='(^|/)schema\.gen\.md$'
+MIGRATION='(^|/)migrations/[0-9]+_[a-z0-9_]+\.sql$'
+erd_tracked="$(git ls-files | grep -E "$ERD_DOC" | head -1)"
+if [ -n "$erd_tracked" ] && printf '%s\n' "$CHANGED" | grep -qE "$MIGRATION" && ! printf '%s\n' "$CHANGED" | grep -qE "$ERD_DOC"; then
+  report "schema — a migration lands with $erd_tracked unchanged" \
+          "trusting status over code: the committed diagram describes the schema before this migration" \
+          "regenerate it (the project's ERD command) and stage it in the same commit"
+  while IFS= read -r f; do say "     $f"; done < <(printf '%s\n' "$CHANGED" | grep -E "$MIGRATION")
+fi
+
+# --- 13. a diagram caption naming code that is not there --------------------
+# A diagram earns its place by pointing at the real thing, and the first part to rot is the path:
+# a folder is renamed and the picture keeps citing the old one, confidently. Every diagram caption
+# carries a `**Code:**` line listing what it describes, in backticks; a listed path that is not in
+# the repo fails here. Prose cannot be checked and the drawing cannot be checked, but this can — it
+# is the enforceable half of the caption contract (METHOD.md, Diagrams).
+# Only tokens that look like paths are tested: a backticked command or identifier is left alone.
+# The field must OPEN its line (a blockquote marker is allowed), so prose that mentions the caption
+# contract in passing is not a caption. devkit's own METHOD.md tripped the first version this way.
+while IFS= read -r rec; do
+  [ -n "$rec" ] || continue
+  while IFS= read -r token; do
+    [ -n "$token" ] || continue
+    case "$token" in
+      */*) ;;
+      *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.sql|*.sh|*.md|*.json|*.yaml|*.yml|*.css|*.py|*.go|*.rs) ;;
+      *) continue ;;
+    esac
+    [ -e "${token%/}" ] && continue
+    report "caption — $(loc "$rec") cites $token, which is not in the repo" \
+            "the pseudo-artifact: a diagram whose caption points at code that moved" \
+            "fix the path, or redraw the diagram for where the code actually is"
+  done < <(body "$rec" | grep -oE '`[^`]+`' | tr -d '`')
+done < <(added_lines | grep -v 'drift-ok' | awk -F'\t' '$1 ~ /\.md$/ && $3 ~ /^[[:space:]]*(>[[:space:]]*)?\*\*Code:\*\*/')
 
 # --- verdict ---------------------------------------------------------------
 say ""

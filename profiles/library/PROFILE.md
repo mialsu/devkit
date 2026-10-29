@@ -59,6 +59,17 @@ Two exceptions, both narrow:
 - **What no harness here catches:** whether the documented examples still run. That's the live
   exercise, and it's the one that catches README drift.
 
+## Diagrams (METHOD.md, *Diagrams*)
+- **`docs/architecture.md`** — **recommend it does not exist**, the same answer `/design-brief`
+  gives here. A library's architecture is its public surface, and that is owned by the exports
+  list, the types and the executed doc examples. A second drawing of it is a thing to keep fresh
+  for no reader.
+- **The exception:** a library whose *users* must understand an internal model to use it correctly
+  — a state machine they drive, a lifecycle they hook. Draw that one, in the README, beside the
+  example that exercises it.
+- **`docs/schema.gen.md`** — nothing to generate. A library that owns a schema is an application.
+- Anything drawn here still carries its caption, and drift check 13 still checks its paths.
+
 ## Dead code & duplication (`/prune`)
 - **The default inverts: for a library, "unreferenced in this repo" proves nothing about anything
   exported.** Your callers are people you cannot grep. Dead code in a library means *internal* code
