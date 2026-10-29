@@ -61,10 +61,11 @@ no enforcer is a `[review-only]` rule that was never labelled as one. Give it a 
 and confess the label.
 
 Checks 12 and 13 are the **diagram** gates (METHOD.md, *Diagrams*) and both are inert until the
-project has something to police: 12 fires only once a generated ERD is tracked, 13 only on a
-`**Code:**` caption line. Neither needs wiring. What does need wiring, in a project that stores
-data, is the generated ERD itself: the profile names the generator, and the gate is the test run
-that already needs a database — assert the generated diagram against the committed file, so
+project has something to police: 12 fires only on a `schema.gen.md` left unstaged at a commit, 13
+only on a `**Code:**` caption line. Neither needs wiring. What does need wiring, in a project that
+stores data, is the generated ERD itself: name what declares the schema (METHOD.md, *Diagrams*:
+migrations, an ORM's schema, a document store's config), the profile names the generator, and the
+gate is the test run — assert the generated diagram against the committed file, so
 regeneration is the test runner's `-u` and staleness fails with a diff. Put the regenerate command
 in `AGENTS.md`'s **Build gates** section beside the others.
 

@@ -121,6 +121,38 @@ else
 fi
 rm -rf "$st"
 
+# --- 3d. the diagram checks fire on the gap, whatever declares the schema ----
+# Check 12 once fired only on a staged SQL migration, so a project whose schema is declared any
+# other way had no check 12 at all; check 13 once read only the caption lines a diff added, so the
+# rename it exists for went unseen. Both are asserted at a commit (--cached), where they run.
+group "3d. diagram checks behaviour (12: unstaged ERD; 13: a rename no caption saw)"
+dt="$(mktemp -d)"
+(
+  cd "$dt" || exit 2
+  git init -q . && git config user.email t@t && git config user.name t
+  mkdir -p docs src && printf 'erDiagram\n' > docs/schema.gen.md && : > src/store.ts
+  printf '%s\n' '> **Code:** `src/store.ts`' 'Prose naming the **Code:** field is not a caption: `src/gone.ts`' > docs/architecture.md
+  git add -A && git commit -qm seed
+) >/dev/null 2>&1
+if [ ! -d "$dt/.git" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+else
+  # Captured, then grepped from a here-string: `drift | grep -q` under pipefail fails the pipe when
+  # grep exits at its first match (SIGPIPE), the defect check_lock had in the gate itself.
+  drift() { (cd "$dt" && bash "$OLDPWD/templates/scripts/drift-check.sh" --cached 2>&1); }
+  dfail=0
+  out="$(drift)"; grep -q 'DRIFT' <<<"$out" && { dfail=1; bad "a clean repo with an ERD and a caption was flagged"; }
+  printf 'erDiagram\n  a {\n  }\n' > "$dt/docs/schema.gen.md"
+  out="$(drift)"; grep -q 'DRIFT · schema — docs/schema.gen.md' <<<"$out" || { dfail=1; bad "an unstaged regenerated ERD was NOT flagged"; }
+  (cd "$dt" && git add docs/schema.gen.md)
+  out="$(drift)"; grep -q 'DRIFT · schema' <<<"$out" && { dfail=1; bad "a staged ERD was flagged"; }
+  (cd "$dt" && git mv src/store.ts src/kept.ts)
+  out="$(drift)"; grep -q 'cites src/store.ts, which is not in the repo' <<<"$out" || { dfail=1; bad "a renamed file its caption still cites was NOT flagged"; }
+  grep -q 'src/gone.ts' <<<"$out" && { dfail=1; bad "prose that names the caption field was read as a caption"; }
+  [ "$dfail" = 0 ] && ok "12 fires on an unstaged ERD only; 13 catches a rename and skips prose"
+fi
+rm -rf "$dt"
+
 # --- 4. skill frontmatter ---------------------------------------------------
 # install.sh links a skill by its DIRECTORY name; the runtime resolves it by the frontmatter
 # `name:`. A mismatch means the skill installs and then cannot be invoked — silently.

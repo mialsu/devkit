@@ -25,8 +25,8 @@
 # Checks: vocabulary drift, unconfessed suppressions, undeclared dependencies, stray lockfiles,
 # hand-edited generated files, oversized new files, invariants with no enforcer, accessibility
 # rules with no enforcer, blocks of commented-out code, deliberate ceilings that name no
-# upgrade path or arrive with no confession, token VALUES living in a markdown file, a migration
-# that lands with the ERD unregenerated, and a diagram caption citing code that is not there.
+# upgrade path or arrive with no confession, token VALUES living in a markdown file, a regenerated
+# ERD left out of the commit, and a diagram caption citing code that is not there.
 #
 # Tunables (env): MAX_NEW_FILE_LINES, LEDGER, ADR_DIR, MIN_TERM_LEN, POLICE_STRINGS,
 #                 MIN_COMMENTED_BLOCK.
@@ -68,6 +68,14 @@ if ! git rev-parse --verify -q HEAD >/dev/null 2>&1; then
     *) RANGE+=("$EMPTY_TREE") ;;
   esac
   echo "drift-check: no commits yet — diffing against the empty tree (everything counts as new)."
+fi
+
+# Every check below reads `git diff` through a pipe, so a range git cannot take (a bad revision, or
+# `a...b` with no merge base after a history-replacing push) printed `fatal:` and then "clean". A
+# range nothing can be checked against is a failure, not a pass. Found by sitesmith's issue #14.
+if ! git diff --relative --name-only "${RANGE[@]}" >/dev/null; then
+  echo "drift-check: git cannot diff the range (${RANGE[*]}); nothing was checked." >&2
+  exit 2
 fi
 
 # Files whose CONTENT this gate does not police (prose, locks, generated, vendored, snapshots).
@@ -300,8 +308,11 @@ done < <(changed | grep -E "$MANIFESTS")
 
 # --- 4. a lockfile that moved on its own ------------------------------------
 check_lock() {                  # check_lock <lock-regex> <manifest-regex> <manifest-name>
-  printf '%s\n' "$CHANGED" | grep -qE "$1" || return 0
-  printf '%s\n' "$CHANGED" | grep -qE "(^|/)$2$" && return 0
+  # Here-strings, not `printf | grep -q`: grep -q exits at its first match, and with pipefail a
+  # change list past the pipe buffer then fails the pipe (SIGPIPE), which read as "no lockfile
+  # changed" and skipped this check (sitesmith's issue #14).
+  grep -qE "$1" <<<"$CHANGED" || return 0
+  grep -qE "(^|/)$2$" <<<"$CHANGED" && return 0
   report "lockfile — the lock for $3 changed but $3 didn't" \
           "reformatting generated or vendored files: touch them only through their generator" \
           "regenerate it from the manifest, or revert it"
@@ -496,20 +507,23 @@ done < <(added_lines | grep -v 'drift-ok' | DS_TOK="$ds_tok" DS_VAL="$ds_val" aw
     $1 ~ /\.md$/ && $3 ~ /^[[:space:]]*\|/ && $3 ~ t && $3 ~ v { c[$1]++ }
     END { for (f in c) if (c[f] >= 3) print c[f] "\t" f }')
 
-# --- 12. a schema change with no regenerated ERD ----------------------------
-# The ERD is a SNAPSHOT of the migrated schema, so the project's own test already fails when the
-# two disagree — but that test reads the WORKING TREE. It cannot see a regeneration that was never
-# staged, and the commit then carries a migration beside a diagram of the schema before it. This
-# check polices the staged set, which is the half a snapshot test structurally cannot reach.
-# Inert until the project has an ERD: the file has to be tracked for the check to fire.
+# --- 12. a regenerated ERD left out of the commit ---------------------------
+# The ERD is a SNAPSHOT of whatever declares the schema (METHOD.md, Diagrams), so the project's own
+# test already fails when the two disagree — but that test reads the WORKING TREE. It passes on a
+# regenerated file the commit then leaves behind, and the commit carries a diagram of a schema that
+# no longer exists. So this fires on that gap itself, whatever the schema's source: a SQL migration,
+# an ORM's schema file, a document store's collection config. A trigger on the source's paths was
+# the first version, and fires on every edit to a file that holds more than the schema.
+# Only at a commit: a range is committed trees, where the snapshot test reads what the commit
+# carries. Inert until the project has an ERD.
 ERD_DOC='(^|/)schema\.gen\.md$'
-MIGRATION='(^|/)migrations/[0-9]+_[a-z0-9_]+\.sql$'
-erd_tracked="$(git ls-files | grep -E "$ERD_DOC" | head -1)"
-if [ -n "$erd_tracked" ] && printf '%s\n' "$CHANGED" | grep -qE "$MIGRATION" && ! printf '%s\n' "$CHANGED" | grep -qE "$ERD_DOC"; then
-  report "schema — a migration lands with $erd_tracked unchanged" \
-          "trusting status over code: the committed diagram describes the schema before this migration" \
-          "regenerate it (the project's ERD command) and stage it in the same commit"
-  while IFS= read -r f; do say "     $f"; done < <(printf '%s\n' "$CHANGED" | grep -E "$MIGRATION")
+if [ "${RANGE[*]}" = "--cached" ]; then
+  while IFS= read -r erd; do
+    [ -n "$erd" ] || continue
+    report "schema — $erd was regenerated but the change is not staged" \
+            "trusting status over code: the snapshot test passed on a file this commit leaves out" \
+            "stage it, or run the project's ERD command first if the schema changed"
+  done < <({ git diff --relative --name-only; git ls-files --others --exclude-standard; } | grep -E "$ERD_DOC" | sort -u)
 fi
 
 # --- 13. a diagram caption naming code that is not there --------------------
@@ -521,21 +535,33 @@ fi
 # Only tokens that look like paths are tested: a backticked command or identifier is left alone.
 # The field must OPEN its line (a blockquote marker is allowed), so prose that mentions the caption
 # contract in passing is not a caption. devkit's own METHOD.md tripped the first version this way.
+# It reads EVERY caption in the repo on every run, not only the lines a diff adds: a rename touches
+# no caption, so a check on added lines never saw the rot it exists for (found in sitesmith). At a
+# commit it reads the index, since that is what the commit carries.
+CAPTION='^[[:space:]]*(>[[:space:]]*)?\*\*Code:\*\*'
+if [ "${RANGE[*]}" = "--cached" ]; then
+  captions() { git grep --cached -n -E "$CAPTION" -- '*.md'; }
+  in_repo()  { [ -n "$(git ls-files --cached -- "$1")" ]; }
+else
+  captions() { git grep -n -E "$CAPTION" -- '*.md'; }
+  in_repo()  { [ -e "$1" ]; }
+fi
 while IFS= read -r rec; do
   [ -n "$rec" ] || continue
+  where="$(cut -d: -f1-2 <<<"$rec")"
   while IFS= read -r token; do
     [ -n "$token" ] || continue
     case "$token" in
       */*) ;;
-      *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.sql|*.sh|*.md|*.json|*.yaml|*.yml|*.css|*.py|*.go|*.rs) ;;
+      *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.sql|*.sh|*.md|*.json|*.yaml|*.yml|*.css|*.py|*.go|*.rs|*.prisma) ;;
       *) continue ;;
     esac
-    [ -e "${token%/}" ] && continue
-    report "caption — $(loc "$rec") cites $token, which is not in the repo" \
+    in_repo "${token%/}" && continue
+    report "caption — $where cites $token, which is not in the repo" \
             "the pseudo-artifact: a diagram whose caption points at code that moved" \
             "fix the path, or redraw the diagram for where the code actually is"
-  done < <(body "$rec" | grep -oE '`[^`]+`' | tr -d '`')
-done < <(added_lines | grep -v 'drift-ok' | awk -F'\t' '$1 ~ /\.md$/ && $3 ~ /^[[:space:]]*(>[[:space:]]*)?\*\*Code:\*\*/')
+  done < <(cut -d: -f3- <<<"$rec" | grep -oE '`[^`]+`' | tr -d '`')
+done < <(captions | grep -v 'drift-ok')
 
 # --- verdict ---------------------------------------------------------------
 say ""

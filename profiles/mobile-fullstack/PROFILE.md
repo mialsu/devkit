@@ -71,7 +71,8 @@ technology, so the enforcer is a real screen reader rather than a browser extens
 - **`docs/architecture.md`** — yes, and it is worth more here than anywhere: app, API, database,
   push/notification service, and the stores. The caption's constraints carry what the picture
   cannot — what works offline, what the client caches, and which calls are retried.
-- **`docs/schema.gen.md`** — generated from the server's schema, as in the web profile. A local
+- **`docs/schema.gen.md`** — generated from whatever declares the server's schema, as in the web
+  profile; Firestore and other document stores included, from the code that declares them. A local
   on-device database (SQLite / Room / Core Data) earns a second generated diagram only when its
   shape differs from the server's; otherwise say so in one line and point at the server's.
 - **The gate:** the generated diagram asserted against the committed file in the server's test run,
