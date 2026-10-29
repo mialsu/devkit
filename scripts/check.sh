@@ -109,6 +109,9 @@ st="$(mktemp -d)"
   git init -q . && git config user.email t@t && git config user.name t
   mkdir scripts src && cp "$OLDPWD/templates/scripts/drift-check.sh" scripts/
   seq 1 450 > src/big.ts
+  printf '# Glossary\n\n_Avoid_: extension\n' > GLOSSARY.md
+  git add GLOSSARY.md
+  printf 'export const extension = 1;\n' > src/plug.ts
 ) >/dev/null 2>&1
 if [ ! -f "$st/scripts/drift-check.sh" ]; then
   skipped "could not build the throwaway repo — this check is not running"
@@ -117,7 +120,9 @@ else
   sfail=0
   printf '%s\n' "$sout" | grep -qxF '     src/big.ts' || { sfail=1; bad "a 450-line new file was NOT flagged"; }
   printf '%s\n' "$sout" | grep -qxF '     scripts/drift-check.sh' && { sfail=1; bad "the gate flagged its own file"; }
-  [ "$sfail" = 0 ] && ok "flags a 450-line new file, waives its own"
+  grep -q 'src/plug.ts:1  ->  extension' <<<"$sout" || { sfail=1; bad "a banned word in a project file was NOT flagged"; }
+  grep -q 'scripts/drift-check.sh:[0-9]*  ->' <<<"$sout" && { sfail=1; bad "a project's glossary policed the gate's own prose"; }
+  [ "$sfail" = 0 ] && ok "flags a 450-line new file and a banned word, waives its own file for both"
 fi
 rm -rf "$st"
 
@@ -196,6 +201,12 @@ else
   printf 'Uses `left-pad`.\n' > "$lt/pkg/docs/adr/0002-other.md"; (cd "$lt" && git add -A)
   out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
   grep -q 'gained a dependency' <<<"$out" && { lfail=1; bad "a dependency an ADR names was still flagged"; }
+  printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0",\n    "@types/left-pad": "^1.0.0"\n  }\n}\n' > "$lt/pkg/package.json"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q 'gained a dependency' <<<"$out" && { lfail=1; bad "@types/left-pad was flagged though an ADR names left-pad"; }
+  printf '{\n  "name": "pkg",\n  "dependencies": {\n    "left-pad": "^1.3.0",\n    "@types/right-pad": "^1.0.0"\n  }\n}\n' > "$lt/pkg/package.json"; (cd "$lt" && git add -A)
+  out="$(cd "$lt" && bash pkg/scripts/drift-check.sh --cached 2>&1)"
+  grep -q '@types/right-pad' <<<"$out" || { lfail=1; bad "an @types package whose package no ADR names went through"; }
   [ "$lfail" = 0 ] && ok "local settings and checks apply; package root, test cap and ADR names hold"
 fi
 rm -rf "$lt"

@@ -159,7 +159,18 @@ added_sizes() {
 # Regexes reach awk through ENVIRON, never -v: awk processes backslash escapes in a -v assignment,
 # so `\.md$` arrived as `.md$` (any character, then md) and gawk warned on every run. Found at
 # prep-planner's bootstrap, 2026-10-20, when check.sh step 3 had been reporting the gate BROKEN.
-policed_lines() { added_lines | SKIP="$SKIP_CONTENT" awk -F'\t' '$1 !~ ENVIRON["SKIP"]' | grep -v 'drift-ok'; }
+# The gate's own file is devkit's, byte-identical in every project and policed by devkit's
+# check.sh, so a project's GLOSSARY.md must not reach into its prose: a word one project bans is
+# plain English in the template, and every sync would trip on it. Found by sitesmith's first sync,
+# whose glossary bans `extension`. Matched by inode, as check 6 does, so another file that happens
+# to share the name is still policed.
+SELF_PATH=""
+while IFS= read -r f; do
+  [ "$f" -ef "$SELF" ] && { SELF_PATH="$f"; break; }
+done < <(git ls-files --cached --others --exclude-standard -- '*drift-check.sh')
+policed_lines() {
+  added_lines | SKIP="$SKIP_CONTENT" SELFP="$SELF_PATH" awk -F'\t' '$1 !~ ENVIRON["SKIP"] && $1 != ENVIRON["SELFP"]' | grep -v 'drift-ok'
+}
 loc()  { printf '%s:%s' "$(cut -f1 <<<"$1")" "$(cut -f2 <<<"$1")"; }
 body() { cut -f3- <<<"$1"; }
 
@@ -194,8 +205,6 @@ if [ -n "$terms" ] && [ -n "$LINES" ]; then
   # had never been able to match. The longest run wins, so a 3-segment term reports itself
   # rather than the 2-segment term nested inside it.
   #
-  # Examples here are deliberately generic programming words: this file is policed by its own
-  # gate, so a real domain synonym in a comment would report itself as a violation.
   hits="$(printf '%s\n' "$LINES" | awk -F'\t' -v terms="$terms" -v SQ="'" -v police="$POLICE_STRINGS" '
   function seglist(id, out,    i,c,prev,nxt,cur,k,isup,prevlow,nxtlow) {
     k=0; cur="";
@@ -324,11 +333,19 @@ dep_names() {                   # dep_names <manifest> <+|->
 # waved through all of them, and an amendment to an existing ADR (a modification) satisfied nothing.
 # Found at prep-planner's ticket 1, when `postgres`, already decided in ADR-0003, failed the gate.
 # --cached reads the staged ADRs, so an unstaged edit cannot vouch for a staged dependency.
+# `@types/<pkg>` is <pkg>'s typings, not a decision of its own, so it counts as named when <pkg> is
+# (`@types/scope__name` types `@scope/name`). Found in sitesmith, whose ADR names `react` and every
+# new site then failed on `@types/react`.
 adr_names() {                   # adr_names <dep>: true when `<dep>` appears in an ADR
+  local typed="$1"
+  case "$1" in
+    @types/*__*) typed="@${1#@types/}"; typed="${typed/__//}" ;;
+    @types/*)    typed="${1#@types/}" ;;
+  esac
   if [ "${RANGE[0]}" = "--cached" ]; then
-    git grep -qF --cached -e "\`$1\`" -- "$ADR_DIR"
+    git grep -qF --cached -e "\`$1\`" -e "\`$typed\`" -- "$ADR_DIR"
   else
-    grep -rqF -e "\`$1\`" "$ADR_DIR" 2>/dev/null
+    grep -rqF -e "\`$1\`" -e "\`$typed\`" "$ADR_DIR" 2>/dev/null
   fi
 }
 while IFS= read -r m; do
