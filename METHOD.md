@@ -143,7 +143,7 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
 ```
 
 Anywhere in there: `/verify-claim` the moment something claims "this already works",
-`/handoff` when a session fills up, and `/resume` when the next one opens. Adding a feature to a
+`/handoff` when a session fills up, and `/pickup` when the next one opens. Adding a feature to a
 project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
 
 Twelve supporting skills sit outside the loop:
@@ -199,7 +199,7 @@ Twelve supporting skills sit outside the loop:
   ecosystem's audit command as gates.
 - **`/handoff` (mp)** — when a session fills up, fork it: write a handoff doc, open a fresh
   session. Steps 1–2 want to live in one unbroken context; each `/implement` can start fresh.
-- **`/resume` (dk)** — the other half, because `/handoff` writes and nothing reads back, which
+- **`/pickup` (dk)** — the other half, because `/handoff` writes and nothing reads back, which
   leaves the Owner holding a path they will not remember. It finds the newest handoff for the
   current project, follows its pointers, and **verifies its claims before acting**. See *Session
   handoffs* below for where they live and why not `/tmp`.
@@ -244,7 +244,7 @@ map, so no session has to guess which shape is canonical:
 | `docs/schema.gen.md` (the stored data, drawn) | devkit — **generated**, never written by hand | the direction of generation (from whatever declares the schema: migrations, an ORM's schema, a document store's collection config), plus the snapshot test and drift check 12 that fail when it and the schema disagree |
 | `docs/architecture.md` (what runs where, and a flow a surface doc cannot hold) | devkit — neither source has this. `DESIGN.md` owns the *surface*, an ADR owns the *decision*, this owns the *current shape* | the whole file, and the caption contract whose `**Code:**` line drift check 13 makes machine-checked |
 | `scripts/drift-check.sh`, `scripts/drift-ci.sh`, `REVIEW-DEBT.md`, the profiles | devkit | — the gate and its CI runner are copied **byte-identical** into each project and never edited there; the project's own settings and checks live in `scripts/drift-check.local.sh`, whose `DEVKIT_GATE` names the commit it came from, and `/harness sync` carries fixes both ways |
-| reading a handoff back and checking it against the code | devkit — `/resume`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
+| reading a handoff back and checking it against the code | devkit — `/pickup`; `/handoff` (mp) writes one and nothing read it | the whole skill: it fills a gap rather than rebuilding a half that exists. devkit does **not** write handoffs — that format is Pocock's |
 
 The rule, and it applies to prose as hard as to code: **if an installed skill writes the artifact,
 adopt its format even when yours is prettier.** Two formats for one artifact is the same defect as
@@ -433,7 +433,7 @@ serially. Research and read-only verification parallelize freely; code does not.
 
 ## Session handoffs
 
-A session ends; the next one starts cold. `/handoff` (mp) writes the document and `/resume` (dk)
+A session ends; the next one starts cold. `/handoff` (mp) writes the document and `/pickup` (dk)
 reads it back. Two rules make the pair work, and both exist because the obvious version fails.
 
 **Handoffs live in `~/.claude/handoffs/<project-slug>/YYYY-MM-DD-HHMM.md`, newest last.** One
@@ -449,20 +449,20 @@ implementations of one behaviour is the defect this document spends a whole sect
 **The redirect has to ride in the project's `CLAUDE.md`, not only here.** A rule no session loads
 is not a rule. It used to live in this file and the `claude-config` rule files alone, and on a
 machine without `claude-config` nothing carried it into the session: `/handoff` followed its own
-`SKILL.md`, the harness steered the file into a session scratchpad under `/tmp`, and `/resume` —
+`SKILL.md`, the harness steered the file into a session scratchpad under `/tmp`, and `/pickup` —
 told never to look in temp — reported no handoff at all (prep-planner, 2026-10-20). So
 `templates/CLAUDE.md` now carries the one-line rule into every project, where it is always loaded,
-and `/resume` checks temp once for a file named like a handoff and offers to move it. That is a
+and `/pickup` checks temp once for a file named like a handoff and offers to move it. That is a
 safety net for the miss, not a second home: the handoffs directory stays the only place a handoff
 is meant to be.
 
 **A handoff is a claim, not a fact** (PRINCIPLES #6). It was true when it was written and the repo
 has moved since — commits landed, CI ran, a deploy may have fired. Anything load-bearing it asserts
 (test counts, coverage, "X already works", file:line references) gets `/verify-claim`'d **before**
-the first edit, not after. `/resume` is built around this: finding the document is the easy half,
+the first edit, not after. `/pickup` is built around this: finding the document is the easy half,
 and refusing to trust it is the half that earns the skill.
 
-And when there is no handoff, `/resume` says so and stops. A fabricated "where we were" reads
+And when there is no handoff, `/pickup` says so and stops. A fabricated "where we were" reads
 exactly like a real one and the Owner acts on it, which makes it worse than silence — the same
 argument ANTI-PATTERNS makes about the pseudo-artifact, at session scale.
 

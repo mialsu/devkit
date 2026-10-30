@@ -43,7 +43,7 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
 /audit                          # (devkit) security findings with verdicts, not a ranked list of guesses
-/resume                         # (devkit) read the last handoff back, and verify what it claims
+/pickup                         # (devkit) read the last handoff back, and verify what it claims
 /cycle-plan                     # (devkit) cadence dial on: commit a capacity-checked set of ready work, and snapshot it
 /cycle-groom                    # (devkit) walk the next cycle up the readiness ladder, via the project's own refinement skills
 /cycle-close                    # (devkit) measure against the snapshot, unplanned work apart; never marks anything done

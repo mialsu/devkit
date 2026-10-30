@@ -96,7 +96,7 @@ in the report. Feasibility answered, design question opened, is a complete and u
 ```
 
 `<repo>` is the basename of `git rev-parse --show-toplevel`. Deliberately **not** the projects-root
-derivation `/resume` uses for handoffs — a work repo has no devkit projects root — and deliberately
+derivation `/pickup` uses for handoffs — a work repo has no devkit projects root — and deliberately
 not the OS temp directory, which most Linux boxes empty on boot. It lives outside the repo because a
 spike in someone else's codebase has no business leaving files in it, and because the report is the
 deliverable: it must survive `git checkout main`.

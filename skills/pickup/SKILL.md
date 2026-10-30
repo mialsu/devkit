@@ -1,5 +1,5 @@
 ---
-name: resume
+name: pickup
 description: Pick up a project from its most recent session handoff — find it, read it, and verify its claims against the code before acting. Use when starting a fresh session on work that a previous session handed off, when the user says "resume", "where were we", "continue where we left off", or "pick up the handoff".
 ---
 
@@ -9,6 +9,9 @@ path — and the one thing they will not remember tomorrow is a path. This is th
 It exists because Pocock's skill has no resume side, not because devkit wanted its own handoff.
 **Do not write handoffs from here**; `/handoff` owns that format (METHOD.md, *reuse before
 building*). This skill only finds, reads and interrogates one.
+
+It was `/resume` until 2026-10-30. Claude Code's built-in `/resume` (reopen a past conversation)
+owns that name, so typing it never reached this skill.
 
 ## Where handoffs live
 
@@ -34,9 +37,9 @@ that line existed, or by a session that ignored it, lands in temp anyway — ste
 
 | Invocation | Does |
 |---|---|
-| `/resume` | newest handoff for the current project |
-| `/resume <slug>` | newest for a named project |
-| `/resume --list` | every handoff, per project, newest first — nothing is read |
+| `/pickup` | newest handoff for the current project |
+| `/pickup <slug>` | newest for a named project |
+| `/pickup --list` | every handoff, per project, newest first — nothing is read |
 
 ## Steps
 
