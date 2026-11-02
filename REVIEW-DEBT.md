@@ -105,6 +105,16 @@ cut (`/confess`), read first by any architecture or review session, dispositione
     Codex reviewer never called it, so its sandbox reaching localhost is still unseen. Upgrade:
     run a slice with a log or diff of thousands of lines; if the seats still read it in full,
     name the trigger in the QA and reviewer roles.
+    **Removed 2026-11-02 (Owner).** On prep-planner #48 the junior, Pi on gemma4:12b-32k, took the
+    builder's first search job, ran a few greps and reads, and never answered: no findings and no
+    `DONE`, so the builder searched itself. The Owner dropped Ollama from the crew: `bin/local-llm`,
+    its test and `check.sh` group, and the Pi junior with its worktree gate are gone, and the junior
+    always runs on Claude Code with `claude-haiku-5-5`.
+  - **The junior's worktree, 2026-11-02.** With Pi gone, so is `worktree-only.ts`, the one thing that
+    refused a file write outside `.crew/junior/`. The Haiku junior has no shell, the web or subagents
+    (its settings fragment denies them), but `Write` and `Edit` outside its worktree are left to auto
+    mode's classifier and the role's words. Never seen to stray. Upgrade: a `PreToolUse` hook in the
+    junior's settings fragment refusing `Write`/`Edit` outside `.crew/junior/`.
 - **Disposition:** open. `--fresh` remains unrun; `crew-up`'s own resume branch is the next thing to
   see.
 

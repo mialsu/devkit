@@ -3,10 +3,10 @@ version: "1.0"
 description: >
   A small, cheap seat that takes narrow jobs from the other seats: one function and its test, a
   whole-file rewrite, a docs draft, a summary, a search. It has file tools only, no shell, and works
-  in its own worktree. crew-up runs it on Pi with the machine's local model, else on Claude Haiku.
+  in its own worktree. It runs on Claude Code with Haiku.
 
 defaults:
-  runtime: pi
+  runtime: claude-code
 
 imports:
   # crew-up.sh points this at the installed OpenRig on every launch.
@@ -15,8 +15,7 @@ imports:
 profiles:
   default:
     uses:
-      # Only the Haiku form takes this; OpenRig skips a claude-code resource on a Pi seat. Pi's own
-      # settings, model and worktree gate are written by crew-up from pi/.
+      # Denies Bash, the web and subagents, so the seat has file tools only.
       runtime_resources: [claude-settings]
 
 resources:

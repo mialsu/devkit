@@ -8,7 +8,7 @@ Five seats working in one repository for the Owner, the person who launched this
 - `dev-qa` verifies each candidate the way a user hits it, one acceptance criterion at a time.
 - `dev-reviewer` reviews each candidate's commits, on Codex, from its own worktree (`.crew/review/`).
 - `dev-junior` takes narrow jobs from the other seats, in its own worktree (`.crew/junior/`), with
-  file tools and no shell. It runs on the machine's local model, else on Claude Haiku.
+  file tools and no shell. It runs on Claude Haiku.
 
 ## Whose rules win
 
@@ -68,23 +68,9 @@ It is a small model, so the job must be narrow:
 - Bring what you keep into your own tree, run the gates yourself, and commit it yourself. Then run
   `junior-sync` again.
 
-Its answers are leads and its code is a draft, as with the local model below: you own what you take
-from it. Its line numbers in particular are often invented: open the file before you cite one, and
-ask it to quote the line with each path. Never hand it a decision, a verdict or a review finding.
-
-## Local model
-
-Some machines run a local model and some do not. `local-llm --check` says which: exit 0 prints the
-model, anything else means there is none here and the job stays with you. Where there is one, hand
-it bulky text you would otherwise read in full only to find a little in it: a long test or build log
-(`npm test 2>&1 | tail -n 3000 | local-llm "List each failing test with its error and file:line"`),
-a large diff to orient in before you read the parts that matter, a first draft of a commit message or
-a PR body's prose. It never sees the command's exit status, which still decides pass or fail. Exit 4
-means the input is too large; cut it down and ask again. Any other failure: do the job yourself.
-
-Its answers are leads, not evidence: it is a small model and it can be wrong. Check what it found
-against the source before acting on it or citing it in a handoff, verdict or report, and never hand
-it the decision itself: a QA verdict, a review finding, a design call.
+Its answers are leads and its code is a draft: you own what you take from it. Its line numbers in
+particular are often invented: open the file before you cite one, and ask it to quote the line with
+each path. Never hand it a decision, a verdict or a review finding.
 
 ## Hard limits
 

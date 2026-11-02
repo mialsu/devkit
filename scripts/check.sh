@@ -306,35 +306,10 @@ done < <(
 )
 [ "$dead" -eq 0 ] && ok "$refs references, all resolve"
 
-# --- 7. local-llm exit codes ------------------------------------------------
-# Seats branch on local-llm's exit codes to decide whether to do a job themselves, so a changed
-# code silently changes who does the work. The test needs node but no Ollama, model or GPU.
-group "7. local-llm exit codes"
-if command -v node >/dev/null 2>&1; then
-  if lout="$(bash openrig/crew/bin/local-llm.test.sh 2>&1)"; then ok "openrig/crew/bin/local-llm.test.sh"
-  else bad "openrig/crew/bin/local-llm.test.sh"; fi
-  printf '%s\n' "$lout" | sed 's/^/      /'
-else
-  skipped "node is NOT installed — local-llm's exit codes are not being tested"
-fi
-
-# --- 8. the junior's worktree gate -------------------------------------------
-# Pi has no sandbox, so worktree-only.ts is all that keeps the junior's file tools out of the
-# Owner's home folder and the repository's hooks. Its check needs node 22.6+ for type stripping.
-group "8. junior worktree gate"
-if command -v node >/dev/null 2>&1; then
-  gate=openrig/crew/agents/junior/pi/extensions/worktree-only.check.mts
-  if gout="$(node --experimental-strip-types --no-warnings "$gate" 2>&1)"; then ok "$gate"
-  else bad "$gate"; fi
-  printf '%s\n' "$gout" | tail -n 1 | sed 's/^/      /'
-else
-  skipped "node is NOT installed — the junior's worktree gate is not being tested"
-fi
-
-# --- 9. junior-sync ----------------------------------------------------------
+# --- 7. junior-sync ----------------------------------------------------------
 # Seats move and clean the junior's worktree with it; a version that drops OpenRig's AGENTS.md
 # blocks leaves the junior without its instructions and no error. Needs git only.
-group "9. junior-sync"
+group "7. junior-sync"
 if jout="$(bash openrig/crew/bin/junior-sync.test.sh 2>&1)"; then ok "openrig/crew/bin/junior-sync.test.sh"
 else bad "openrig/crew/bin/junior-sync.test.sh"; fi
 printf '%s\n' "$jout" | tail -n 1 | sed 's/^/      /'

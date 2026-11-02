@@ -75,7 +75,7 @@ Two meta-rules, from the template devkit ships:
 
 - **`scripts/check.sh` green before every commit.** It is devkit's whole gate set: shell syntax,
   shellcheck (when installed), the drift gate on itself, skill frontmatter, skill advertising,
-  cross-references, and local-llm's exit codes (when node is installed). `[review-only]` —
+  cross-references, and junior-sync. `[review-only]` —
   nothing forces it to run; see the debt below.
 - **Confess in the same commit as the corner you cut** (PRINCIPLES #5). `REVIEW-DEBT.md` is read
   first by any later session, so an entry written "next time" is an entry lost.

@@ -73,11 +73,6 @@ listed() {
 
 next_steps() {
   echo
-  if model="$(local-llm --check 2>/dev/null)"; then
-    echo "Local model for bulky text jobs: $model"
-  else
-    echo "No local model on this machine; the seats do every job themselves."
-  fi
   if ! command -v junior-sync >/dev/null 2>&1; then
     echo "junior-sync is not on PATH, so the seats cannot reset the junior's worktree; see README.md."
   fi
@@ -143,27 +138,6 @@ sed -i -E "s#^( *cwd: )\"\\.\"\$#\\1\"$root\"#; s#^( *cwd: )\"\\.crew/review\"\$
 find "$instance/agents" -name agent.yaml -exec \
   sed -i -E "s#ref: path:[^[:space:]]*/@openrig/cli/daemon/specs/agents/shared\$#ref: path:$shared#" {} +
 
-# The junior runs on Pi with the local model where this machine has one and Pi is installed, and on
-# Claude Code with Haiku everywhere else. Both forms have file tools only and no shell: Pi through
-# the settings and worktree gate written into its agent directory here (OpenRig writes none),
-# Haiku through its Claude settings fragment.
-if local_model="$(local-llm --check 2>/dev/null)" && command -v pi >/dev/null 2>&1; then
-  junior_form="Pi on $local_model"
-  sed -i -E "s#^( *model: )ollama/local\$#\\1ollama/$local_model#" "$instance/rig.yaml"
-  pi_agent="${OPENRIG_HOME:-$HOME/.openrig}/state/pi/dev-junior@$name/agent"
-  if [ "$plan" -eq 0 ]; then
-    mkdir -p -- "$pi_agent/extensions"
-    for f in settings.json models.json; do
-      sed "s#__CREW_LOCAL_MODEL__#$local_model#g" "$template/agents/junior/pi/$f" > "$pi_agent/$f"
-    done
-    sed "s#__CREW_JUNIOR_ROOT__#$junior#" "$template/agents/junior/pi/extensions/worktree-only.ts" \
-      > "$pi_agent/extensions/worktree-only.ts"
-  fi
-else
-  junior_form="Claude Code on claude-haiku-5-5 (no local model or no pi here)"
-  sed -i -E "s#^( *runtime: )pi\$#\\1claude-code#; s#^( *model: )ollama/local\$#\\1claude-haiku-5-5#" "$instance/rig.yaml"
-fi
-echo "Junior: $junior_form"
 if ! out="$(rig spec validate "$instance/rig.yaml" 2>&1)"; then
   printf '%s\n' "$out" >&2
   exit 1

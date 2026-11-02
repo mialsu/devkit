@@ -6,8 +6,7 @@ summary: >
   candidate the way a user hits it, a Codex reviewer that reviews each candidate's commits from
   its own worktree, and a junior that takes narrow jobs from the others in a worktree of its own.
   Launch it per project with crew-up.sh, which names the rig crew-<project>, makes each cwd
-  absolute (the repository, .crew/review for the reviewer, .crew/junior for the junior) and picks
-  the junior's runtime.
+  absolute (the repository, .crew/review for the reviewer, .crew/junior for the junior).
 culture_file: CULTURE.md
 
 # Claude seats launch with --permission-mode auto, so the Owner is not answering a prompt per command;
@@ -54,13 +53,12 @@ pods:
         profile: default
         runtime: codex
         cwd: ".crew/review"
-      # File tools only, no shell, in its own worktree. crew-up keeps this Pi form on a machine with
-      # a local model (local-llm --check) and switches it to Claude Code on Haiku everywhere else.
+      # File tools only, no shell, in its own worktree: Claude Code on Haiku, the cheapest Claude.
       - id: junior
         agent_ref: "local:agents/junior"
         profile: default
-        runtime: pi
-        model: ollama/local
+        runtime: claude-code
+        model: claude-haiku-5-5
         cwd: ".crew/junior"
     edges:
       - kind: delegates_to
