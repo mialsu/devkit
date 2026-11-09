@@ -30,6 +30,13 @@ pods:
         runtime: claude-code
         model: claude-opus-5-5
         cwd: "."
+        # gh keeps its token in the desktop keyring, reached over the session D-Bus. OpenRig gives
+        # every seat DBUS_SESSION_BUS_ADDRESS=disabled: (rig-spec, "The runtime directory, on
+        # Linux"), so gh in a seat finds no token and reports it invalid. The architect opens the
+        # slice's PR, so it alone gets the bus. It can read the whole keyring, not only gh's token.
+        # The path assumes uid 1000.
+        env:
+          DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/1000/bus"
 
   - id: dev
     label: Build and verify
