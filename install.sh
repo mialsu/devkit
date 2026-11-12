@@ -139,7 +139,6 @@ cat <<'NOTE'
 Done. devkit's skills are linked:
   /sketch  /product-brief  /new-project  /harness  /crunch-domain  /design-brief
   /verify-live  /verify-claim  /spike  /confess  /ship  /prune  /audit  /pickup
-  /cycle-plan  /cycle-groom  /cycle-close
 
 Next — install Matt Pocock's skills (devkit references them, so you get his updates):
 
