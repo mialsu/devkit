@@ -1,5 +1,7 @@
 # ADR-0002 — The Light lane gets two doors: `/spike` and `/sketch`
 
+Status: `/spike` superseded 2026-11-12 by [ADR-0004](0004-the-skill-set-under-the-crew-model.md), decision 3. `/sketch` stands.
+
 `METHOD.md`'s weight dial has always sold Light as "a script, a spike, a prototype" running steps
 1 → 3 → 5, and nothing ever invoked it. Every entry point devkit shipped was heavyweight and
 once-per-project: `/product-brief` refuses tech, `/new-project` delegates to `/harness`, which

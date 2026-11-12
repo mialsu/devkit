@@ -5,8 +5,7 @@ disable-model-invocation: true
 argument-hint: "[the idea]"
 ---
 
-`/product-brief` asks what should be built. `/spike` asks whether a thing is possible in a codebase.
-This asks the question that comes before both: **is there anything here worth building at all** —
+`/product-brief` asks what should be built. This asks the question that comes before it: **is there anything here worth building at all** —
 answered by using the thing for ten minutes rather than reasoning about it for two hours.
 
 Some ideas are cheaper to build than to discuss. This is the skill for those, and its output is a

@@ -147,20 +147,11 @@ Anywhere in there: `/verify-claim` the moment something claims "this already wor
 `/handoff` when a session fills up, and `/pickup` when the next one opens. Adding a feature to a
 project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
 
-Nine supporting skills sit outside the loop:
+Eight supporting skills sit outside the loop:
 
 - **`/verify-claim` (dk)** — before you trust *any* "this already works / already exists"
   claim (from a doc, an old TODO, a past session), dispatch this to grep the committed code and
   return a MET / PARTIAL / NOT-MET verdict with file:line evidence.
-- **`/spike` (dk)** — the feasibility question, asked of a codebase that already exists: *could
-  this work here at all?* Timeboxed, throwaway, and it ends in a verdict — FEASIBLE (with the
-  command that reproduces it), FEASIBLE-WITH-COST (and the named things that must change first),
-  BLOCKED (the wall, at file:line), or INCONCLUSIVE (the clock won; here is the next probe worth
-  running). Its report lives **outside** the repo, at `~/.claude/spikes/<repo>/`, because the report
-  is the deliverable and the code is an appendix. This is the one devkit skill built to run outside
-  this tree — in an employer's monorepo, where none of these files load — so it carries its own
-  spine and probes what it is allowed to touch before it touches anything. Pairs with
-  `/verify-claim`: that one answers *does it work today*, this one *could it work at all*.
 - **`/harness` (dk)** — install and *prove* a project's standards harness: `CODING_STANDARDS.md`
   (the exact filename `/code-review`'s Standards axis reads), the import/architecture boundary
   gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
@@ -223,7 +214,6 @@ map, so no session has to guess which shape is canonical:
 | *which* accessibility rules a surface owes — the `A11Y-n` rows themselves | `ui-ux-pro-max` (installed skill) — `search.py --domain ux`: 119 guidelines with stable ids, citing WCAG 2.2, Apple HIG and Material | devkit supplies the half the dataset has no opinion on: the **enforcer tag**. The rule comes from the query, `[test]`/`[live]`/`[review-only]` comes from `/design-brief`, and the row still lands in `DESIGN.md` in devkit's format — a source, not a second artifact |
 | per-stack UI implementation rules (`swiftui`, `flutter`, `jetpack-compose`, `threejs`, `react`, `nextjs`, `shadcn` — 22 in all) | `ui-ux-pro-max` — `search.py --stack <name>`, plus `--domain react` for render and bundle work | none as a format: it writes nothing. It is a **read at `/implement` time**, and which stacks matter is per-domain — so the pointer lives in `profiles/*/PROFILE.md`, not here |
 | a persisted `design-system/<slug>/MASTER.md` | **nothing — devkit refuses this one** | `ui-ux-pro-max`'s `--design-system` is a **read**; `--persist` stays unused, and with it `--page`, `--output-dir` and `--force`, which only act under it — the write is gated on `--persist` alone. (`-p` is `--project-name`, a harmless label.) That MASTER.md carries a `--space-*` token table, a second home for values this table already puts in code, and a one-pass file nobody read that every later session then cites is the *pseudo-artifact* exactly. Its own `SKILL.md` says "Do not persist unverified output" — so take the palette, font and style recommendation straight into the token file |
-| "could this work here at all" (feasibility, in a codebase that exists) | devkit — `/spike`; neither source asks it. `/prototype` (mp) answers *design* questions, `/verify-claim` (dk) answers *does it work today* | the whole skill, plus the artifact neither source has: a spike report outside the repo, carrying the verdict, its evidence, and what the spike faked |
 | "is there anything here worth building" (before a brief exists) | devkit — `/sketch`; `/product-brief` demands a cheapest falsifying test and ships no tool that builds a whole app in a day | the whole skill. It feeds the brief, is reachable from it, and its code is never promoted |
 | `DESIGN.md` (surfaces, flows, states, `A11Y-n`) | devkit — neither source has this | the whole file: `ui-ux-pro-max` returns an aesthetic recommendation, not a scope-reconciled contract, and neither source enforces accessibility at all |
 | `INVARIANTS.md` (the rules, each naming its enforcer) | devkit — neither source has this | the whole file: `domain-modeling` keeps `GLOSSARY.md` a glossary and *nothing else*, so domain **rules** had no home |
@@ -326,11 +316,12 @@ logic leaves **one runnable thing** that fails if the logic breaks — an assert
 one small test file, no framework and no fixtures. Light is the weight where the ladder
 (PRINCIPLES #3) produces its shortest diffs, which is exactly where a wrong one goes unnoticed.
 
-Light has two doors, and until they existed this column was a table row nothing invoked:
-**`/sketch`** for a whole app in a day, **`/spike`** for one question against a codebase that
-already exists. Neither is an exemption from *gates before every commit* — neither lands on a
-shared branch, so there is nothing to gate until something does, and then the rule applies in
-full and the code is rewritten rather than promoted.
+Light has one door, **`/sketch`**, for a whole app in a day; until it existed this column was a
+table row nothing invoked. It is not an exemption from *gates before every commit* — a sketch
+never lands on a shared branch, so there is nothing to gate until something does, and then the
+rule applies in full and the code is rewritten rather than promoted. A feasibility question in a
+repo that already exists is a throwaway branch whose deliverable is a verdict (ADR-0004,
+decision 3).
 
 ---
 
