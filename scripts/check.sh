@@ -297,7 +297,14 @@ while IFS=$'\t' read -r src target; do
     *)  base="$(dirname "$src")" ;;
   esac
   refs=$((refs + 1))
-  [ -e "$base/$target" ] || [ -e "./$target" ] || { bad "$src → $target (does not exist)"; dead=$((dead + 1)); }
+  [ -e "$base/$target" ] || [ -e "./$target" ] && continue
+  # An ADR is history: it names what existed when the decision was made, and a later ADR may delete
+  # it (ADR-0004 removed skills ADR-0002 introduced). So a path an ADR cites passes if it ever
+  # existed in this repo's history. A typo never existed, so it still fails.
+  case "$src" in
+    docs/adr/*) [ -n "$(git log --all -1 --format=%h -- "$target" 2>/dev/null)" ] && continue ;;
+  esac
+  bad "$src → $target (does not exist)"; dead=$((dead + 1))
 done < <(
   git ls-files '*.md' | while IFS= read -r f; do
     grep -oP '\]\(\K[^)]+'                                   "$f" 2>/dev/null | sed "s#^#$f\t#"
