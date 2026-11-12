@@ -22,9 +22,9 @@ owns that name, so typing it never reached this skill.
 `<project-slug>` is the basename of the project root — the child of your **projects root**, not the
 repo you happen to be standing in. A project with four sibling repos has **one** handoff directory.
 
-The projects root is the directory whose `CLAUDE.md` imports devkit's `METHOD.md` (it comes from
-`claude-config`, linked by `install.sh`). Derive it rather than assuming it, so the skill survives
-someone laying their tree out differently. A machine without `claude-config` has no such file, so
+The projects root is the directory whose `CLAUDE.md` imports devkit's `METHOD.md` (devkit's
+`rules/personal/CLAUDE.md`, linked by `install.sh`). Derive it rather than assuming it, so the skill survives
+someone laying their tree out differently. A machine without a projects tree has no such file, so
 derivation has a fallback (step 1) — and a `CLAUDE.md` that merely *mentions* `METHOD.md`, as every
 project's does, is not an import and does not count.
 

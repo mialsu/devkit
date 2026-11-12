@@ -405,8 +405,8 @@ redirects his skill rather than forking it: a fork stops receiving his updates, 
 implementations of one behaviour is the defect this document spends a whole section on.
 
 **The redirect has to ride in the project's `CLAUDE.md`, not only here.** A rule no session loads
-is not a rule. It used to live in this file and the `claude-config` rule files alone, and on a
-machine without `claude-config` nothing carried it into the session: `/handoff` followed its own
+is not a rule. It used to live in this file and the projects-root rule file alone (then in a separate
+`claude-config` repo, now `rules/`), and on a machine without that file nothing carried it into the session: `/handoff` followed its own
 `SKILL.md`, the harness steered the file into a session scratchpad under `/tmp`, and `/pickup` —
 told never to look in temp — reported no handoff at all (prep-planner, 2026-10-20). So
 `templates/CLAUDE.md` now carries the one-line rule into every project, where it is always loaded,

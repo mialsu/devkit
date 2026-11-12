@@ -1,0 +1,9 @@
+# devkit rule files: rules/-relative source <TAB> destination.
+#
+# install.sh symlinks each destination at its source, so a `git pull` in devkit updates
+# every machine. $HOME expands. Lines whose destination PARENT directory is absent
+# are skipped with a notice -- that is how the work laptop, which has no
+# ~/code/personal tree, ends up with the global rules and nothing it cannot use.
+
+global/CLAUDE.md	$HOME/.claude/CLAUDE.md
+personal/CLAUDE.md	$HOME/code/personal/CLAUDE.md
