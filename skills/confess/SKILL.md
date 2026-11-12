@@ -28,7 +28,8 @@ Anything you did that a future reader would be surprised by:
 Silence about any of these is the defect, not the corner-cut itself.
 
 ## How to record it
-Append to the project's `REVIEW-DEBT.md`, one entry per confession:
+Add each confession to the project's `REVIEW-DEBT.md` in two places: a line at the top of its
+**Index** (`<date> — <title> — open`), and the full entry below it, newest first:
 
 ```
 ## <date> — <one-line title>
@@ -38,7 +39,7 @@ Append to the project's `REVIEW-DEBT.md`, one entry per confession:
 - **Invariant:** `INV-N` from `INVARIANTS.md`, quoted  (omit unless a domain rule is involved)
 - **Ceiling:** what breaks at the limit, and the upgrade path  (omit unless a `CEILING:` landed)
 - **What green tests do NOT prove here:** the specific gap.
-- **Disposition:** open  (later: fixed / accepted-with-reason / promoted-to-issue)
+- **Disposition:** open  (later: accepted-with-reason; fixed and promoted entries leave the file)
 ```
 
 For Light-weight tasks, a single confession line in the commit message is enough; for Standard
@@ -46,6 +47,12 @@ and Full, it goes in `REVIEW-DEBT.md`. Do not invent debt to look diligent, and 
 real debt into vague reassurance — each entry names a concrete, checkable gap.
 
 ## Then
-Report the confessions to the Owner in plain words and let them disposition each one (fix now /
-accept / turn into an issue). Undispositioned entries are read first by any later architecture
-or review session.
+Report the confessions in plain words. Do not ask the Owner to disposition each one as it is
+written: a decision asked for mid-build, one at a time, is not made (ADR-0004 in devkit found
+69–88% of entries still `open`). Disposition happens in one pass at the close of the mandate,
+where `/mandate` shows the Owner that mandate's new entries, each with a recommendation. Outside
+a mandate, offer the same one-pass review when the session closes.
+
+After the Owner decides: a **fixed** or **promoted-to-issue** entry leaves the file, index line and
+all; git history keeps it. An **accepted** entry stays, with its reason, because the limit it
+describes is still in the code.

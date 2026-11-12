@@ -71,7 +71,8 @@ Never ship: dead screens, fake zeros, raw IDs on a surface, "coming soon"/"unsup
   tagged `[review-only]` is genuinely unenforced; treat it as a prompt for judgement, not a promise.
 - **`docs/adr/`** — why the load-bearing calls were made, and what was rejected. Don't re-litigate
   a decision recorded here; supersede it with a new ADR or leave it alone.
-- **`REVIEW-DEBT.md`** — everything the green gates do not prove. Read it before trusting the repo.
+- **`REVIEW-DEBT.md`** — everything the green gates do not prove. Read its **Index** before trusting
+  the repo, and open an entry when your work touches its files.
 
 ## Process rules
 - Shape before build: `/grill-with-docs` → agree a spec → wait for an explicit "go".

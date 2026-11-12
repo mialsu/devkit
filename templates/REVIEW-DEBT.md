@@ -1,11 +1,24 @@
 # REVIEW-DEBT.md — <PROJECT>
 
 The standing ledger of everything the green tests do NOT prove. Written at the moment a corner
-is cut (`/confess`), read first by any architecture or review session, dispositioned by the
-Owner (fixed / accepted-with-reason / promoted-to-issue). A stale or empty-but-should-not-be
-ledger is worse than none, because sessions trust it.
+is cut (`/confess`); dispositioned by the Owner at the close of each mandate (`/mandate`), from a
+recommendation per entry: fixed / accepted-with-reason / promoted-to-issue. A stale ledger is worse
+than none, because sessions trust it.
 
-<!-- Newest first. Template for an entry: -->
+Two layers, so a fresh session does not pay for the whole file:
+- **Index** — one line per entry still in the file. Sessions read this, and open an entry only
+  when their work touches its files.
+- **Entries** — the full record, below the index.
+
+**Fixed** and **promoted-to-issue** entries leave the file, index line and all; git history keeps
+them. **Accepted** entries stay: they describe a limit the code still has (a `CEILING:` among them).
+
+## Index
+
+<!-- Newest first. One line per entry: date — title — disposition. -->
+- YYYY-MM-DD — <one-line title> — open
+
+<!-- Entries, newest first. Template for an entry: -->
 
 ## YYYY-MM-DD — <one-line title>
 - **What:** <what is stubbed / faked / deferred / weaker than spec>
