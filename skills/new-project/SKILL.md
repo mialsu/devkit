@@ -12,10 +12,12 @@ truth. This is Phase 0 of the method, resized for solo. Do the steps in order; c
 Ask which domain this is (or infer from the argument): `web`, `mobile-fullstack`, `game`,
 `cli-tools`, or `library`. Read the matching `profiles/<domain>/PROFILE.md` from the devkit repo.
 It defines this project's **stack defaults, gate set, tracer-slice shape, "verify like a user"
-meaning, and definition of done**. Everything below is parameterised by it.
+meaning, and definition of done**. Everything below is parameterised by it. Where `/architect`
+already left ADRs in `docs/adr/`, they win over the profile's stack defaults: the Owner picked them.
 
 ## 2. Lay down the workspace
-Create the project directory (or use the current one if it's empty). Drop in, from devkit's
+Create the project directory, or use the current one if it holds nothing but a `PRODUCT-BRIEF.md`
+and the `docs/adr/` that `/architect` wrote before bootstrap — keep both as they are. Drop in, from devkit's
 `templates/`:
 - `AGENTS.md` — the project's rules for every agent. Fill the **domain guard-rails** section WITH
   the user (see step 4). Everything else is adopt-verbatim.

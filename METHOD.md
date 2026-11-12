@@ -22,9 +22,9 @@ Losing this separation is how solo work degrades into vibe coding. Keep it.
 
 | Role | Who | Does |
 |---|---|---|
-| **Owner** | You | Decides. Answers shaping questions tersely. Gates every publish. Tests the thing personally. Vetoes. |
-| **Foreman** | Claude's main session | Grounds itself, recommends on every question, executes, coordinates, reports. Never decides a product question alone; never builds without your go. |
-| **Lanes / Verifiers** | Background agents | Build in isolation, or attack a claim with evidence. Never publish; never mark done. |
+| **Owner** | You | Guides the design and the product with the agent, and decides every load-bearing choice (`/architect`). Approves each spec once, as a mandate. Merges, which releases. Tests the released build. Vetoes. |
+| **Foreman** | Claude's main session | Grounds itself, drafts and recommends on every question, issues a mandate after a cold read, waits while the crew runs it, answers the crew from the record and escalates the rest, closes it (`/mandate`). Never decides a product question alone; never issues a mandate without your go. |
+| **Crew** | OpenRig seats (`openrig/crew/`) | Runs a mandate slice by slice inside its stop rules: the lead routes, a fresh builder and QA per slice, a reviewer, a junior. Never publishes or merges; never marks done without per-criterion evidence. |
 
 ---
 
@@ -68,7 +68,15 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
 0. DISCOVER  /product-brief (dk)      → PRODUCT-BRIEF.md: problem, core loop, MVP cut, edge
    (greenfield only)                    cases, non-goals, riskiest-assumption tests. Asks about
                                         users/scope/constraints first. Tech DEFERRED.
-                  │  gate: lovable MVP + cheap test for the #1 risk? → /new-project (dk)
+                  │  gate: lovable MVP + cheap test for the #1 risk? → /architect (dk)
+                  ▼
+0a. ARCHITECT /architect (dk)        → the two or three decisions that would be expensive to reverse,
+   (broad ideas; narrow ones          one per message, the Owner picking from options with a
+    before SHAPE)                     recommendation. Each an ADR with rejected alternatives and
+                                       predictions; a cold critic hunts contradictions; a build
+                                       tests the predictions. The stack decisions come before
+                                       /new-project (dk), which reads them.
+                  │  gate: does every load-bearing choice have an ADR the Owner picked?
                   ▼
 0b. CRUNCH   /crunch-domain (dk)      → only if the DOMAIN DIAL is on (below), and BEFORE the first
    (dial on only)                       spec: walk the domain's timeline with the Owner, harvest the
@@ -88,6 +96,9 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
    (+ shape)  → /to-spec (mp)          Writes the spec; devkit then adds falsifiable ACCEPTANCE
                                        CRITERIA, each naming how it will be proven, before code.
                                        Ambiguity → the spec's open questions, not an assumption.
+             → /mandate (dk)          issues it to the crew once a cold reader finds no blocking
+                                       question. Steps 2–6 then run in the crew, alone, inside the
+                                       stop rules; the Owner's go is given once, per spec (ADR-0003).
                   │
 2. SLICE     /to-tickets (mp)         → tracer-bullet vertical slices with blocking edges.
    (optional)                           Skip for small work.
@@ -118,6 +129,9 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
                                   → its platform reality picks the profile, and its MVP cut is
                                     already the DOMAIN DIAL's evidence (money? scheduling?
                                     permissions? a state machine? then the dial is on)
+1b. /architect                    the decisions bootstrap needs (stack, hosting, the data store),
+                                  each an ADR the Owner picked, with predictions. Continues after
+                                  bootstrap for the rest of the system's shape.
 2. /new-project                   once. Profile, AGENTS.md + CLAUDE.md, GLOSSARY.md, CODING_STANDARDS.md,
                                   REVIEW-DEBT.md, scripts/drift-check.sh, specs/. Delegates to
                                   /harness, which PROVES each gate by breaking it. Step 3a sets
@@ -130,7 +144,11 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
                                   Look and copy DELEGATED to ui-ux-pro-max, layout to /prototype.
 ── per MVP-cut bullet ────────────────────────────────────────────────────────────────────
 5. /grill-with-docs → /to-spec    the spec, then its AC table (each criterion naming
-                                  test:/live:/review-only) and `Invariants touched: INV-n`
+                                  test:/live:/review-only) and `Invariants touched: INV-n`.
+                                  /architect first when the bullet changes the system's shape.
+5b. /mandate                      issue: a cold read to zero blocking questions, then the crew
+                                  runs 6–10 alone; close: the mandate's confessions decided in one
+                                  pass. The Owner's session waits; it does not watch.
 6. (/to-tickets)                  tracer slices, blockers first. Skip for small work.
 7. /implement (+ /tdd)            build the slice. The profile's gate set green before EVERY commit.
 8. /code-review                   standards + spec axes; fixes folded INTO the commits.
@@ -145,7 +163,8 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
 
 Anywhere in there: `/verify-claim` the moment something claims "this already works",
 `/handoff` when a session fills up, and `/pickup` when the next one opens. Adding a feature to a
-project that already exists? Start at step 4 — Stage 0 and the bootstrap are once-per-project.
+project that already exists? Start at step 5 — with `/architect` first when the feature changes
+the system's shape. Stage 0 and the bootstrap are once-per-project.
 
 Eight supporting skills sit outside the loop:
 
@@ -204,7 +223,8 @@ map, so no session has to guess which shape is canonical:
 | Artifact | Format owned by | devkit's additions |
 |---|---|---|
 | `GLOSSARY.md` (ubiquitous language) | `domain-modeling` (mp) — `GLOSSARY-FORMAT.md` | an `_Unresolved_:` marker; `_Avoid_:` made machine-checked by the drift gate |
-| `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7) |
+| `docs/adr/NNNN-*.md` | `domain-modeling` (mp) — `ADR-FORMAT.md`; created lazily | **rejected alternatives are mandatory** (PRINCIPLES #7); when `/architect` writes one, **Predictions** a build can falsify, with a line for each outcome |
+| the working agreement a crew runs under — boundary, spend limit, who answers, when to stop | OpenRig — `openrig-software-factory`, and `human-in-the-loop` for classifying what reaches the Owner | `/mandate` adds devkit's half: the cold read and the readiness ladder before issue, ADR-0003's stop rules, answering from the record with a citation, and the confessions decided at close |
 | `specs/NNNN-*.md` | `to-spec` (mp) — its section template | a local file; where a project has a tracker, the issue is linked at the top and the file stays canonical; adds Tracer slices (#4) and Open questions (#7) |
 | `GLOSSARY-MAP.md` (contexts, their folders, their relationships) | `domain-modeling` (mp) — `GLOSSARY-FORMAT.md` | each context folder becomes a layering rule in the boundary gate |
 | `CODING_STANDARDS.md` | `code-review` (mp) reads this exact filename | the enforcer tag on every rule |

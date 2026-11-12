@@ -10,8 +10,9 @@ team-scale machinery (agent fleets, boards, deploy pipelines, governance) is dro
 quality spine and the composable-skill format stay.
 
 ## The 10-second mental model
-You are the **Owner** (decide, gate, test). Claude is the **Foreman** (recommend, execute).
-Background agents are **Lanes/Verifiers** (build or verify, never publish). Every task rides one
+You are the **Owner** (guide the design, decide, merge). Claude is the **Foreman** (draft,
+recommend, issue and close mandates). The **crew** — OpenRig seats in `openrig/crew/` — runs a
+mandate on its own and never publishes. Every task rides one
 **loop** — shape → (slice) → build → review → **verify like a user** → confess — governed by a
 short **spine** of [principles](PRINCIPLES.md), scaled by a **weight dial**, sized by a **domain
 dial** (does this project have a domain worth modelling at all?), and made concrete by a per-domain
@@ -39,6 +40,8 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /harness sync                   # (devkit) bring a project's drift gate back to the template
 /crunch-domain                  # (devkit) crunch the domain with the Owner → GLOSSARY.md + INVARIANTS.md
 /design-brief                   # (devkit) surfaces + states + A11Y-n with enforcers → DESIGN.md
+/architect                      # (devkit) design with the Owner: decision by decision, ADRs with predictions, a cold critic
+/mandate                        # (devkit) issue a spec to the crew after a cold read; wait, don't watch; close in one pass
 /prune                          # (devkit) dead code, proven dead before it is deleted; then duplication
 /audit                          # (devkit) security findings with verdicts, not a ranked list of guesses
 /pickup                         # (devkit) read the last handoff back, and verify what it claims

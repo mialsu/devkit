@@ -137,7 +137,7 @@ link_rules
 cat <<'NOTE'
 
 Done. devkit's skills are linked:
-  /sketch  /product-brief  /new-project  /harness  /crunch-domain  /design-brief
+  /sketch  /product-brief  /architect  /mandate  /new-project  /harness  /crunch-domain  /design-brief
   /verify-live  /verify-claim  /confess  /prune  /audit  /pickup
 
 Next — install Matt Pocock's skills (devkit references them, so you get his updates):
