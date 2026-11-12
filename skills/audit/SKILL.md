@@ -148,7 +148,7 @@ something, the revert must be surgical. The profile's full gate set runs between
 The order is not negotiable. **Rotate the credential
 before touching git history** — removing a commit does not un-publish a value that has been on a
 remote, in a fork, in someone's cache, or in a CI log. Then purge, then confirm the old value is
-dead by trying it. Rewriting shared history is a `/ship`-class act: it needs the Owner's explicit
+dead by trying it. Rewriting shared history is an Owner-only act, like a merge: it needs the Owner's explicit
 go, and it is the Owner who runs it.
 
 ## 11. Wire what you found into the gates

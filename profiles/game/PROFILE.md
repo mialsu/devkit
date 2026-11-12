@@ -124,7 +124,7 @@ mechanic loop — the player can *do the thing and see it respond*. Not "the inv
 alone; the smallest thing that is fun (or informative) to play for ten seconds.
 
 ## Verify like a user (`/verify-live`)
-**Build and play the slice** — in a build, not only in the editor, at least before `/ship`.
+**Build and play the slice** — in a build, not only in the editor, at least before the merge that releases it.
 Capture a short clip or key frames. Then answer two questions honestly, in the confession:
 1. Does it *work* (no crash, no error spam, frame budget sane)?
 2. Does it *feel right* (responsive input, readable feedback, no jank)? "It runs but feels bad"

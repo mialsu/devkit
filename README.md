@@ -34,7 +34,6 @@ dial** (does this project have a domain worth modelling at all?), and made concr
 /implement                      # (Pocock) build the slice, drives /tdd, then /code-review
 /verify-live                    # (devkit) prove it works the way a user hits it
 /confess                        # (devkit) record what was cut → REVIEW-DEBT.md
-/ship                           # (devkit) the explicit publish gate
 /verify-claim                   # (devkit) check any "already works" claim vs the real code
 /spike                          # (devkit) could this work here at all? timeboxed, throwaway, a verdict with evidence
 /harness                        # (devkit) install + PROVE the standards gates (boundaries, drift)

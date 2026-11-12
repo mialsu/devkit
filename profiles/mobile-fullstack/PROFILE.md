@@ -124,7 +124,7 @@ Run the **built app on a device or emulator** (not just a component in isolation
 the real flow as the real persona. Exercise the things phones break: **offline / flaky network,
 small screens, permission prompts (camera, location, notifications), cold start, background→foreground.**
 Capture screen recordings or frames. Verify the app against the *actually deployed* backend, not
-a local mock, before `/ship`.
+a local mock, before the merge that releases it.
 
 **Then the four passes that a single-device run silently skips.** `ui-ux-pro-max`'s pre-delivery
 checklist is scoped to exactly this profile — App UI, iOS/Android/RN/Flutter — and these are the
@@ -148,4 +148,4 @@ items mobile's walk above does not already cover:
 ## Definition of done
 Installed and tapped through on a device (or a faithful emulator), against the deployed backend,
 with the flow captured. Backend deployed and verified like the web profile. Store submission is
-a separate, explicit `/ship` step.
+a separate, explicit Owner step.

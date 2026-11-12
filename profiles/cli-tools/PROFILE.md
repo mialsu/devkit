@@ -135,5 +135,5 @@ Paste the actual terminal output as evidence.
 
 ## Definition of done
 Built, installed from clean into a fresh environment, and run there with the real output and
-exit codes captured. `--help` is honest and complete. For `/ship`: versioned, tagged, published
-to the registry, then installed *from the registry* and run once more.
+exit codes captured. `--help` is honest and complete. After release, by hand: versioned, tagged,
+published to the registry, then installed *from the registry* and run once more.

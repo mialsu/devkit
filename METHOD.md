@@ -139,7 +139,8 @@ An optional step 0 sits in front, for when the idea is cheaper to build than to 
                                   is the worst criterion's.
 10. /confess                      every faked/deferred/weaker-than-spec seam → REVIEW-DEBT.md
 ── when you choose to publish ────────────────────────────────────────────────────────────
-11. /ship                         the only command that puts anything on a remote.
+11. merge (the Owner)             the release: CI deploys what is merged. Then the Owner checks
+                                  the released build by hand, per the profile's after-release line.
 ```
 
 Anywhere in there: `/verify-claim` the moment something claims "this already works",
@@ -199,8 +200,8 @@ Nine supporting skills sit outside the loop:
 Bootstrapping a brand-new project is its own skill: **`/new-project` (dk)** — picks a domain
 profile, lays down the workspace, `AGENTS.md` (the rules for every agent) with a thin `CLAUDE.md` that
 imports it, `GLOSSARY.md`, and `REVIEW-DEBT.md`, and wires the
-gate commands via **`/harness`**. Publishing is **`/ship` (dk)** — the per-profile,
-explicit-keystroke publish checklist.
+gate commands via **`/harness`**. Publishing is the Owner's merge: CI releases what is merged, and
+each profile says what to check on the released build, by hand (ADR-0004, decision 2).
 
 ---
 

@@ -130,5 +130,5 @@ verdict, not a doc nit.
 
 ## Definition of done
 Built, installed from the packed artifact into a clean project, imported by its public name, and
-the documented examples run verbatim. Semver intent is explicit. For `/ship`: version + changelog,
-publish, then install *from the registry* into a clean environment and run the examples once more.
+the documented examples run verbatim. Semver intent is explicit. After release, by hand: version +
+changelog, publish, then install *from the registry* into a clean environment and run the examples once more.

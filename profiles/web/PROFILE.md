@@ -140,7 +140,7 @@ endpoints with no screen.
 Real browser (Playwright or by hand), real navigation, real login as the **real persona** —
 including a restricted, non-admin user, because admin bypasses the permission checks you most
 need to test. Perform the real mutation. Screenshot each key state, **including empty and error
-states**. On the deployed build for `/ship`, confirm the served version matches what you merged.
+states**. After release, by hand: on the deployed build, confirm the served version matches what you merged.
 
 **Keyboard-only pass, every time.** Complete the primary flow with the mouse untouched — Tab,
 Shift-Tab, Enter, Space, Escape. Focus visible at every step, order following reading order, no
