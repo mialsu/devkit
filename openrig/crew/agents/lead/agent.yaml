@@ -1,6 +1,6 @@
-name: crew-architect
+name: crew-lead
 version: "1.0"
-description: Crew lead. Shapes the Owner's goal into slices, routes them, reviews the result and reports. Writes no feature code.
+description: Crew lead. Runs the Owner's mandate slice by slice inside its stop rules, routes each slice, merges review and QA verdicts, and reports. Writes no feature code.
 
 defaults:
   runtime: claude-code

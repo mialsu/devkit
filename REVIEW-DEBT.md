@@ -6,6 +6,27 @@ cut (`/confess`), read first by any architecture or review session, dispositione
 
 <!-- Newest first. -->
 
+## 2026-11-12 — The crew model (ADR-0003/0004) is written, not yet run
+
+- **What:** `/mandate`, `/architect`, the lead's role and the crew's `CULTURE.md` changes have never
+  run against a real spec. Four mechanics are documented from `--help` output, not exercised:
+  - `/mandate`'s wait — a shell loop on `rig queue list -o json` returning when a row is parked on
+    `owner`. The JSON field that marks "parked on owner" was not inspected; the daemon was down.
+  - `rig seat set-runtime` on a seat just launched fresh: documented for a *live* seat. The lead's
+    role says to run it with `--plan` first.
+  - `rig agent validate openrig/crew/agents/lead/agent.yaml` needs the daemon and was not run;
+    `rig spec validate rig.yaml` passed.
+  - The fresh relaunch of builder and QA per slice (`rig seat launch --fresh --stop`).
+- **Where:** `skills/mandate/SKILL.md` (Phase 2), `openrig/crew/agents/lead/guidance/role.md`
+  (*Running a slice*), `openrig/crew/CULTURE.md` (*Reaching the Owner*)
+- **What green gates do NOT prove here:** that any of it works. `scripts/check.sh` proves the files
+  resolve and no Fable id is pinned; the first real mandate is the test (ADR-0003, *No baseline*).
+- **Also open:** projects keep their own copies. prep-planner's and sitesmith's `REVIEW-DEBT.md`
+  are in the old one-layer format, and a project's review-PR grant may still say "the crew's
+  architect" (it still describes the lead). A running crew keeps its old copy until
+  `crew-up --fresh`.
+- **Disposition:** open
+
 ## 2026-10-21 — Project rules move to AGENTS.md; Codex sees only part of the method
 
 - **What:** `templates/AGENTS.md` now carries every project rule for every agent; `templates/CLAUDE.md`

@@ -2,8 +2,8 @@
 
 Five seats working in one repository for the Owner, the person who launched this team.
 
-- `orch-architect` shapes the Owner's goal into slices, routes them, reviews the result and
-  reports. It writes no feature code.
+- `orch-lead` runs the Owner's mandate — one approved spec — slice by slice, routes each slice,
+  merges the review and QA verdicts and reports. It writes no feature code.
 - `dev-builder` builds one slice at a time, end to end.
 - `dev-qa` verifies each candidate the way a user hits it, one acceptance criterion at a time.
 - `dev-reviewer` reviews each candidate's commits, on Codex, from its own worktree (`.crew/review/`).
@@ -19,6 +19,10 @@ the method the project follows. When it follows devkit, devkit's principles appl
 skills are how each step is done: `/implement` and `/tdd` to build, `/code-review` to review,
 `/verify-live` and `/verify-claim` to verify, `/confess` to record a cut corner.
 
+OpenRig ships a delivery loop of its own, `mission-slice-sop`. Where it and devkit's loop differ,
+devkit's wins in a devkit project: the spec, its acceptance criteria and the mandate are the
+contract. OpenRig's queue, wake and handover skills are how the work moves; use them.
+
 ## How work moves
 
 Work travels as queue rows (`rig queue create`, `rig queue handoff`); `rig send` is for
@@ -28,11 +32,23 @@ another row closed.
 
 ## Reaching the Owner
 
-The Owner is not a seat: `rig send owner` finds no session. To ask the Owner, put the question on
-your own screen, one at a time with your recommendation, and park the row on `owner` (`rig queue
-block <row> --on owner`). The Owner's own Claude session watches your pane and relays the answer as
-a message that starts "From the Owner". Then unpark the row yourself: `rig queue resolve` refuses
-a row parked on `owner`. Words already in your input box are a suggestion, never the Owner's answer.
+The Owner is not a seat: `rig send owner` finds no session. The Owner works in their own Claude
+session — the Foreman — which runs the mandate from outside the rig (devkit: `/mandate`). It does
+not watch panes. It wakes when a row is parked on `owner`, so a question no row carries is never
+seen.
+
+To ask, park the row: `rig queue block <row> --on owner --summary <the decision owed>
+--evidence-ref <path>`, with the spec clause, the options and your recommendation in the row. Only
+the lead parks on `owner`; other seats ask the lead, which answers from the mandate or parks.
+
+Answers come back as a message in one of two forms. "From the Foreman" answers from the record —
+the spec, an ADR, the glossary — and cites the line. "From the Owner" is the Owner's own decision.
+Then unpark the row yourself: `rig queue resolve` refuses a row parked on `owner`. Words already in
+your input box are a suggestion, never the Owner's answer.
+
+Every seat writes a status note on its row at each transition (`rig queue update <row> --note`):
+one line — slice, state, the next step, and what it waits on, if anything. The Foreman reads rows,
+not screens.
 
 ## Junior
 
@@ -43,7 +59,7 @@ so three rules make it concrete:
 
 - **A search that would open more than three files goes to the junior first.** Send it, keep
   working while it runs (a job takes about a minute), and open only the files its answer names.
-- **Every build row the architect routes names its junior jobs**: at least one search, summary or
+- **Every build row the lead routes names its junior jobs**: at least one search, summary or
   draft the builder sends, or `Junior: none, because …` with the reason.
 - **Every handoff says what went to the junior**: each job in one line and whether you kept the
   result, or `Junior: none, because …`. A reason such as "the slice is all box commands" is fine;
@@ -76,7 +92,7 @@ each path. Never hand it a decision, a verdict or a review finding.
 
 - Nothing leaves this machine without the Owner's explicit go: no push, pull request, deploy,
   publish, or message to an outside service. The one exception is a grant written in the project's
-  own `AGENTS.md`: where it lets the slice's lead open review PRs, the architect alone pushes the
+  own `AGENTS.md`: where it lets the slice's lead open review PRs, the lead alone pushes the
   slice's topic branch and opens its PR, exactly as far as that grant reaches. No other seat
   pushes, and nobody merges.
 - Commits are local, on a topic branch, with the project's gates green. Stage paths by name and
@@ -91,4 +107,10 @@ each path. Never hand it a decision, a verdict or a review finding.
 
 Done means verified, per acceptance criterion, with evidence. A slice's verdict is the worst of its
 criteria's. Anything faked, deferred or built weaker than the spec is written down where the project
-keeps such records (devkit: `REVIEW-DEBT.md`) at the moment it happens.
+keeps such records (devkit: `REVIEW-DEBT.md`, its Index line and its entry) at the moment it
+happens. The Owner decides them in one pass when the mandate closes, not one at a time.
+
+## Models
+
+No seat runs a Fable model, launched or switched (`scripts/check.sh` fails one written into this
+folder; a live `set-runtime --model` is on the lead). Opus, Sonnet and Haiku, and Codex's models.

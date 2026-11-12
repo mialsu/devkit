@@ -6,7 +6,7 @@ never mix.
 
 | Seat | Address | Job |
 |---|---|---|
-| architect | `orch-architect@crew-<project>` | shapes the goal into slices, routes them, reviews and reports; writes no feature code |
+| lead | `orch-lead@crew-<project>` | runs the Owner's mandate slice by slice inside its stop rules, routes, merges the verdicts and reports; writes no feature code |
 | builder | `dev-builder@crew-<project>` | builds one slice at a time, end to end |
 | qa | `dev-qa@crew-<project>` | verifies each candidate the way a user hits it, per acceptance criterion |
 | reviewer | `dev-reviewer@crew-<project>` | Codex: reviews each candidate's commits against the spec and the standards, alongside qa |
@@ -16,6 +16,11 @@ Each seat's role is in `agents/<seat>/guidance/role.md`, and the team rules are 
 Both defer to the project's own `AGENTS.md`, and they name the devkit skill for each step instead
 of restating the method.
 
+The crew runs a **mandate**: one spec the Owner approved once, issued from the Owner's own Claude
+session with devkit's `/mandate`. The lead runs every slice without asking, pauses once after the
+first, and otherwise parks on `owner` only when a stop rule fires. The builder and QA are relaunched
+fresh for every slice. The why is devkit's ADR-0003.
+
 ## Use it
 
 From the project's root, in a normal terminal. `crew-up` on your PATH is a link to `crew-up.sh`
@@ -24,7 +29,8 @@ in this folder.
     crew-up --plan     # what would start; starts nothing
     crew-up            # launch, or resume this project's stopped crew
     crew-up --fresh    # new seats, replacing a stopped crew
-    env -u TMUX tmux attach-session -t '=orch-architect@crew-<project>'   # talk to the architect
+    /mandate <spec>    # from your own Claude session: issue a spec to the crew
+    env -u TMUX tmux attach-session -t '=orch-lead@crew-<project>'        # talk to the lead
     # leave a seat with Ctrl-b d; Ctrl-c twice quits its agent and leaves a bare shell
     rig down crew-<project>                                               # stop it
 
@@ -88,12 +94,12 @@ full_bypass --reason "<why>"` (plus `--operator` from a human shell) launches it
 
 ## Review PRs
 
-When a slice's QA verdicts and review are in, the architect writes its report as a PR body in
+When a slice's QA verdicts and review are in, the lead writes its report as a PR body in
 `/pr`'s shape (Summary visual, Evidence, Merge Danger) at `.crew/pr/<branch>.md`. It opens the PR
 itself only where the project's `AGENTS.md` carries a standing grant for review PRs; nobody in the
 crew merges. A grant reads like prep-planner's:
 
-    **Standing grant (Owner, <date>) — review PRs:** an agent leading a slice (the crew's architect)
+    **Standing grant (Owner, <date>) — review PRs:** an agent leading a slice (the crew's lead)
     may push that slice's own topic branch and open its pull request against `main` once the slice's
     QA verdicts and code review are in, with the body in `/pr`'s shape. Nothing else leaves under
     this grant: never push `main` or another branch, never force-push, never merge, close or approve
@@ -130,5 +136,5 @@ Edit a role, the culture or an agent's skills here, then check before the next l
     rig spec validate rig.yaml
     crew-up --plan
 
-A new seat is a new folder under `agents/` plus a member in `rig.yaml`. The architect, builder and
+A new seat is a new folder under `agents/` plus a member in `rig.yaml`. The lead, builder and
 qa are Claude sessions on Opus, the reviewer a Codex one, and the junior a Claude session on Haiku.

@@ -321,6 +321,16 @@ if jout="$(bash openrig/crew/bin/junior-sync.test.sh 2>&1)"; then ok "openrig/cr
 else bad "openrig/crew/bin/junior-sync.test.sh"; fi
 printf '%s\n' "$jout" | tail -n 1 | sed 's/^/      /'
 
+# --- 8. no Fable model in the crew ------------------------------------------
+# The Owner ruled Fable models out of the crew on cost (ADR-0003, decision 5). A model id is how one
+# would get in: pinned in rig.yaml or an agent spec, or named by a specialist profile. Prose that
+# forbids it says "Fable", not an id, so it does not trip this. A live `rig seat set-runtime
+# --model` is invisible to any file check; the lead's role carries that half.
+group "8. no Fable model in the crew"
+fable="$(git ls-files openrig/crew | xargs grep -nIiE 'claude-fable|model:[[:space:]]*["'"'"']?fable' 2>/dev/null)"
+if [ -z "$fable" ]; then ok "no Fable model id under openrig/crew/"
+else bad "a Fable model id under openrig/crew/ (ADR-0003, decision 5)"; printf '%s\n' "$fable" | sed 's/^/        /'; fi
+
 # --- verdict ----------------------------------------------------------------
 printf '\n'
 if [ "$fails" -gt 0 ]; then

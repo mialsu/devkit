@@ -77,10 +77,9 @@ next_steps() {
     echo "junior-sync is not on PATH, so the seats cannot reset the junior's worktree; see README.md."
   fi
   echo
-  echo "Talk to the architect, in a new terminal:"
-  echo "  env -u TMUX tmux attach-session -t '=orch-architect@$name'"
-  echo "Send it a goal from here:"
-  echo "  rig send orch-architect@$name '<outcome, boundary, how to check>'"
+  echo "Issue a spec to it from your own Claude session: /mandate <spec path>"
+  echo "Talk to the lead directly, in a new terminal:"
+  echo "  env -u TMUX tmux attach-session -t '=orch-lead@$name'"
   echo "Stop this crew:"
   echo "  rig down $name"
 }

@@ -1,7 +1,7 @@
 version: "0.2"
 name: crew
 summary: >
-  The Owner's five-seat team for any repository: an architect who shapes goals into slices and
+  The Owner's five-seat team for any repository: a lead who runs the Owner's mandate slice by slice and
   reports, a builder who delivers one slice at a time end to end, a QA seat that verifies each
   candidate the way a user hits it, a Codex reviewer that reviews each candidate's commits from
   its own worktree, and a junior that takes narrow jobs from the others in a worktree of its own.
@@ -24,15 +24,15 @@ pods:
   - id: orch
     label: Lead
     members:
-      - id: architect
-        agent_ref: "local:agents/architect"
+      - id: lead
+        agent_ref: "local:agents/lead"
         profile: default
         runtime: claude-code
         model: claude-opus-5-5
         cwd: "."
         # gh keeps its token in the desktop keyring, reached over the session D-Bus. OpenRig gives
         # every seat DBUS_SESSION_BUS_ADDRESS=disabled: (rig-spec, "The runtime directory, on
-        # Linux"), so gh in a seat finds no token and reports it invalid. The architect opens the
+        # Linux"), so gh in a seat finds no token and reports it invalid. The lead opens the
         # slice's PR, so it alone gets the bus. It can read the whole keyring, not only gh's token.
         # The path assumes uid 1000.
         env:
@@ -80,23 +80,23 @@ pods:
 
 edges:
   - kind: delegates_to
-    from: orch.architect
+    from: orch.lead
     to: dev.builder
   - kind: delegates_to
-    from: orch.architect
+    from: orch.lead
     to: dev.qa
   - kind: delegates_to
-    from: orch.architect
+    from: orch.lead
     to: dev.reviewer
   - kind: delegates_to
-    from: orch.architect
+    from: orch.lead
     to: dev.junior
   - kind: escalates_to
     from: dev.builder
-    to: orch.architect
+    to: orch.lead
   - kind: escalates_to
     from: dev.qa
-    to: orch.architect
+    to: orch.lead
   - kind: escalates_to
     from: dev.reviewer
-    to: orch.architect
+    to: orch.lead
