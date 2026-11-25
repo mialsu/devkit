@@ -1,6 +1,6 @@
 ---
 name: crunch-domain
-description: Crunch a project's domain with the Owner — walk the timeline out loud, harvest the language into GLOSSARY.md, and turn the rules into INVARIANTS.md entries that each name a failing test. Use when the user says "crunch the domain", "model the domain", "what are the invariants", "event storm", when a word keeps meaning two things, or before a project with real rules (money, scheduling, permissions, state machines) gets big.
+description: Crunch a project's domain with the Owner — draft the timeline and its rules from the brief and ADRs, have the Owner confirm or change each, ask only where the sources are silent, then harvest the language into GLOSSARY.md and the rules into INVARIANTS.md entries that each name a failing test. Use when the user says "crunch the domain", "model the domain", "what are the invariants", "event storm", when a word keeps meaning two things, or before a project with real rules (money, scheduling, permissions, state machines) gets big.
 disable-model-invocation: true
 ---
 
@@ -11,10 +11,22 @@ carries none, while every later session cites it as fact.
 
 So the division of labour here is strict and does not bend:
 
-> **The Owner supplies the rules. The agent asks, transcribes, challenges, and names.**
+> **The agent drafts; the Owner decides.** The agent turns what the Owner has already decided — the
+> brief, the ADRs, the glossary — into a timeline and candidate rules, each citing its source. The
+> Owner accepts, strikes or changes each one. Where the sources are silent, the agent asks, with
+> options and a recommendation.
 
-If you catch yourself writing an invariant the Owner never said, stop and ask instead. A guess in
-this file is worse than a gap, because a gap is visible.
+Drafting replaced an open interview on 2026-11-25 (ADR-0005): the Owner works by steering an agent,
+and most rules were already written in the brief, so asking the Owner to narrate them again cost
+time and added nothing. Two things keep a draft from becoming the pseudo-artifact:
+
+- **Every draft cites its source** — a brief section, an ADR, a glossary term. A rule with no source
+  in the Owner's decisions is your invention: it goes to the Owner as a *question*, never into the
+  draft table as though it were settled. A guess in this file is worse than a gap, because a gap
+  is visible.
+- **Nothing is written until the Owner confirms it**, and the recite gate still closes the session:
+  can the Owner state the top three invariants with the file closed? Accepting a table in one click
+  is how a skimmed model gets in; the recite check is what catches it.
 
 ## 1. Try to talk the Owner out of it
 
@@ -32,34 +44,42 @@ anyway, that's their call (PRINCIPLES #8) — proceed, and note in the report th
 
 ## 2. Ground yourself first, out loud
 
-Before the first question, read and *state what you found*: `GLOSSARY.md` (and `GLOSSARY-MAP.md` if
-it exists), the top-level code folders, the existing specs, `REVIEW-DEBT.md`. Every "the code
+Before the first draft, read and *state what you found*: `PRODUCT-BRIEF.md` (its edge-case tables
+already decide most outcomes), `docs/adr/`, `GLOSSARY.md` (and `GLOSSARY-MAP.md` if it exists), the
+top-level code folders, the existing specs, `REVIEW-DEBT.md`. Every "the code
 already does X" is a claim needing file:line (PRINCIPLES #6) — `/verify-claim` it if it matters.
 Say which terms already exist so the Owner doesn't re-invent their own vocabulary at you.
 
-## 3. Walk the timeline — one question per message
+## 3. Draft the timeline, then ask only what the sources leave open
 
-Ask the Owner to narrate the domain as **things that happen, in order**, past tense. Not tables,
-not screens, not endpoints. "A trip was requested. A driver accepted it. …"
+1. **Draft the timeline** from the sources: the domain as **things that happen, in order**, past
+   tense. Not tables, not screens, not endpoints. "A trip was requested. A driver accepted it. …"
+   Show it and let the Owner add, cut or reorder events before you build on it.
+2. **Work each event yourself**, with the questions the interview used to put to the Owner:
+   - **who or what caused it**, and who is allowed to issue it;
+   - **what had to be true for it to be allowed**, and **what must be true afterwards, forever** —
+     each a candidate **invariant**;
+   - **the edges** — it happens **twice**; it arrives **out of order** or very **late**; two actors
+     do it **at the same time**; someone **undoes** it (reversed, or never happened?); the data is
+     **a year old**.
+3. **Draft each candidate as a full row**: the rule in glossary words, the concrete case that breaks
+   it, the enforcer's name, and its source. Push each until it is falsifiable before showing it.
+4. **Show all the drafts at once**, as one table, and ask the Owner to accept, strike or change them
+   — row by row is fine. Five to ten is the target (`templates/INVARIANTS.md`, rule 1).
+5. **Ask what the sources do not answer.** An edge nobody decided (what happens when a customer
+   stops paying, who may undo a cancellation) is a product question: ask it with options and a
+   recommendation marked "(Recommended)". Independent questions may share one prompt; a question
+   whose answer changes the next one waits for it. A choice that adds or changes a rule goes back
+   into the table before it is written.
+6. **Challenge the words as you draft them.** A term that conflicts with `GLOSSARY.md` gets called
+   out; a fuzzy term gets a proposed canonical name. That is `/domain-modeling`'s job — invoke it
+   rather than re-implementing it, and let it write `GLOSSARY.md` in its own format. Before
+   proposing an `_Avoid_:` word, check it against the identifiers the code will need and the
+   glossary's rule on general programming words: the drift gate bans the word everywhere, so
+   `contact` as a synonym to avoid would fail the contact form's own code.
 
-For each event, work it before moving on — one question at a time, each with a recommendation
-marked "(Recommended)":
-
-1. **Who or what caused it?** (the command, and who is allowed to issue it)
-2. **What had to be true for it to be allowed?** → this is a candidate **invariant**. Push until
-   it's falsifiable: "what would have to happen for that to be violated?"
-3. **What must be true afterwards, forever?** → also a candidate invariant.
-4. **Then probe the edges** — the questions that find the real model:
-   - what if it happens **twice**?
-   - what if it arrives **out of order**, or very **late**?
-   - what if two actors do it **at the same time**?
-   - who can **undo** it, and what does undone mean — reversed, or never happened?
-   - what does this look like **a year later**, when the data is old?
-5. **Challenge the words as they're spoken.** A term that conflicts with `GLOSSARY.md` gets called
-   out immediately; a fuzzy term gets a proposed canonical name. That is `/domain-modeling`'s job —
-   invoke it rather than re-implementing it, and let it write `GLOSSARY.md` in its own format.
-
-Stop when the Owner starts repeating themselves. That's the model, not a shortage of questions.
+Stop when every event has its rules confirmed or its open question asked. More drafts past that
+point are padding the Owner will skim.
 
 ## 4. Harvest — each thing to the file that owns it
 
@@ -127,5 +147,6 @@ not yet in the boundary gate, and anything the Owner deferred.
 ## What this skill does not do
 
 It doesn't design the schema, pick the framework, or write the feature — that's the spec's job,
-downstream. It doesn't run on a CRUD app. And it never, at any weight, hands the Owner a finished
-model to nod at: the interview *is* the deliverable, and the files are the residue.
+downstream. It doesn't run on a CRUD app. And it never writes a rule the Owner hasn't confirmed, or
+drafts one with no source in the Owner's decisions: the draft is the agent's, the model is the
+Owner's, and the recite gate is what proves the second.

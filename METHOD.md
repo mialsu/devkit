@@ -79,9 +79,11 @@ installed via his plugin), **(dk)** = devkit's own (in this repo).
                   │  gate: does every load-bearing choice have an ADR the Owner picked?
                   ▼
 0b. CRUNCH   /crunch-domain (dk)      → only if the DOMAIN DIAL is on (below), and BEFORE the first
-   (dial on only)                       spec: walk the domain's timeline with the Owner, harvest the
-                                        words into GLOSSARY.md and the rules into INVARIANTS.md, give
-                                        every invariant the test that fails when it is violated.
+   (dial on only)                       spec: draft the domain's timeline and rules from the brief
+                                        and ADRs, the Owner confirming each and answering what they
+                                        leave open; harvest the words into GLOSSARY.md and the rules
+                                        into INVARIANTS.md, give every invariant the test that fails
+                                        when it is violated.
                   │  gate: can the Owner recite the contexts and top 3 invariants, files closed?
                   ▼
 0c. DESIGN   /design-brief (dk)       → only if the project has a surface: DESIGN.md — every
@@ -175,9 +177,11 @@ Eight supporting skills sit outside the loop:
   (the exact filename `/code-review`'s Standards axis reads), the import/architecture boundary
   gate, and the drift gate that makes `ANTI-PATTERNS.md` executable. Run at bootstrap, or to
   retrofit a project whose rules currently live only in prose.
-- **`/crunch-domain` (dk)** — for a project whose **domain dial** is on (below): walk the domain's
-  timeline with the Owner, harvest the words into `GLOSSARY.md` and the rules into `INVARIANTS.md`,
-  and give every invariant the test that fails when it's violated. Its first act is to check the
+- **`/crunch-domain` (dk)** — for a project whose **domain dial** is on (below): draft the domain's
+  timeline and its rules from the brief and the ADRs, each citing its source, for the Owner to
+  confirm, strike or change, and ask only what those sources leave open; harvest the words into
+  `GLOSSARY.md` and the rules into `INVARIANTS.md`, and give every invariant the test that fails
+  when it's violated. Its first act is to check the
   dial and try to talk you out of it. Not per-task: run it once early, re-run when the domain moves.
 - **`/design-brief` (dk)** — for a project with a **surface**: the inventory reconciled against the
   MVP cut both ways, the states that cite the brief instead of re-deciding it, and accessibility

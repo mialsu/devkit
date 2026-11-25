@@ -33,8 +33,9 @@ They look alike and are not:
    the single place that owns it; everywhere else calls that.
 5. **Glossary words only.** If stating an invariant needs a word `GLOSSARY.md` doesn't define, the
    word goes in `GLOSSARY.md` first — then write the invariant.
-6. **The Owner supplies these.** The agent may draft candidates from the code, ask, and challenge;
-   but an invariant the Owner cannot state with this file closed is not theirs yet
+6. **The Owner decides these.** The agent drafts candidates from the brief, the ADRs and the code,
+   citing each source, and asks where they are silent; a row is written only once the Owner
+   confirms it. An invariant the Owner cannot state with this file closed is not theirs yet
    (PRINCIPLES #11). A list nobody can recite is the pseudo-artifact, not the model.
 
 ## Invariants
