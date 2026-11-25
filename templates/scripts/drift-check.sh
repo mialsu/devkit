@@ -331,7 +331,7 @@ dep_names() {                   # dep_names <manifest> <+|->
     | sed 's/^.//; s/^[[:space:]]*//; s/^["'"'"']//' | grep -v '^-' | sed 's/["'"'"':=<>~![ ].*$//' \
     | grep -E '^[A-Za-z0-9@._/-]+$' \
     | grep -Eiv '^(version|name|description|license|author|authors|readme|repository|keywords|main|types|type|private|files|exports|scripts|engines|node|npm|packageManager|requires-python|python|python_version|edition|go|rust-version|module|require|tool|project|package|lib|bin|workspace|features|profile|target|(dev-|build-|optional|peer|dev|Dev|Peer|Optional|Build)?[dD]ependenc(y|ies)|dependency-groups|build-system|plugins|resolutions|overrides)$' \
-    | sort -u
+    | LC_ALL=C sort -u           # byte order: comm below compares in it too (check.sh 3g)
 }
 # Each new name must appear IN BACKTICKS in some file under $ADR_DIR (`postgres` in ADR-0003), so a
 # prose mention ("PostgreSQL holds the data") never counts. Until 2026-10-21 this check passed every
@@ -356,7 +356,7 @@ adr_names() {                   # adr_names <dep>: true when `<dep>` appears in 
 }
 while IFS= read -r m; do
   [ -n "$m" ] || continue
-  new="$(comm -23 <(dep_names "$m" '+') <(dep_names "$m" '-'))"
+  new="$(LC_ALL=C comm -23 <(dep_names "$m" '+') <(dep_names "$m" '-'))"
   undocumented="$(while IFS= read -r d; do [ -n "$d" ] && ! adr_names "$d" && printf '%s\n' "$d"; done <<<"$new")"
   if [ -n "$undocumented" ]; then
     report "dependency — $m gained a dependency no ADR names" \

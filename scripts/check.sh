@@ -217,6 +217,43 @@ else
 fi
 rm -rf "$lt"
 
+# --- 3g. the dependency check compares names in one byte order -----------------
+# Under en_US.UTF-8, `sort` skips the `@` and puts @eslint/js after eslint, while `comm` checks its
+# input in a different order and prints "input is not in sorted order". A unique name is always
+# printed, so nothing new is missed; an unchanged one can fail to pair and be reported as new.
+# Found at sitesmith-v2's bootstrap, 2026-11-25. This bumps every version, adds nothing, and
+# expects silence under en_US.UTF-8 (C.UTF-8 sorts by byte and would hide the bug).
+group "3g. dependency check behaviour (a version bump under en_US.UTF-8 reports nothing)"
+utf8="$(locale -a 2>/dev/null | grep -iE '^en_US\.utf-?8$' | head -1)"
+gt="$(mktemp -d)"
+(
+  cd "$gt" || exit 2
+  git init -q . && git config user.email t@t && git config user.name t
+  mkdir -p scripts docs/adr
+  cp "$OLDPWD/templates/scripts/drift-check.sh" scripts/
+  printf 'Uses `cross-env`, `eslint`, `@eslint/js` and `@payloadcms/next`.\n' > docs/adr/0001-seed.md
+  deps() { printf '{\n  "name": "p",\n  "dependencies": {\n    "@eslint/js": "%s",\n    "@payloadcms/next": "%s",\n    "cross-env": "%s",\n    "eslint": "%s"\n  }\n}\n' "$1" "$1" "$1" "$1"; }
+  deps 1.0.0 > package.json
+  git add -A && git commit -qm seed
+  printf 'Nothing named.\n' > docs/adr/0001-seed.md
+  deps 1.1.0 > package.json
+  git add -A
+) >/dev/null 2>&1
+if [ ! -f "$gt/package.json" ]; then
+  skipped "could not build the throwaway repo — this check is not running"
+elif [ -z "$utf8" ]; then
+  skipped "no en_US.UTF-8 locale on this machine — the ordering bug cannot show here"
+else
+  out="$(cd "$gt" && LC_ALL="$utf8" bash scripts/drift-check.sh --cached 2>&1)"
+  if grep -qE 'not in sorted order|gained a dependency' <<<"$out"; then
+    bad "a version bump that adds no dependency was reported under $utf8"
+    grep -E 'sorted order|gained|→' <<<"$out" | sed 's/^/        /'
+  else
+    ok "a version bump under $utf8 reports no new dependency and no ordering error"
+  fi
+fi
+rm -rf "$gt"
+
 # --- 3f. drift-ci.sh checks the range the event brought, or fails --------------
 # Each project once resolved its CI range in its own workflow, and two of the three narrowed to the
 # last commit when the base was missing. This asserts each base resolves as the header says, that

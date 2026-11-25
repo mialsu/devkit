@@ -71,8 +71,9 @@ contradicts one of these, the principle wins.
     isn't. An honest PARTIAL always beats an indefensible DONE.
 
 11. **The model is yours, not the agent's.** The domain's rules — what must always be true, what a
-    word means, where one context ends — come from you. The agent asks, transcribes, challenges,
-    and names; it never supplies them. Every invariant names the enforcer that fails when it's
+    word means, where one context ends — are yours to decide. The agent drafts them from what you
+    have already decided, cites where each came from, and asks where that is silent; nothing
+    enters the model until you confirm it. Every invariant names the enforcer that fails when it's
     violated, or it is prose. And a model you can't recite with the file closed is a
     *pseudo-artifact*: it manufactures confidence without carrying understanding, which is worse
     than having no document at all.
